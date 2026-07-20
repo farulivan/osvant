@@ -1,0 +1,5 @@
+# Design/engineering docs are LAW content — never reformatted by tooling.
+docs/
+
+pnpm-lock.yaml
+pnpm-workspace.yaml

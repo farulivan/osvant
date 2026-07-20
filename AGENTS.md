@@ -20,14 +20,21 @@ OSVANT — a fictional luxury fragrance brand site, built as a portfolio showcas
 
 ## Workflow
 
-- Conventional commits (`feat:`/`fix:`/`perf:`/`docs:`/`chore:`); body explains *why*. AI-assisted commits carry a `Co-authored-by:` trailer.
+- Conventional commits (`feat:`/`fix:`/`perf:`/`docs:`/`chore:`); body explains _why_. AI-assisted commits carry a `Co-authored-by:` trailer.
 - One module/section per PR. PR description links the spec section it implements and quotes its acceptance boxes; visual changes need recordings; mobile screenshots mandatory.
 - Append 3–5 lines per PR to `docs/engineering/worklog.md`: what, spec refs, deviations, judgment calls.
 - Stop and escalate per guide §7: missing values, LAW-doc conflicts, infeasible budgets, new deps/routes, anything touching `docs/design/*` content.
 
 ## Commands
 
-No code yet — the scaffold is M1 task 1.1 (`00-implementation-guide.md §5`). Update this section with install/dev/test/build commands in the scaffold PR and keep it current.
+Node 24 (`.nvmrc`), pnpm (pinned via `packageManager`).
+
+- `pnpm install` — install (build-script approvals live in `pnpm-workspace.yaml`)
+- `pnpm dev` — dev server
+- `pnpm build` / `pnpm preview` — production build / serve it locally
+- `pnpm verify` — format (Prettier, writes) → lint (ESLint + stylelint) → typecheck (`astro check`) → unit tests (Vitest). Run before every push.
+- `pnpm format:check` — CI-style non-mutating format check
+- Granular: `pnpm format` · `pnpm lint` · `pnpm typecheck` · `pnpm test`
 
 ## AI transparency
 
