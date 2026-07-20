@@ -1,0 +1,8 @@
+allowBuilds:
+  esbuild: true
+
+# eslint-plugin-jsx-a11y (hard dep of eslint-plugin-astro) hasn't bumped its
+# peer range to eslint 10 yet; its rules API is compatible.
+peerDependencyRules:
+  allowedVersions:
+    'eslint-plugin-jsx-a11y>eslint': '10'
