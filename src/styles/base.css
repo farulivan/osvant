@@ -1,0 +1,45 @@
+/*
+ * Global base styles.
+ * Focus ring per M §9 (never removed). Selection + scrollbar are an
+ * owner-approved gap-fill (guide task 1.2 points at 01 §6, which holds no
+ * such values) — recorded in the worklog, 2026-07-21.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scrollbar-color: var(--color--ink-3) var(--color--black);
+  scrollbar-width: thin;
+}
+
+body {
+  margin: 0;
+  background: var(--color--black);
+  color: var(--color--white);
+  font-family: Archivo, sans-serif;
+  font-size: var(--text--body);
+  font-weight: 400;
+  font-stretch: 100%;
+  line-height: 1.5;
+}
+
+img,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: var(--color--uv);
+  color: var(--color--black);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color--uv);
+  outline-offset: 3px;
+}
