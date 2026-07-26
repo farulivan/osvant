@@ -1,0 +1,78 @@
+/*
+ * OSVANT design tokens — implemented VERBATIM from docs/design/01-design-system.md.
+ * This is the ONLY file where raw color/size values may appear (03-eng §2).
+ * Never invent a value here — flag gaps instead (guide §7).
+ */
+
+:root {
+  /* ---- Color (01 §2.1) ---- */
+
+  /* Core brand pair */
+  --color--uv: #be29ff; /* ultraviolet — CTAs, highlights, live states */
+  --color--black: #111013; /* near-black, violet-shifted — default page bg */
+
+  /* Accent variants */
+  --color--uv-off: #8f4fb3; /* desaturated UV — hover-off, visited, disabled-accent */
+  --color--uv-zero: #be29ff00; /* transparent UV — gradient/fade endpoints */
+  --color--amber: #ffb000; /* counter-accent — heat, scarcity, cart badge */
+
+  /* Light neutrals (violet-tinted, warm-to-cool) */
+  --color--white: #f5f3f7; /* off-white — primary text on dark */
+  --color--cream: #efeaf2;
+  --color--lilac-1: #e9e4ee; /* light section backgrounds */
+  --color--lilac-2: #cdc7de;
+  --color--lilac-3: #b3abbc; /* muted text on dark */
+
+  /* Dark neutrals (violet-tinted) */
+  --color--ink-3: #524d59; /* borders on dark, disabled text */
+  --color--ink-2: #3b3740; /* raised surfaces, cards on black */
+  --color--ink-1: #201c24; /* alt dark section bg */
+
+  /* ---- Scent tint fallback (01 §2.3) ---- */
+  --scent-tint: var(--color--uv);
+
+  /* ---- Type scale (01 §3.2) ---- */
+  --text--impact: clamp(4.5rem, 12vw, 8rem); /* viewport-filling name moments */
+  --text--h1: clamp(3rem, 6vw, 4.5rem);
+  --text--h2: clamp(2.5rem, 5vw, 4rem);
+  --text--med: 2.75rem; /* stat numbers, prices on PDP */
+  --text--h3: 2rem;
+  --text--h4: 1.5rem;
+  --text--h5: 1.2rem;
+  --text--h6: 1rem; /* footer sitemap/legal rows (RFC-001 A1) */
+  --text--lead: 1.6rem; /* section intro paragraphs — generous, editorial */
+  --text--body: 1.125rem; /* long-form, product info */
+  --text--btn: 1rem;
+  --text--eyebrow: 0.625rem; /* micro-labels: batch no., nav meta */
+
+  /* ---- Layout (01 §4.1) ---- */
+  --container-max: 90rem; /* 1440px design canvas */
+  --gutter: clamp(1.25rem, 4vw, 5rem); /* page side padding */
+  --grid-gap: 1.25rem;
+
+  /* ---- Radius (01 §4.3) — circles: 50%; no other radii exist ---- */
+  --radius--xs: 3px; /* chips, tags, inputs */
+  --radius--media: 1vw; /* imagery & video, fluid */
+}
+
+/* ---- Scent-scoped theming (01 §2.3) — each PDP/card swaps ONE variable ---- */
+
+[data-scent="volt"] {
+  --scent-tint: var(--color--uv);
+}
+
+[data-scent="nocturne"] {
+  --scent-tint: #3a2fbf;
+}
+
+[data-scent="static"] {
+  --scent-tint: #cdc7de;
+}
+
+[data-scent="fever"] {
+  --scent-tint: #ffb000;
+}
+
+[data-scent="halo"] {
+  --scent-tint: #ebd9ff;
+}

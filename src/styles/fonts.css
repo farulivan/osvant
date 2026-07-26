@@ -1,0 +1,30 @@
+/*
+ * Self-hosted faces (01 §3.1) — latin subsets, OFL-licensed.
+ * Archivo Variable (wdth 62–125, wght 100–900): preloaded in the document head.
+ * Instrument Serif: NOT preloaded — idle-loads when first used (M §6).
+ */
+
+@font-face {
+  font-family: Archivo;
+  src: url("/assets/fonts/archivo-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Instrument Serif";
+  src: url("/assets/fonts/instrument-serif.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Instrument Serif";
+  src: url("/assets/fonts/instrument-serif-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
