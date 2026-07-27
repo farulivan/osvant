@@ -2,6 +2,15 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-07-27 — feat: core singletons — scroll, track, PageModule registry
+
+- Implements guide task 1.4 (`01-arch §3.1/§3.2`): `core/scroll.ts` (Lenis + `gsap.ticker`, the one scroll/RAF loop per §6.1), `core/track.ts` (no-op `dataLayer` emitter, ADR-012), `core/registry.ts` (`PageModule`/`PageContext` contract + `mountModules` per §6.2).
+- Added `gsap` + `lenis` as runtime deps — already covered by ADR-006, no new ADR needed.
+- Judgment call: `scroll.ts`'s binding-contract snippet is literal, but `M §9` separately mandates "Lenis disabled (native scroll)" under reduced motion — added that branch now per `03-eng §4.4` ("reduced-motion branches written with the feature, not retrofitted"), with `scrollTo` falling back to `scrollIntoView`/native `window.scrollTo`.
+- `registry.ts` exports `createModuleRegistry()` (a factory) plus a `registry` singleton — the factory keeps the registry unit-testable without a reset-for-tests escape hatch; the router (task 1.5) will consume the singleton.
+- Added `jsdom` + `environment: "jsdom"` in `vitest.config.ts`: these singletons are browser-only (`window`, `matchMedia`, DOM). 13 unit tests cover registration order, destroyer wiring, async mount, reduced-motion branching, and the dataLayer contract.
+- Not yet wired into any page/script — `pnpm size` still reports no client JS; wiring lands with the router in task 1.5.
+
 ## 2026-07-26 — chore: CI pipeline (lint/types/unit/build + size-limit + LHCI + asset guard)
 
 - Implements guide task 1.3 (`05-cicd §2`): GitHub Actions `ci.yml` — static (format/lint/typecheck) + unit + build jobs in parallel, asset guard, LHCI budgets gated on the build artifact.
