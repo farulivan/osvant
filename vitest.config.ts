@@ -3,7 +3,7 @@ import { getViteConfig } from "astro/config";
 
 export default getViteConfig({
   test: {
-    // No unit tests exist until the core runtime lands (M1 task 1.4).
-    passWithNoTests: true,
+    // Core singletons (task 1.4) touch window/document — jsdom throughout.
+    environment: "jsdom",
   },
 });
