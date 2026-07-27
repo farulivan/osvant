@@ -2,6 +2,15 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-07-27 — feat: router — taxi.js wiring, clip-path transition API
+
+- Implements guide task 1.5 (`01-arch §3.3`, `M §5`): `core/router.ts` wires `@unseenco/taxi`'s `Core`/`Renderer`/`Transition` to the exact lifecycle in `01-arch §3.3` — leave: `lenis.stop()` → `transition.in()` → destroy page modules → `ScrollTrigger` sweep; enter: mount modules → `transition.out()` (hero-overlap hook) → `lenis.start()`. `core/transition.ts` ships the clip-path placeholder for `{ in(), out(), speed(n) }` (guide §6.5, RFC B4.2) with a 0.3s opacity-crossfade branch under reduced motion (`M §9`).
+- Traps closed (guide §8): `document.title` synced manually in `Renderer.onEnter` (#1); `ScrollTrigger.refresh()` once in `onEnterCompleted`, never per-module (#4); `history.scrollRestoration = "manual"` + a pathname→scrollY map restores position on `popstate`, resets to top otherwise (#5).
+- Judgment call: `transition.out()`'s "hero reveal overlaps at 50%" hook (§6.5) is implemented as a fixed-delay `setTimeout` at half the tween duration rather than a live GSAP progress callback — the guide explicitly permits either, and a timer keeps the placeholder trivial to swap for the real Rive `speed`-driven timeline later.
+- `@unseenco/taxi`'s `Renderer` is reconstructed per navigation (fresh instance per page) while `Transition` state (destroyers, last trigger, scroll positions) must survive across instances — both classes are defined as closures inside `initRouter()` over shared `Map`/`let` state, avoiding module-level mutable singletons that would leak between test runs.
+- 13 new unit tests (5 in `transition.test.ts`, 8 in `router.test.ts`) mock `@unseenco/taxi`/`gsap`/`gsap/ScrollTrigger` to assert the wiring rather than the libraries themselves — consistent with the `scroll.ts` test pattern from task 1.4.
+- Not wired into a real page yet — no `[data-taxi]` markup exists until the base layout (task 1.6) calls `initRouter()`.
+
 ## 2026-07-27 — feat: core singletons — scroll, track, PageModule registry
 
 - Implements guide task 1.4 (`01-arch §3.1/§3.2`): `core/scroll.ts` (Lenis + `gsap.ticker`, the one scroll/RAF loop per §6.1), `core/track.ts` (no-op `dataLayer` emitter, ADR-012), `core/registry.ts` (`PageModule`/`PageContext` contract + `mountModules` per §6.2).
