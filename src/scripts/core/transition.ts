@@ -27,13 +27,16 @@ function duration(): number {
 
 let scrim: HTMLDivElement | undefined;
 
-// Lazily creates the one full-viewport scrim element — task 1.6 hasn't
-// landed the base layout's transition-scrim markup yet, so this owns its
-// own DOM node rather than depending on it.
+// Prefers the scrim markup declared in `layouts/BaseLayout.astro`
+// (01-arch §7); falls back to creating its own node so this module still
+// works in isolation (e.g. these unit tests, no layout present).
 function getScrim(): HTMLDivElement {
   if (scrim) return scrim;
 
-  scrim = document.createElement("div");
+  const existing = document.querySelector<HTMLDivElement>(
+    "[data-transition-scrim]",
+  );
+  scrim = existing ?? document.createElement("div");
   scrim.dataset.transitionScrim = "";
   scrim.setAttribute("aria-hidden", "true");
   Object.assign(scrim.style, {
@@ -45,7 +48,7 @@ function getScrim(): HTMLDivElement {
     clipPath: "inset(0 0 100% 0)",
     opacity: "0",
   });
-  document.body.append(scrim);
+  if (!existing) document.body.append(scrim);
 
   return scrim;
 }

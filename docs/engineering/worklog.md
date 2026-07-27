@@ -2,6 +2,15 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-07-27 — feat: base layout — nav/footer, transition scrim, skip link, stub routes
+
+- Implements guide task 1.6 (`01 §5.2/§5.6`, `03 §sitemap`): `layouts/BaseLayout.astro` (head/meta, skip link, `[data-taxi]`/`[data-taxi-view]` container, transition scrim, `scripts/main.ts` bootstrap); `components/Nav.astro` + `components/Footer.astro`; every sitemap route stubbed (`/`, `/collection`, `/collection/[scent]` ×5, `/the-house`, `/journal`, `/contact`, `/legal/privacy`, `/legal/terms`, `/404`).
+- `core/nav.ts` (named in `01-arch §3.1`) is the nav-theme `PageModule` — registered first per `01-arch §3.3` ("mount order: nav themes first") via `scripts/main.ts`'s import order. One `ScrollTrigger` per `data-nav-theme` section (`M §4.9`) plus the `nav--solid` toggle past 100vh (`01 §5.2`); applies the correct theme immediately on mount rather than waiting for the next scroll crossing, since a page can load already scrolled past a themed section. Cart chip renders a static `0` — count wiring is `lib/commerce.ts` scope (task 1.8).
+- Moved the transition scrim from self-owned DOM (task 1.5's `transition.ts`) into layout markup per `01-arch §7`'s repo-structure note ("layouts: ... transition scrim"); `transition.ts` is unchanged — it still lazily creates its own node if the layout's isn't found, so its existing unit tests needed no changes.
+- Added `lib/url.ts` (`withBase()`) — every internal `<a href>` and asset reference now resolves through `import.meta.env.BASE_URL`, closing guide trap #2 (preview deploys serve under `/previews/pr-<n>/`) before any real navigation exists to trip over it.
+- Judgment call: the nav's mobile menu is a CSS-only disclosure (button + class toggle) — the spec'd SplitText staggered entrance (`01 §5.2`) is a motion-layer feature better built as its own `PageModule`/animation module once that pattern exists (M2), not hand-rolled into the persistent nav script.
+- 10 new unit tests (`lib/url.ts`, `core/nav.ts`); `pnpm build` now emits real client JS — `core+transitions` sits at 54.85KB gzip against the 350KB budget.
+
 ## 2026-07-27 — feat: router — taxi.js wiring, clip-path transition API
 
 - Implements guide task 1.5 (`01-arch §3.3`, `M §5`): `core/router.ts` wires `@unseenco/taxi`'s `Core`/`Renderer`/`Transition` to the exact lifecycle in `01-arch §3.3` — leave: `lenis.stop()` → `transition.in()` → destroy page modules → `ScrollTrigger` sweep; enter: mount modules → `transition.out()` (hero-overlap hook) → `lenis.start()`. `core/transition.ts` ships the clip-path placeholder for `{ in(), out(), speed(n) }` (guide §6.5, RFC B4.2) with a 0.3s opacity-crossfade branch under reduced motion (`M §9`).

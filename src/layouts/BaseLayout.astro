@@ -1,0 +1,77 @@
+---
+// Base shell (01-arch §7): head/meta, nav, taxi container, footer,
+// transition scrim, skip link. Every route renders through this layout.
+import "../styles/tokens.css";
+import "../styles/fonts.css";
+import "../styles/base.css";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import { withBase } from "../lib/url";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "osvant — eau de parfum, est. batch 001." } =
+  Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href={withBase("favicon.svg")} />
+    <link rel="icon" href={withBase("favicon.ico")} />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link
+      rel="preload"
+      href={withBase("assets/fonts/archivo-var.woff2")}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <title>{title} — osvant</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <Nav />
+
+    <main id="main" data-taxi>
+      <div data-taxi-view data-module="nav-theme">
+        <slot />
+      </div>
+    </main>
+
+    <Footer />
+
+    <!-- Rive `page-transition` placeholder scrim (RFC B4.2) — styled and
+         driven by core/transition.ts; declared here, outside [data-taxi],
+         per 01-arch §7 ("layouts: ... transition scrim"). -->
+    <div data-transition-scrim></div>
+
+    <script>
+      import "../scripts/main";
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .skip-link {
+    position: fixed;
+    top: -100%;
+    left: 1rem;
+    z-index: 1000;
+    padding: 0.75rem 1.25rem;
+    background: var(--color--uv);
+    color: var(--color--black);
+    text-decoration: none;
+    border-radius: var(--radius--xs);
+  }
+
+  .skip-link:focus {
+    top: 1rem;
+  }
+</style>

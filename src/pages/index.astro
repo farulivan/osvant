@@ -1,28 +1,12 @@
 ---
-// Temporary shell — replaced by the base layout + stub routes in M1 task 1.6.
-// Style imports and the Archivo preload move into src/layouts/ then.
-import "../styles/tokens.css";
-import "../styles/fonts.css";
-import "../styles/base.css";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import StubSection from "../components/StubSection.astro";
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <link
-      rel="preload"
-      href="/assets/fonts/archivo-var.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <title>osvant</title>
-  </head>
-  <body>
-    <h1>osvant</h1>
-  </body>
-</html>
+<BaseLayout title="home" description="osvant — eau de parfum, est. batch 001.">
+  <StubSection
+    eyebrow="eau de parfum — est. batch 001"
+    title="osvant"
+    theme="dark"
+  />
+</BaseLayout>
