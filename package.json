@@ -17,20 +17,35 @@
     "lint": "eslint . && stylelint \"src/**/*.{css,astro}\" --allow-empty-input",
     "typecheck": "astro check",
     "test": "vitest run",
-    "verify": "pnpm format && pnpm lint && pnpm typecheck && pnpm test"
+    "verify": "pnpm format && pnpm lint && pnpm typecheck && pnpm test",
+    "size": "node scripts/check-size.mjs",
+    "lhci": "lhci autorun",
+    "check:assets": "node scripts/check-assets.mjs"
   },
+  "size-limit": [
+    {
+      "name": "core+transitions JS (M §10 / 04-qa §4)",
+      "path": "dist/**/*.js",
+      "limit": "350 KB",
+      "gzip": true
+    }
+  ],
   "dependencies": {
     "astro": "^7.1.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@eslint/js": "^10.0.1",
+    "@lhci/cli": "^0.15.1",
+    "@size-limit/file": "^12.1.0",
     "eslint": "^10.7.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^3.0.1",
+    "globals": "^17.7.0",
     "postcss-html": "^1.8.1",
     "prettier": "^3.9.5",
     "prettier-plugin-astro": "^0.14.1",
+    "size-limit": "^12.1.0",
     "stylelint": "^17.14.0",
     "stylelint-config-standard": "^40.0.0",
     "typescript": "^6.0.3",
