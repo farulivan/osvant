@@ -1,0 +1,187 @@
+---
+// Footer (01-design-system.md §5.6). Lives OUTSIDE [data-taxi] — persistent
+// across navigations, same as Nav.astro.
+import { withBase } from "../lib/url";
+
+const sitemap = [
+  { href: "collection", label: "collection" },
+  { href: "the-house", label: "the house" },
+  { href: "journal", label: "journal" },
+  { href: "contact", label: "contact" },
+];
+
+const legal = [
+  { href: "legal/privacy", label: "privacy" },
+  { href: "legal/terms", label: "terms" },
+];
+
+const socials = [
+  { href: "https://instagram.com", label: "instagram" },
+  { href: "https://tiktok.com", label: "tiktok" },
+  { href: "https://youtube.com", label: "youtube" },
+  { href: "https://twitch.tv", label: "twitch" },
+];
+---
+
+<footer class="footer" data-nav-theme="dark">
+  <div class="footer__marquee" aria-hidden="true" data-anim="marquee">
+    <span>provocation, bottled. &nbsp;</span>
+    <span>provocation, bottled. &nbsp;</span>
+  </div>
+
+  <div class="footer__newsletter">
+    <p class="footer__newsletter-label">join the current</p>
+    <form class="footer__newsletter-form" data-newsletter-form>
+      <label class="visually-hidden" for="newsletter-email">Email</label>
+      <input
+        id="newsletter-email"
+        name="email"
+        type="email"
+        placeholder="your email"
+        required
+      />
+      <button class="btn-primary" type="submit">
+        <span data-btn-label>join</span>
+      </button>
+    </form>
+  </div>
+
+  <div class="footer__rows">
+    <ul class="footer__list">
+      {
+        sitemap.map((item) => (
+          <li>
+            <a href={withBase(item.href)}>{item.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <ul class="footer__list">
+      {
+        socials.map((item) => (
+          <li>
+            <a href={item.href} target="_blank" rel="noreferrer">
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <ul class="footer__list">
+      {
+        legal.map((item) => (
+          <li>
+            <a href={withBase(item.href)}>{item.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <p class="footer__wordmark" aria-hidden="true">osvant</p>
+</footer>
+
+<style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .footer {
+    background: var(--color--black);
+    color: var(--color--white);
+    padding: 6rem var(--gutter) 0;
+    overflow: hidden;
+  }
+
+  .footer__marquee {
+    display: flex;
+    white-space: nowrap;
+    font-size: var(--text--impact);
+    font-weight: 900;
+    color: var(--color--ink-2);
+  }
+
+  .footer__newsletter {
+    margin-top: 4rem;
+  }
+
+  .footer__newsletter-label {
+    font-size: var(--text--h4);
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+  }
+
+  .footer__newsletter-form {
+    display: flex;
+    gap: 1rem;
+    max-width: 28rem;
+  }
+
+  .footer__newsletter-form input {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--color--ink-3);
+    border-radius: 0;
+    color: var(--color--white);
+    padding: 0.5rem 0;
+    font-size: var(--text--body);
+  }
+
+  .footer__newsletter-form input:focus-visible {
+    border-bottom-color: var(--color--uv);
+  }
+
+  /* §5.1 btn-primary — full variant set lands with the component library (M2). */
+  .footer__newsletter-form .btn-primary {
+    background: var(--color--uv);
+    color: var(--color--black);
+    border: 0;
+    border-radius: var(--radius--xs);
+    padding: 0.75rem 1.5rem;
+    font-size: var(--text--btn);
+    cursor: pointer;
+  }
+
+  .footer__rows {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3rem;
+    margin-top: 4rem;
+    font-size: var(--text--h6);
+  }
+
+  .footer__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footer__list a {
+    color: var(--color--lilac-3);
+    text-decoration: none;
+  }
+
+  .footer__list a:hover {
+    color: var(--color--white);
+  }
+
+  .footer__wordmark {
+    margin: 4rem 0 0;
+    font-size: clamp(6rem, 20vw, 16rem);
+    font-weight: 900;
+    line-height: 0.8;
+    color: var(--color--ink-2);
+    transform: translateY(20%);
+  }
+</style>

@@ -1,0 +1,24 @@
+---
+// PDP stub × 5 (03-page-specs.md §3). SKU data (`lib/commerce.ts`,
+// `products.json`) lands in task 1.8 — the scent list is hardcoded here
+// only until that port exists.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import StubSection from "../../components/StubSection.astro";
+
+export function getStaticPaths() {
+  const scents = ["volt", "nocturne", "static", "fever", "halo"];
+  return scents.map((scent) => ({ params: { scent } }));
+}
+
+const { scent } = Astro.params;
+---
+
+<BaseLayout title={scent} description={`the ${scent} — osvant eau de parfum.`}>
+  <div data-scent={scent}>
+    <StubSection
+      eyebrow={`batch — eau de parfum`}
+      title={scent}
+      theme="scent"
+    />
+  </div>
+</BaseLayout>
