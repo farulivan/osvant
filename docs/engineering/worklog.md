@@ -2,6 +2,16 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-07-27 — feat: preloader — decanting counter, sessionStorage gate, reduced-motion branch
+
+- Implements guide task 1.7 (`M §6`, RFC A2): `core/preloader.ts`, a core singleton (`guide §6.3`) mounted from `layouts/BaseLayout.astro`'s `[data-preloader]` markup and run once from `scripts/main.ts`.
+- Gates on `document.fonts.ready` today; `logo.riv`/`page-transition.riv`/`vapor.riv` are still CSS/SVG placeholders with no network load of their own (`06-asset-pipeline §1`), so the `GATES` array is deliberately a single entry with a comment marking where each real Rive-load promise gets added later — no other code changes needed when those assets land.
+- 3s hard cap (`M §6.2`) via `Promise.race` against the real gates — forces completion to 100% if loading overruns rather than hanging.
+- Exit sequence reuses `transition.out()`'s existing halfway-hook (built in task 1.5) to dispatch a `window` `osvant:hero-reveal` CustomEvent — this is the binding contract a future hero module listens to for its impact-reveal overlap (`M §6.3`/`§4.2`); documented in `preloader.ts` since no hero module exists yet to consume it.
+- Reduced motion (`M §9`, "preloader → counter only, no wipe"): skips `transition.out()` entirely rather than falling into its built-in crossfade branch — the counter still fades 0.3s, but there's no wipe of any kind.
+- Judgment call: sessionStorage guard lives inside `run()` and always removes stale `[data-preloader]` markup even when skipped (every full page load renders the static HTML fresh) — otherwise a same-session reload would leave a permanent black screen.
+- 5 new unit tests (`preloader.test.ts`) mocking `./transition`; `pnpm build` size unaffected in any meaningful way — 55.21KB gzip / 350KB budget.
+
 ## 2026-07-27 — feat: base layout — nav/footer, transition scrim, skip link, stub routes
 
 - Implements guide task 1.6 (`01 §5.2/§5.6`, `03 §sitemap`): `layouts/BaseLayout.astro` (head/meta, skip link, `[data-taxi]`/`[data-taxi-view]` container, transition scrim, `scripts/main.ts` bootstrap); `components/Nav.astro` + `components/Footer.astro`; every sitemap route stubbed (`/`, `/collection`, `/collection/[scent]` ×5, `/the-house`, `/journal`, `/contact`, `/legal/privacy`, `/legal/terms`, `/404`).
