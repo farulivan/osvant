@@ -21,6 +21,10 @@ dist/
 .env.*
 !.env.example
 
+# --- Parity reference recordings + capture tooling (local-only dev reference, R11) ---
+docs/parity-recordings/*.webm
+scripts/capture-parity.mjs
+
 # --- Test & perf artifacts ---
 coverage/
 playwright-report/

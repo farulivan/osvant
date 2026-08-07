@@ -2,6 +2,13 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-07 — chore: parity recordings — 13 reference-build beats captured + archived locally
+
+- Implements guide task 1.10 (R11, M §11): all 13 reference beats recorded as short webm clips into `docs/parity-recordings/`. Owner call: clips **and** the capture script are **local-only** (both gitignored, repo stays lean) — the committed README is the beat map + review tracker. Motion PRs compare side-by-side against the local clips (guide §5 "Every PR").
+- Local Playwright capture script (one fresh context per beat — cold load so beat 1's preloader shows, best-effort consent dismissal, scripted scroll/hover/click; `PARITY_BEATS` env var recaptures a subset). `playwright` added as devDependency — pre-approved E2E tooling per `04 §1`, also the runner for the upcoming `04 §2` E2E suite.
+- First run captured 12/13; beat 01 timed out on the very first cold navigation (DNS/TLS warmup) — fixed with a 60s goto timeout and recaptured via the subset filter.
+- **Flag:** scenarios are best-effort against a live third-party site — every clip is marked `captured, needs review` in the README until a human confirms the beat is actually visible (R3 single-reviewer protocol applies).
+
 ## 2026-08-07 — feat: /dev harnesses — rive/glb handoff probes, motion playground
 
 - Implements guide task 1.9 (`06-assets §2`): `/dev/rive` (M §7 artboard inventory + file-presence probe against the contracted `public/assets/rive/` paths), `/dev/glb` (binding acceptance checklist + probe for the 5 bottle GLBs and shared HDR), `/dev/motion` (live playground: reduced-motion/Lenis state, scroll-velocity readout, trap-#10 marquee reference implementation).
