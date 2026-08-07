@@ -43,7 +43,12 @@ const socials = [
       <button class="btn-primary" type="submit">
         <span data-btn-label>join</span>
       </button>
+      <p class="newsletter-msg" data-newsletter-msg role="status" hidden></p>
     </form>
+    <p class="footer__newsletter-success" data-newsletter-success hidden>
+      you&rsquo;re in the current.
+      <span class="footer__newsletter-demo">demo — no list connected.</span>
+    </p>
   </div>
 
   <div class="footer__rows">
@@ -123,8 +128,39 @@ const socials = [
 
   .footer__newsletter-form {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     max-width: 28rem;
+    overflow: hidden;
+  }
+
+  /* 01 §5.5 — validation copy at eyebrow size, amber, below the field */
+  .newsletter-msg {
+    flex-basis: 100%;
+    margin: 0.25rem 0 0;
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+  }
+
+  .newsletter-msg--error {
+    color: var(--color--amber);
+  }
+
+  .footer__newsletter-success {
+    margin: 0.5rem 0 0;
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    font-size: var(--text--h4);
+  }
+
+  .footer__newsletter-demo {
+    display: block;
+    margin-top: 0.25rem;
+    font-family: inherit;
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+    font-style: normal;
+    color: var(--color--lilac-3);
   }
 
   .footer__newsletter-form input {
@@ -140,17 +176,6 @@ const socials = [
 
   .footer__newsletter-form input:focus-visible {
     border-bottom-color: var(--color--uv);
-  }
-
-  /* §5.1 btn-primary — full variant set lands with the component library (M2). */
-  .footer__newsletter-form .btn-primary {
-    background: var(--color--uv);
-    color: var(--color--black);
-    border: 0;
-    border-radius: var(--radius--xs);
-    padding: 0.75rem 1.5rem;
-    font-size: var(--text--btn);
-    cursor: pointer;
   }
 
   .footer__rows {

@@ -1,0 +1,121 @@
+---
+// Social band (03 §1.6). Title fragments split-reveal per M §4.2; four
+// link cards with hover tilt — micro register (0.25s), max 3° (spec cap),
+// CSS-only, gated to no-preference.
+---
+
+<section class="social" data-nav-theme="dark" aria-labelledby="social-title">
+  <p class="social__eyebrow" data-eyebrow>what's diffusing</p>
+  <h2 class="social__title" id="social-title">
+    <span class="social__fragment" data-anim="split">@osvant</span>
+    <span class="social__fragment" data-anim="split">everywhere</span>
+  </h2>
+
+  <ul class="social__cards">
+    {
+      [
+        { label: "tiktok", href: "https://tiktok.com" },
+        { label: "instagram", href: "https://instagram.com" },
+        { label: "youtube", href: "https://youtube.com" },
+        { label: "twitch", href: "https://twitch.tv" },
+      ].map((item) => (
+        <li>
+          <a
+            class="social__card"
+            href={item.href}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span class="social__card-label">{item.label}</span>
+            <span class="social__card-handle">@osvant</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .social {
+    padding: 6rem var(--gutter);
+    background: var(--color--black);
+  }
+
+  .social__eyebrow {
+    margin: 0 0 1rem;
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .social__title {
+    margin: 0 0 3rem;
+    font-size: var(--text--h1);
+    font-weight: 900;
+    font-stretch: 125%;
+    line-height: 1.05;
+  }
+
+  .social__fragment {
+    display: block;
+  }
+
+  .social__cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--grid-gap);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .social__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1.5rem;
+    background: var(--color--ink-2);
+    border: 1px solid transparent;
+    border-radius: var(--radius--xs);
+    text-decoration: none;
+    color: var(--color--white);
+  }
+
+  .social__card-label {
+    font-size: var(--text--h5);
+    font-weight: 700;
+  }
+
+  .social__card-handle {
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .social__card {
+      transition:
+        transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        border-color 0.25s;
+    }
+
+    /* hover tilt — micro register, max 3° (03 §1.6) */
+    .social__card:hover,
+    .social__card:focus-visible {
+      transform: rotate(-1.5deg) translateY(-4px);
+      border-color: var(--scent-tint);
+    }
+
+    .social__cards li:nth-child(even) .social__card:hover,
+    .social__cards li:nth-child(even) .social__card:focus-visible {
+      transform: rotate(1.5deg) translateY(-4px);
+    }
+  }
+
+  @media (width <= 48rem) {
+    .social__cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

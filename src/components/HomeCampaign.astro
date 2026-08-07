@@ -1,0 +1,101 @@
+---
+// Campaign band — featured drop (03 §1.5). Full-bleed ink-1; marquee per
+// M §4.7 (data-anim="marquee", velocity-reactive, pauses off-viewport);
+// amber appears ONLY in its canonical role here — the limited chip
+// (01 §1 rule 4, RFC-001 A3). Campaign still is a duotone placeholder
+// pending photography (ADR-008) — data-anim="parallax" wires with real media.
+import { withBase } from "../lib/url";
+---
+
+<section class="campaign" data-nav-theme="dark" aria-labelledby="campaign-lead">
+  <div class="campaign__marquee" aria-hidden="true">
+    <div class="campaign__marquee-track" data-anim="marquee">
+      <span>fever — limited batch 001 &nbsp;·&nbsp; </span>
+    </div>
+  </div>
+
+  <div class="campaign__body">
+    <div class="campaign__media" aria-hidden="true"></div>
+
+    <div class="campaign__content">
+      <span class="campaign__chip">limited</span>
+      <p class="campaign__lead" id="campaign-lead">
+        saffron, chili-rose, benzoin. the heat, bottled.
+      </p>
+      <a class="btn-primary" href={withBase("collection/fever/")}>
+        <span data-btn-label>shop fever</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .campaign {
+    background: var(--color--ink-1);
+    overflow: hidden;
+  }
+
+  .campaign__marquee {
+    overflow: hidden;
+    border-bottom: 1px solid var(--color--ink-3);
+    padding-block: 0.75rem;
+  }
+
+  .campaign__marquee-track {
+    display: flex;
+    white-space: nowrap;
+    width: max-content;
+    font-size: var(--text--h3);
+    font-weight: 900;
+    font-stretch: 125%;
+    will-change: transform;
+  }
+
+  .campaign__body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--grid-gap);
+    align-items: center;
+    padding: 4rem var(--gutter);
+  }
+
+  /* Campaign-still placeholder (ADR-008, pending photography) */
+  .campaign__media {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius--media);
+    background: linear-gradient(
+      150deg,
+      color-mix(in oklab, var(--color--amber) 16%, var(--color--ink-1)) 0%,
+      var(--color--ink-2) 100%
+    );
+  }
+
+  .campaign__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  /* Amber canonical role: scarcity chip only (01 §1 rule 4) */
+  .campaign__chip {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--color--amber);
+    border-radius: var(--radius--xs);
+    color: var(--color--amber);
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+  }
+
+  .campaign__lead {
+    margin: 0;
+    font-size: var(--text--lead);
+    max-width: 24ch;
+  }
+
+  @media (width <= 48rem) {
+    .campaign__body {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
