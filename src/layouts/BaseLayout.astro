@@ -37,6 +37,13 @@ const { title, description = "osvant — eau de parfum, est. batch 001." } =
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
 
+    <!-- Preloader (M §6) — core/preloader.ts drives it, gated on
+         sessionStorage so it only ever shows once per browser session. -->
+    <div data-preloader>
+      <p class="preloader__label">decanting…</p>
+      <p class="preloader__count" data-preloader-count>0%</p>
+    </div>
+
     <Nav />
 
     <main id="main" data-taxi>
@@ -73,5 +80,29 @@ const { title, description = "osvant — eau de parfum, est. batch 001." } =
 
   .skip-link:focus {
     top: 1rem;
+  }
+
+  [data-preloader] {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: var(--color--black);
+    color: var(--color--white);
+  }
+
+  .preloader__label {
+    font-size: var(--text--h5);
+    margin: 0;
+  }
+
+  .preloader__count {
+    font-size: var(--text--eyebrow);
+    font-variant-numeric: tabular-nums;
+    margin: 0;
   }
 </style>

@@ -3,5 +3,7 @@
 // PageModule (01-arch §3.3 "mount order: nav themes first").
 import "./core/nav";
 import { initRouter } from "./core/router";
+import { preloader } from "./core/preloader";
 
 initRouter();
+void preloader.run();
