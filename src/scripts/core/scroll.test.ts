@@ -21,10 +21,12 @@ vi.mock("lenis", () => ({
 const tickerAdd = vi.fn();
 const lagSmoothing = vi.fn();
 const registerPlugin = vi.fn();
+const defaults = vi.fn();
 
 vi.mock("gsap", () => ({
   default: {
     registerPlugin,
+    defaults,
     ticker: { add: tickerAdd, lagSmoothing },
   },
 }));
@@ -57,6 +59,17 @@ describe("core/scroll", () => {
     expect(onMock).toHaveBeenCalledWith("scroll", expect.any(Function));
     expect(tickerAdd).toHaveBeenCalledTimes(1);
     expect(lagSmoothing).toHaveBeenCalledWith(0);
+  });
+
+  it("sets the default register once in core (03-eng §4.2, M §2)", async () => {
+    mockReducedMotion(false);
+
+    await import("./scroll");
+
+    expect(defaults).toHaveBeenCalledWith({
+      ease: "power2.out",
+      duration: 0.5,
+    });
   });
 
   it("delegates stop/start/scrollTo to the Lenis instance", async () => {
