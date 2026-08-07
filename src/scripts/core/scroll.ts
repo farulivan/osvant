@@ -13,6 +13,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
 gsap.registerPlugin(ScrollTrigger);
+// Default register for all tweens (03-eng §4.2, M §2) — set once here in core.
+gsap.defaults({ ease: "power2.out", duration: 0.5 });
 
 const reducedMotion = window.matchMedia(
   "(prefers-reduced-motion: reduce)",

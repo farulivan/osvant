@@ -2,6 +2,14 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-07 — feat: headline reveal module — masked char cascade (M §4.2)
+
+- First M2 module: `scripts/modules/headline-reveal.ts` — SplitText `chars,lines` with `line-mask`, recipe verbatim from M §4.2 (yPercent 110, 0.8s, `power3.out`, 0.02 stagger, `top 85%` once), paired `[data-eyebrow]` fade (0.4s, +0.2s), debounced (200ms) re-split on resize until the once-reveal has played.
+- Reduced-motion branch inline (M §9): no SplitText, 0.3s opacity fade with the same trigger. Lifecycle per 03-eng §4.1: per-mount state stack, `destroy()` pops one mount and kills its tweens/ScrollTriggers/split/resize listener exactly.
+- **Gap flagged:** M §4.2 names no `data-anim` marker for the split reveal (card/parallax/btn-line are named) — chose `data-anim="split"`; eyebrow pairing contract chose `[data-eyebrow]` sibling lookup (01 §3.3 mandates the pairing, names no selector).
+- `gsap.defaults({ ease: "power2.out", duration: 0.5 })` now set once in core (`scroll.ts`, 03-eng §4.2) — was missing since scaffold. `.line-mask { overflow: hidden }` added to base.css. StubSection headings opt in (`data-anim="split"` + `data-eyebrow`) so every stub route exercises the module.
+- 7 new unit tests (recipe values, eyebrow fade, reduced-motion branch, resize re-split gating, destroy lifecycle, multi-heading pages); 65 tests total. Build 60.84KB gzip / 350KB.
+
 ## 2026-08-07 — chore: parity recordings — 13 reference-build beats captured + archived locally
 
 - Implements guide task 1.10 (R11, M §11): all 13 reference beats recorded as short webm clips into `docs/parity-recordings/`. Owner call: clips **and** the capture script are **local-only** (both gitignored, repo stays lean) — the committed README is the beat map + review tracker. Motion PRs compare side-by-side against the local clips (guide §5 "Every PR").

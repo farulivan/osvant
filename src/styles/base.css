@@ -43,3 +43,8 @@ canvas {
   outline: 2px solid var(--color--uv);
   outline-offset: 3px;
 }
+
+/* Mask for SplitText line wrapping — headline reveal (M §4.2) */
+.line-mask {
+  overflow: hidden;
+}

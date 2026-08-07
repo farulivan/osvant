@@ -2,6 +2,7 @@
 // Import order matters: nav-theme must register before any other
 // PageModule (01-arch §3.3 "mount order: nav themes first").
 import "./core/nav";
+import "./modules/headline-reveal";
 import { initRouter } from "./core/router";
 import { preloader } from "./core/preloader";
 import { CART_CHANGED_EVENT, getCart } from "../lib/commerce";
