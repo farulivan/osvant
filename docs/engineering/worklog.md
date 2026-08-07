@@ -2,6 +2,15 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-07 — feat: commerce port — products.json, local adapter, cart chip wiring
+
+- Implements guide task 1.8 (`07 §1`): `src/data/products.json` (all 5 scents, batch 001–005 by collection order per §6.4 disambiguation; fever single €135 `limited` variant per RFC B2), `src/lib/commerce.ts` (port interface + local adapter resolving from the JSON catalog + `localStorage`), and 15 unit tests.
+- Port signatures per §1.2 (`getProducts`/`getProduct`/`cartCreate`/`cartAddLine`/`cartRemoveLine`/`checkout`), async like a real backend client. `createAdapter(catalog)` is exported separately so a Shopify Storefront adapter stays a one-file swap (§6) and tests can inject fixture catalogs (e.g. a sold-out variant).
+- **Judgment call:** added `getCart()` (read accessor, not in §1.2's list) — the nav cart chip needs to read cart state without creating one. Also added `osvant:cart-changed` `CustomEvent` on mutations so persistent chrome updates without polling; chip wiring lives in `scripts/main.ts`.
+- `checkout()` per §1.3: returns a confirmation snapshot (`orderNumber`, lines, subtotal, LAW notice `demo store — no real orders`) and clears the cart; rejects empty carts. The confirmation-step drawer UI is M2 scope.
+- `[scent].astro`'s `getStaticPaths` now sources from `getProducts()` instead of a hardcoded scent list — the hardcoding comment from task 1.6 is discharged.
+- Instrumentation (`07 §5` `add_to_cart` etc.) intentionally NOT emitted from the port — §5 spec's the trigger as the PDP/cart CTA (UI layer), keeping the port pure.
+
 ## 2026-07-27 — feat: preloader — decanting counter, sessionStorage gate, reduced-motion branch
 
 - Implements guide task 1.7 (`M §6`, RFC A2): `core/preloader.ts`, a core singleton (`guide §6.3`) mounted from `layouts/BaseLayout.astro`'s `[data-preloader]` markup and run once from `scripts/main.ts`.
