@@ -1,0 +1,154 @@
+---
+// Home hero — the name (03 §1.2). Impact char cascade via the shared
+// split module (data-anim="split"), scroll-out + chip + vapor placeholder
+// orchestrated by modules/home-hero.ts (data-hero).
+//
+// Vapor: `vapor.riv` lands M3 (06 §1) — the [data-vapor] element is the
+// placeholder-first stand-in (ADR-008): a duotone gradient wash whose
+// opacity IS the intensity channel, so the velocity wiring is real today
+// and the Rive artboard drops in later without touching the module.
+import { withBase } from "../lib/url";
+---
+
+<section class="hero" data-nav-theme="dark" data-hero>
+  <div class="hero__vapor" data-vapor aria-hidden="true"></div>
+
+  <a class="hero__chip" data-hero-chip href={withBase("journal/")}>
+    <span class="hero__chip-eyebrow">next drop</span>
+    <span class="hero__chip-label">batch 002 — fall</span>
+  </a>
+
+  <div class="hero__inner">
+    <p class="hero__eyebrow" data-eyebrow>eau de parfum — est. batch 001</p>
+    <h1 class="hero__title" data-anim="split">osvant</h1>
+    <p class="hero__subline" data-hero-subline>
+      scent <em>beyond</em> the visible
+    </p>
+  </div>
+
+  <div class="hero__cue">
+    <button class="hero__cue-btn btn-text" type="button" data-hero-cue>
+      <span data-btn-label>explore the collection -&gt;</span>
+    </button>
+    <span class="hero__cue-line" data-hero-cue-line aria-hidden="true"></span>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 0 var(--gutter);
+    overflow: hidden;
+    background: var(--color--black);
+  }
+
+  /* vapor.riv placeholder (ADR-008) — opacity is the intensity channel */
+  .hero__vapor {
+    position: absolute;
+    inset: -20%;
+    background:
+      radial-gradient(
+        ellipse 60% 45% at 50% 60%,
+        var(--color--uv-zero) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse 45% 35% at 35% 45%,
+        color-mix(in oklab, var(--color--uv) 14%, transparent) 0%,
+        transparent 70%
+      );
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .hero__chip {
+    position: absolute;
+    top: 5.5rem;
+    right: var(--gutter);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color--ink-3);
+    border-radius: var(--radius--xs);
+    text-decoration: none;
+    color: var(--color--white);
+  }
+
+  .hero__chip-eyebrow {
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .hero__chip-label {
+    font-size: var(--text--btn);
+  }
+
+  .hero__inner {
+    position: relative;
+  }
+
+  .hero__eyebrow {
+    margin: 0 0 1rem;
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .hero__title {
+    margin: 0;
+    font-size: var(--text--impact);
+    font-weight: 900;
+    font-stretch: 125%;
+    line-height: 1.05;
+  }
+
+  .hero__subline {
+    margin: 1.5rem 0 0;
+    font-size: var(--text--lead);
+  }
+
+  .hero__subline em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+  }
+
+  .hero__cue {
+    position: absolute;
+    bottom: 2rem;
+    left: var(--gutter);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .hero__cue-btn {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color--white);
+    font-size: var(--text--btn);
+    cursor: pointer;
+  }
+
+  .hero__cue-line {
+    display: block;
+    width: 1px;
+    height: 3rem;
+    background: var(--color--lilac-3);
+    transform-origin: top;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__vapor {
+      opacity: 0.2;
+    }
+  }
+</style>
