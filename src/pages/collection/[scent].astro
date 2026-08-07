@@ -1,13 +1,13 @@
 ---
-// PDP stub × 5 (03-page-specs.md §3). SKU data (`lib/commerce.ts`,
-// `products.json`) lands in task 1.8 — the scent list is hardcoded here
-// only until that port exists.
+// PDP stub × 5 (03-page-specs.md §3). Catalog from `lib/commerce.ts`
+// (07 §1.1) — real PDP content lands in M2.
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import StubSection from "../../components/StubSection.astro";
+import { getProducts } from "../../lib/commerce";
 
-export function getStaticPaths() {
-  const scents = ["volt", "nocturne", "static", "fever", "halo"];
-  return scents.map((scent) => ({ params: { scent } }));
+export async function getStaticPaths() {
+  const products = await getProducts();
+  return products.map((product) => ({ params: { scent: product.scent } }));
 }
 
 const { scent } = Astro.params;

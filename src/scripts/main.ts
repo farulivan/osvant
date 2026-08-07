@@ -4,6 +4,21 @@
 import "./core/nav";
 import { initRouter } from "./core/router";
 import { preloader } from "./core/preloader";
+import { CART_CHANGED_EVENT, getCart } from "../lib/commerce";
 
 initRouter();
 void preloader.run();
+
+// Nav cart chip — persistent chrome, so it listens for cart changes
+// instead of living inside a page module.
+async function syncCartCount(): Promise<void> {
+  const el = document.querySelector<HTMLElement>("[data-cart-count]");
+  if (!el) return;
+  const cart = await getCart();
+  el.textContent = String(
+    cart?.lines.reduce((total, line) => total + line.quantity, 0) ?? 0,
+  );
+}
+
+void syncCartCount();
+window.addEventListener(CART_CHANGED_EVENT, () => void syncCartCount());

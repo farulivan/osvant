@@ -1,0 +1,118 @@
+[
+  {
+    "scent": "volt",
+    "name": "the volt",
+    "batch": "001",
+    "variants": [
+      {
+        "sku": "OSV-VOLT-50",
+        "scent": "volt",
+        "size": "50ml",
+        "price": 110,
+        "currency": "EUR",
+        "availableForSale": true,
+        "limited": false
+      },
+      {
+        "sku": "OSV-VOLT-100",
+        "scent": "volt",
+        "size": "100ml",
+        "price": 160,
+        "currency": "EUR",
+        "availableForSale": true,
+        "limited": false
+      }
+    ]
+  },
+  {
+    "scent": "nocturne",
+    "name": "the nocturne",
+    "batch": "002",
+    "variants": [
+      {
+        "sku": "OSV-NOCTURNE-50",
+        "scent": "nocturne",
+        "size": "50ml",
+        "price": 110,
+        "currency": "EUR",
+        "availableForSale": true,
+        "limited": false
+      },
+      {
+        "sku": "OSV-NOCTURNE-100",
+        "scent": "nocturne",
+        "size": "100ml",
+        "price": 160,
+        "currency": "EUR",
+        "availableForSale": true,
+        "limited": false
+      }
+    ]
+  },
+  {
+    "scent": "static",
+    "name": "the static",
+    "batch": "003",
+    "variants": [
+      {
+        "sku": "OSV-STATIC-50",
+        "scent": "static",
+        "size": "50ml",
+        "price": 110,
+        "currency": "EUR",
+        "availableForSale": true,
+        "limited": false
+      },
+      {
+        "sku": "OSV-STATIC-100",
+        "scent": "static",
+        "size": "100ml",
+        "price": 160,
+        "currency": "EUR",
+        "availableForSale": true,
+        "limited": false
+      }
+    ]
+  },
+  {
+    "scent": "fever",
+    "name": "the fever",
+    "batch": "004",
+    "variants": [
+      {
+        "sku": "OSV-FEVER-50",
+        "scent": "fever",
+        "size": "50ml",
+        "price": 135,
+        "currency": "EUR",
+        "availableForSale": true,
+        "limited": true
+      }
+    ]
+  },
+  {
+    "scent": "halo",
+    "name": "the halo",
+    "batch": "005",
+    "variants": [
+      {
+        "sku": "OSV-HALO-50",
+        "scent": "halo",
+        "size": "50ml",
+        "price": 110,
+        "currency": "EUR",
+        "availableForSale": true,
+        "limited": false
+      },
+      {
+        "sku": "OSV-HALO-100",
+        "scent": "halo",
+        "size": "100ml",
+        "price": 160,
+        "currency": "EUR",
+        "availableForSale": true,
+        "limited": false
+      }
+    ]
+  }
+]
