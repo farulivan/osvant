@@ -1,12 +1,69 @@
 ---
+// Home (03 §1). Sections land in order: 1.2 hero + 1.3 doors (this PR);
+// 1.4 collection gallery is the M3 WebGL signature moment (placeholder
+// section keeps nav-theme + order intact); 1.5–1.7 follow next.
 import BaseLayout from "../layouts/BaseLayout.astro";
-import StubSection from "../components/StubSection.astro";
+import HomeHero from "../components/HomeHero.astro";
+import HomeDoors from "../components/HomeDoors.astro";
 ---
 
 <BaseLayout title="home" description="osvant — eau de parfum, est. batch 001.">
-  <StubSection
-    eyebrow="eau de parfum — est. batch 001"
-    title="osvant"
-    theme="dark"
-  />
+  <HomeHero />
+  <HomeDoors />
+
+  <!-- 03 §1.4 placeholder — pinned WebGL bottle procession (M §4.4)
+       lands in M3 with the GLBs (06 §1). Reserve the section so nav
+       theming and section order stay true. -->
+  <section
+    class="gallery-placeholder"
+    data-nav-theme="scent"
+    aria-label="the collection — five currents"
+  >
+    <p class="gallery-placeholder__eyebrow" data-eyebrow>the collection</p>
+    <h2 class="gallery-placeholder__title">
+      <span data-anim="split">five</span>
+      <span data-anim="split">currents</span>
+    </h2>
+    <p class="gallery-placeholder__note">
+      the bottle procession lands in M3 — pending GLB assets (06 §1).
+    </p>
+  </section>
 </BaseLayout>
+
+<style>
+  .gallery-placeholder {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 70vh;
+    padding: 0 var(--gutter);
+    background: var(--color--ink-1);
+  }
+
+  .gallery-placeholder__eyebrow {
+    margin: 0;
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .gallery-placeholder__title {
+    margin: 0;
+    font-size: var(--text--h1);
+    font-weight: 900;
+    font-stretch: 125%;
+    line-height: 1.05;
+  }
+
+  .gallery-placeholder__title span {
+    display: block;
+  }
+
+  .gallery-placeholder__note {
+    margin: 0;
+    color: var(--color--lilac-3);
+    font-size: var(--text--body);
+  }
+</style>

@@ -2,6 +2,13 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-07 — feat: home hero + two-door split (03 §1.2–1.3)
+
+- `HomeHero.astro` + `HomeDoors.astro` replace the home stub; gallery (03 §1.4) stays a placeholder section — M3 WebGL moment pending GLBs (R2/ADR-008). `home-hero.ts` module: M §4.10 scroll-out verbatim (scrubbed, no pin, title yPercent 30/opacity 0.4, eyebrow+subline exit early by 40%, cue line scaleY scrub — all ease "none"), `next drop` chip enters last (0.5s default register), cue button routes through `scroll.scrollTo` (M §4.1).
+- Vapor placeholder-first (ADR-008): `[data-vapor]` duotone gradient wash, opacity = intensity channel driven by Lenis velocity via `onFrame` — `vapor.riv` drops in M3 without touching the module. Door imagery likewise duotone placeholders pending photography; `data-anim="parallax"` wires when real media lands.
+- **Gaps flagged:** chip delay unspecified (chose 1.1s, after the cascade settles); cue-line scrub interpretation (scaleY 1→0 over the scroll-out); vapor baseline/range are placeholder values, not LAW.
+- 6 new unit tests (86 total): scroll-out recipe + all-"none" eases, chip sequence, velocity→opacity, Lenis-only cue, RM branch, destroy lifecycle. Build + size + asset guard green.
+
 ## 2026-08-07 — feat: shared behaviors + marquee — card, parallax, btn-line, marquee modules
 
 - Batched M2 steps 2–3 (owner-approved batching): four PageModules — `card-entrance.ts` (01 §5.3 `data-anim="card"`, ScrollTrigger.batch stagger group, 0.06s inside the M §3 0.05–0.08 card band, default register), `media-parallax.ts` (M §4.5 verbatim: yPercent -12→0, scale 1.15→1, ease none, scrub), `btn-line.ts` (01 §5.1: label y-flip via aria-hidden clone, 0.3s power2.out micro register; border → UV stays pure CSS), `marquee.ts` (M §4.7 verbatim: xPercent -50 loop, repeat -1, ease none, 35s desktop, timeScale 1–2.5 from Lenis velocity lerped back to 1, IntersectionObserver pause, aria-hidden duplication).

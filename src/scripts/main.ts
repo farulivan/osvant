@@ -7,6 +7,7 @@ import "./modules/card-entrance";
 import "./modules/media-parallax";
 import "./modules/btn-line";
 import "./modules/marquee";
+import "./modules/home-hero";
 import { initRouter } from "./core/router";
 import { preloader } from "./core/preloader";
 import { CART_CHANGED_EVENT, getCart } from "../lib/commerce";

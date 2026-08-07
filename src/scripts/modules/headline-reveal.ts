@@ -35,9 +35,15 @@ export function createHeadlineReveal(): PageModule {
   const states: RevealState[] = [];
 
   function buildSplit(state: RevealState): void {
+    // SplitText's default aria:"auto" writes aria-label onto the target —
+    // legal on headings (naming-capable role), prohibited on plain spans
+    // (axe aria-prohibited-attr; Lighthouse a11y gate). Non-heading targets
+    // get aria:"none"; screen readers still read the concatenated text.
+    const canHoldLabel = state.el.matches("h1,h2,h3,h4,h5,h6,[role]");
     state.split = new SplitText(state.el, {
       type: "chars,lines",
       linesClass: "line-mask",
+      ...(canHoldLabel ? {} : { aria: "none" }),
     });
     const tween = gsap.from(state.split.chars, {
       yPercent: 110,
