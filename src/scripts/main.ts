@@ -8,12 +8,27 @@ import "./modules/media-parallax";
 import "./modules/btn-line";
 import "./modules/marquee";
 import "./modules/home-hero";
+import "./modules/newsletter";
 import { initRouter } from "./core/router";
 import { preloader } from "./core/preloader";
+import { registry } from "./core/registry";
 import { CART_CHANGED_EVENT, getCart } from "../lib/commerce";
 
 initRouter();
 void preloader.run();
+
+// Persistent chrome: the footer lives OUTSIDE [data-taxi], so the router's
+// per-view module scan never reaches it. Mount its modules (marquee,
+// newsletter) once at boot — chrome never swaps, so no destroy pairing.
+const footer = document.querySelector("footer");
+if (footer) {
+  void registry.mountModules(footer, {
+    url: new URL(window.location.href),
+    firstLoad: true,
+    reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)")
+      .matches,
+  });
+}
 
 // Nav cart chip — persistent chrome, so it listens for cart changes
 // instead of living inside a page module.

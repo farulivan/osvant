@@ -2,6 +2,14 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-07 — feat: home campaign + social bands, footer wiring (03 §1.5–1.7)
+
+- `HomeCampaign.astro` (marquee per M §4.7 wired via `data-anim="marquee"`, amber `limited` chip in its canonical scarcity role only — 01 §1 rule 4; campaign still is duotone placeholder pending photography) + `HomeSocial.astro` (split title fragments, 4 link cards, CSS hover tilt 1.5° within the spec'd 3° cap, micro register, `no-preference`-gated).
+- Footer (persistent chrome, outside `[data-taxi]`) now mounts its modules once at boot in `main.ts` — marquee + newsletter were previously unreachable by the router's per-view scan.
+- `newsletter.ts` mock per 01 §5.5 / 07 §3 verbatim: `required` / `check your email` / `didn't send — try again.` (amber, eyebrow-size, below field, amber line pulse), ~600ms latency, success = UV line pulse (0.6s) → form collapses (0.5s UI register) → `you're in the current.` + `demo — no list connected.`, `?demo=fail` force-state, `newsletter_signup {source: footer}` on the no-op emitter. RM: instant swap, no pulse/collapse.
+- **Gaps flagged:** amber-pulse duration unspecified (matched to the 0.6s UV pulse); social band nav-theme unspecified (dark); ghost-type mix ratio (60% lilac-3) from the PR-13 a11y fix now lives in Footer.
+- `btn-primary` promoted to base.css (01 §5.1) — shared by footer, campaign, later PDP. 6 new newsletter tests (92 total). Build 62.67KB / 350KB.
+
 ## 2026-08-07 — feat: home hero + two-door split (03 §1.2–1.3)
 
 - `HomeHero.astro` + `HomeDoors.astro` replace the home stub; gallery (03 §1.4) stays a placeholder section — M3 WebGL moment pending GLBs (R2/ADR-008). `home-hero.ts` module: M §4.10 scroll-out verbatim (scrubbed, no pin, title yPercent 30/opacity 0.4, eyebrow+subline exit early by 40%, cue line scaleY scrub — all ease "none"), `next drop` chip enters last (0.5s default register), cue button routes through `scroll.scrollTo` (M §4.1).

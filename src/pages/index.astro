@@ -1,10 +1,11 @@
 ---
-// Home (03 §1). Sections land in order: 1.2 hero + 1.3 doors (this PR);
-// 1.4 collection gallery is the M3 WebGL signature moment (placeholder
-// section keeps nav-theme + order intact); 1.5–1.7 follow next.
+// Home (03 §1). 1.4 collection gallery is the M3 WebGL signature moment
+// (placeholder section keeps nav-theme + order intact).
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HomeHero from "../components/HomeHero.astro";
 import HomeDoors from "../components/HomeDoors.astro";
+import HomeCampaign from "../components/HomeCampaign.astro";
+import HomeSocial from "../components/HomeSocial.astro";
 ---
 
 <BaseLayout title="home" description="osvant — eau de parfum, est. batch 001.">
@@ -28,6 +29,9 @@ import HomeDoors from "../components/HomeDoors.astro";
       the bottle procession lands in M3 — pending GLB assets (06 §1).
     </p>
   </section>
+
+  <HomeCampaign />
+  <HomeSocial />
 </BaseLayout>
 
 <style>

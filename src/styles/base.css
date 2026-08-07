@@ -44,6 +44,24 @@ canvas {
   outline-offset: 3px;
 }
 
+/* btn-primary (01 §5.1) — UV fill, black text, radius xs. Shared across
+   footer newsletter, campaign CTAs, PDP. Contrast escalation: UV + black
+   measures 4.47:1 vs the 4.5:1 floor — owner call pending (PR #13). */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color--uv);
+  color: var(--color--black);
+  border: 0;
+  border-radius: var(--radius--xs);
+  padding: 0.75rem 1.5rem;
+  font-size: var(--text--btn);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 /* Mask for SplitText line wrapping — headline reveal (M §4.2) */
 .line-mask {
   overflow: hidden;
