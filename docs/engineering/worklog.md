@@ -2,6 +2,13 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-07 — feat: shared behaviors + marquee — card, parallax, btn-line, marquee modules
+
+- Batched M2 steps 2–3 (owner-approved batching): four PageModules — `card-entrance.ts` (01 §5.3 `data-anim="card"`, ScrollTrigger.batch stagger group, 0.06s inside the M §3 0.05–0.08 card band, default register), `media-parallax.ts` (M §4.5 verbatim: yPercent -12→0, scale 1.15→1, ease none, scrub), `btn-line.ts` (01 §5.1: label y-flip via aria-hidden clone, 0.3s power2.out micro register; border → UV stays pure CSS), `marquee.ts` (M §4.7 verbatim: xPercent -50 loop, repeat -1, ease none, 35s desktop, timeScale 1–2.5 from Lenis velocity lerped back to 1, IntersectionObserver pause, aria-hidden duplication).
+- Reduced-motion branches inline per M §9: no batch/scrub/clone/tween in any module — static final state everywhere.
+- **Gaps flagged:** §4.5 names no trigger bounds (chose `top bottom`→`bottom top`); §4.7 names no marker or velocity→timeScale mapping (chose `data-anim="marquee"`, target = 1 + min(|v|/1000, 1)×1.5, lerp 0.1); card entrance offset unspecified (chose y 24px).
+- 15 new unit tests (80 total): recipe values, velocity scaling/lerp, observer pause, RM branches, destroy lifecycle for all four. Build 61.65KB gzip / 350KB.
+
 ## 2026-08-07 — feat: headline reveal module — masked char cascade (M §4.2)
 
 - First M2 module: `scripts/modules/headline-reveal.ts` — SplitText `chars,lines` with `line-mask`, recipe verbatim from M §4.2 (yPercent 110, 0.8s, `power3.out`, 0.02 stagger, `top 85%` once), paired `[data-eyebrow]` fade (0.4s, +0.2s), debounced (200ms) re-split on resize until the once-reveal has played.

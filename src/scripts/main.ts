@@ -3,6 +3,10 @@
 // PageModule (01-arch §3.3 "mount order: nav themes first").
 import "./core/nav";
 import "./modules/headline-reveal";
+import "./modules/card-entrance";
+import "./modules/media-parallax";
+import "./modules/btn-line";
+import "./modules/marquee";
 import { initRouter } from "./core/router";
 import { preloader } from "./core/preloader";
 import { CART_CHANGED_EVENT, getCart } from "../lib/commerce";
