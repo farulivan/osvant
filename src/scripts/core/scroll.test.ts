@@ -98,6 +98,43 @@ describe("core/scroll", () => {
     expect(scrollToMock).not.toHaveBeenCalled();
   });
 
+  it("dispatches onFrame subscribers from the single ticker and unsubscribes cleanly", async () => {
+    mockReducedMotion(false);
+    const scroll = await import("./scroll");
+
+    const cb = vi.fn();
+    const unsubscribe = scroll.onFrame(cb);
+
+    const tickerCallback = tickerAdd.mock.calls[0][0] as (
+      time: number,
+      deltaMs: number,
+    ) => void;
+    tickerCallback(1, 16);
+    expect(cb).toHaveBeenCalledWith(1, 16);
+
+    unsubscribe();
+    tickerCallback(2, 16);
+    expect(cb).toHaveBeenCalledTimes(1);
+  });
+
+  it("velocity() reflects Lenis scroll events and stays 0 under reduced motion", async () => {
+    mockReducedMotion(false);
+    const scroll = await import("./scroll");
+    expect(scroll.velocity()).toBe(0);
+
+    const scrollHandler = onMock.mock.calls
+      .map(([event, handler]) => ({ event, handler }))
+      .filter(({ event }) => event === "scroll")
+      .at(-1)?.handler as (e: { velocity: number }) => void;
+    scrollHandler({ velocity: 120 });
+    expect(scroll.velocity()).toBe(120);
+
+    vi.resetModules();
+    mockReducedMotion(true);
+    const reduced = await import("./scroll");
+    expect(reduced.velocity()).toBe(0);
+  });
+
   it("falls back to window.scrollTo for numeric targets under reduced motion", async () => {
     mockReducedMotion(true);
     const scroll = await import("./scroll");

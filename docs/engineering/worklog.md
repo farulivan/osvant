@@ -2,6 +2,14 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-07 — feat: /dev harnesses — rive/glb handoff probes, motion playground
+
+- Implements guide task 1.9 (`06-assets §2`): `/dev/rive` (M §7 artboard inventory + file-presence probe against the contracted `public/assets/rive/` paths), `/dev/glb` (binding acceptance checklist + probe for the 5 bottle GLBs and shared HDR), `/dev/motion` (live playground: reduced-motion/Lenis state, scroll-velocity readout, trap-#10 marquee reference implementation).
+- All three render through `layouts/DevHarness.astro`: `noindex,nofollow` always; content only in `astro dev` or builds with `PUBLIC_DEV_HARNESS=true` (production builds render a disabled notice). `.env.example` documents the flag + `PUBLIC_SITE_URL` per `05 §1`; staging/preview CI should set it when that env config lands.
+- **Judgment call:** `@rive-app/canvas` and `three.js` are NOT installed yet — zero `.riv`/`.glb` assets exist to smoke-test (placeholders until EOW3/w4 per `06 §1`), and the repo-wide size-limit glob (350KB) would absorb ~250KB of runtimes prematurely (M §10 excludes the Three.js chunk from the per-page budget, but the current gate measures all of `dist/**/*.js`). Both deps are pre-approved (ADR-006) and land with the first real assets; the harness pages are written as acceptance checklists + presence probes so handoff readiness is visible today.
+- Extended the `scroll.ts` core singleton with `onFrame(cb)` (single-ticker subscription, returns unsubscribe for `destroy()`) and `velocity()` (Lenis px/s) — trap #10 requires marquees driven by gsap.ticker with Lenis velocity, and `03-eng §4.4` forbids touching the ticker anywhere else. Existing behavior unchanged: no ticker under reduced motion (M §9), so harness marquees are automatically static there.
+- 2 new unit tests (`scroll.test.ts` — onFrame dispatch/unsubscribe, velocity wiring); `pnpm build` size 57.44KB gzip / 350KB.
+
 ## 2026-08-07 — feat: commerce port — products.json, local adapter, cart chip wiring
 
 - Implements guide task 1.8 (`07 §1`): `src/data/products.json` (all 5 scents, batch 001–005 by collection order per §6.4 disambiguation; fever single €135 `limited` variant per RFC B2), `src/lib/commerce.ts` (port interface + local adapter resolving from the JSON catalog + `localStorage`), and 15 unit tests.

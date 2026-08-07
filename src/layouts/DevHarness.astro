@@ -1,0 +1,72 @@
+---
+// Dev-harness shell (guide task 1.9, 06-asset-pipeline §2). Engineering
+// tooling, not site chrome: no nav/footer/router, `noindex` always.
+// Renders content only in `astro dev` (import.meta.env.DEV) or when the
+// build sets PUBLIC_DEV_HARNESS=true (staging/preview CI per 05 §1) —
+// production builds get the disabled notice, not the tools.
+import "../styles/tokens.css";
+import "../styles/fonts.css";
+import "../styles/base.css";
+
+interface Props {
+  title: string;
+  spec: string;
+}
+
+const { title, spec } = Astro.props;
+const enabled =
+  import.meta.env.DEV || import.meta.env.PUBLIC_DEV_HARNESS === "true";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} — osvant dev</title>
+  </head>
+  <body>
+    <main class="harness">
+      <header class="harness__header">
+        <p class="harness__eyebrow">dev harness · {spec}</p>
+        <h1 class="harness__title">{title}</h1>
+      </header>
+      {
+        enabled ? (
+          <slot />
+        ) : (
+          <p class="harness__disabled">
+            disabled in this build — run `pnpm dev`, or set
+            PUBLIC_DEV_HARNESS=true for staging/preview builds (05 §1)
+          </p>
+        )
+      }
+    </main>
+  </body>
+</html>
+
+<style>
+  .harness {
+    padding: 4rem var(--gutter);
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .harness__eyebrow {
+    font-size: var(--text--eyebrow);
+    color: var(--color--lilac-3);
+    margin: 0;
+  }
+
+  .harness__title {
+    font-size: var(--text--h2);
+    margin: 0.5rem 0 0;
+  }
+
+  .harness__disabled {
+    color: var(--color--lilac-3);
+    font-size: var(--text--body);
+    margin: 0;
+  }
+</style>

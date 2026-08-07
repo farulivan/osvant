@@ -1,0 +1,129 @@
+---
+// /dev/rive — Rive handoff smoke-test harness (06-asset-pipeline §2).
+// Checks each `M §7` artboard's file presence against the handoff contract
+// and lists its binding state-machine inputs. The runtime loader
+// (@rive-app/canvas, ADR-006) lands with the first real .riv — until then
+// this page is the acceptance checklist + presence probe.
+import DevHarness from "../../layouts/DevHarness.astro";
+
+const ARTBOARDS = [
+  {
+    file: "logo.riv",
+    inputs: "hover (bool), scrolled (bool)",
+    where: "nav, footer",
+  },
+  {
+    file: "page-transition.riv",
+    inputs: "in, out (triggers), speed (number)",
+    where: "router + preloader",
+  },
+  {
+    file: "btn-ui.riv",
+    inputs: "hover (bool), press (trigger)",
+    where: "primary buttons",
+  },
+  {
+    file: "vapor.riv",
+    inputs: "intensity (number 0–1)",
+    where: "hero + PDP motif",
+  },
+  {
+    file: "mob-landscape.riv",
+    inputs: "autoplay loop",
+    where: "landscape prompt",
+  },
+];
+---
+
+<DevHarness title="rive handoff" spec="06-assets §2 · M §7">
+  <section class="harness-block">
+    <h2 class="harness-block__title">artboard inventory + presence probe</h2>
+    <p class="harness-block__note">
+      Artboard + state-machine names are the binding contract (M §7). Inputs
+      must be verified in the Rive editor preview before handoff; this probe
+      confirms the exported file arrived at its contracted path
+      (`public/assets/rive/`).
+    </p>
+    <table class="harness-table">
+      <thead>
+        <tr>
+          <th>file</th>
+          <th>inputs (M §7)</th>
+          <th>used by</th>
+          <th>status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          ARTBOARDS.map((artboard) => (
+            <tr>
+              <td>
+                <code>{artboard.file}</code>
+              </td>
+              <td>{artboard.inputs}</td>
+              <td>{artboard.where}</td>
+              <td data-probe={`assets/rive/${artboard.file}`}>…</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </section>
+</DevHarness>
+
+<script>
+  import { withBase } from "../../lib/url";
+
+  document
+    .querySelectorAll<HTMLElement>("[data-probe]")
+    .forEach(async (cell) => {
+      const path = cell.dataset.probe ?? "";
+      try {
+        const response = await fetch(withBase(path), { method: "HEAD" });
+        cell.textContent = response.ok ? "present" : "missing";
+        cell.dataset.status = response.ok ? "present" : "missing";
+      } catch {
+        cell.textContent = "missing";
+        cell.dataset.status = "missing";
+      }
+    });
+</script>
+
+<style>
+  .harness-block__title {
+    font-size: var(--text--h4);
+    margin: 0 0 0.75rem;
+  }
+
+  .harness-block__note {
+    color: var(--color--lilac-3);
+    font-size: var(--text--body);
+    margin: 0 0 1.5rem;
+    max-width: 44rem;
+  }
+
+  .harness-table {
+    border-collapse: collapse;
+    font-size: var(--text--body);
+  }
+
+  .harness-table th,
+  .harness-table td {
+    padding: 0.5rem 1.5rem 0.5rem 0;
+    text-align: left;
+    border-bottom: 1px solid var(--color--ink-3);
+  }
+
+  .harness-table th {
+    color: var(--color--lilac-3);
+    font-weight: 500;
+  }
+
+  [data-status="present"] {
+    color: var(--color--uv);
+  }
+
+  [data-status="missing"] {
+    color: var(--color--amber);
+  }
+</style>
