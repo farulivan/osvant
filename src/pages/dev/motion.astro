@@ -1,0 +1,159 @@
+---
+// /dev/motion — motion playground (guide task 1.9). Exercises the core
+// scroll singleton the way production modules will: velocity readout, and
+// the trap #10 marquee reference implementation (gsap.ticker via
+// scroll.onFrame, Lenis velocity, duplicated content, aria-hidden on
+// duplicates, paused off-viewport via IntersectionObserver).
+import DevHarness from "../../layouts/DevHarness.astro";
+---
+
+<DevHarness title="motion playground" spec="M §4 · guide §8 trap #10">
+  <section class="harness-block">
+    <h2 class="harness-block__title">core state</h2>
+    <dl class="harness-stats">
+      <div class="harness-stat">
+        <dt>reduced motion (M §9)</dt>
+        <dd data-stat="reduced-motion">…</dd>
+      </div>
+      <div class="harness-stat">
+        <dt>lenis</dt>
+        <dd data-stat="lenis">…</dd>
+      </div>
+      <div class="harness-stat">
+        <dt>scroll velocity</dt>
+        <dd><span data-stat="velocity">0</span> px/s</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="harness-block">
+    <h2 class="harness-block__title">
+      marquee — trap #10 reference implementation
+    </h2>
+    <p class="harness-block__note">
+      gsap.ticker loop via <code>scroll.onFrame</code>, speed follows Lenis
+      velocity, content duplicated for seamlessness (duplicate is
+      <code>aria-hidden</code>), paused off-viewport. Static under reduced
+      motion (M §9). Scroll to feel it.
+    </p>
+    <div class="harness-marquee" data-harness-marquee>
+      <div class="harness-marquee__track" data-harness-marquee-track>
+        <span class="harness-marquee__item">provocation, bottled. &nbsp;</span>
+        <span class="harness-marquee__item" aria-hidden="true"
+          >provocation, bottled. &nbsp;</span
+        >
+      </div>
+    </div>
+  </section>
+
+  <div class="harness-scroll-space" aria-hidden="true"></div>
+</DevHarness>
+
+<script>
+  import { onFrame, velocity } from "../../scripts/core/scroll";
+
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
+  const reducedStat = document.querySelector<HTMLElement>(
+    '[data-stat="reduced-motion"]',
+  );
+  const lenisStat = document.querySelector<HTMLElement>('[data-stat="lenis"]');
+  if (reducedStat) reducedStat.textContent = reducedMotion ? "on" : "off";
+  if (lenisStat) {
+    lenisStat.textContent = reducedMotion
+      ? "disabled (native scroll)"
+      : "active";
+  }
+
+  const velocityStat = document.querySelector<HTMLElement>(
+    '[data-stat="velocity"]',
+  );
+
+  const marquee = document.querySelector<HTMLElement>("[data-harness-marquee]");
+  const track = document.querySelector<HTMLElement>(
+    "[data-harness-marquee-track]",
+  );
+
+  if (marquee && track && !reducedMotion) {
+    const BASE_SPEED = 60; // px/s
+    const VELOCITY_FACTOR = 0.5;
+
+    let offset = 0;
+    let inView = false;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+    });
+    observer.observe(marquee);
+
+    onFrame((_time, deltaMs) => {
+      if (!inView) return;
+
+      if (velocityStat) {
+        velocityStat.textContent = Math.round(velocity()).toString();
+      }
+
+      const halfWidth = track.scrollWidth / 2;
+      if (halfWidth === 0) return;
+
+      offset -=
+        ((BASE_SPEED + Math.abs(velocity()) * VELOCITY_FACTOR) * deltaMs) /
+        1000;
+      offset %= halfWidth;
+      track.style.transform = `translate3d(${offset}px, 0, 0)`;
+    });
+  }
+</script>
+
+<style>
+  .harness-block__title {
+    font-size: var(--text--h4);
+    margin: 0 0 0.75rem;
+  }
+
+  .harness-block__note {
+    color: var(--color--lilac-3);
+    font-size: var(--text--body);
+    margin: 0 0 1.5rem;
+    max-width: 44rem;
+  }
+
+  .harness-stats {
+    display: flex;
+    gap: 3rem;
+    margin: 0;
+  }
+
+  .harness-stat dt {
+    color: var(--color--lilac-3);
+    font-size: var(--text--eyebrow);
+  }
+
+  .harness-stat dd {
+    margin: 0.25rem 0 0;
+    font-size: var(--text--h5);
+  }
+
+  .harness-marquee {
+    overflow: hidden;
+    border-block: 1px solid var(--color--ink-3);
+    padding-block: 1rem;
+  }
+
+  .harness-marquee__track {
+    display: flex;
+    white-space: nowrap;
+    will-change: transform;
+  }
+
+  .harness-marquee__item {
+    font-size: var(--text--h1);
+    font-weight: 900;
+  }
+
+  .harness-scroll-space {
+    height: 200vh;
+  }
+</style>

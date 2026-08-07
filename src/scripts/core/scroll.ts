@@ -19,14 +19,40 @@ const reducedMotion = window.matchMedia(
 ).matches;
 
 let lenis: Lenis | undefined;
+let currentVelocity = 0;
+
+type FrameCallback = (time: number, deltaMs: number) => void;
+const frameCallbacks = new Set<FrameCallback>();
 
 if (!reducedMotion) {
   lenis = new Lenis();
   lenis.on("scroll", ScrollTrigger.update);
-  gsap.ticker.add((time) => {
+  lenis.on("scroll", (e) => {
+    currentVelocity = e.velocity;
+  });
+  gsap.ticker.add((time, deltaMs) => {
     lenis?.raf(time * 1000);
+    frameCallbacks.forEach((cb) => cb(time, deltaMs));
   });
   gsap.ticker.lagSmoothing(0);
+}
+
+/**
+ * Subscribe to the single gsap ticker (trap #10 pattern: marquees and
+ * other per-frame loops batch here — never add your own ticker/rAF).
+ * Returns an unsubscribe function; call it in `destroy()`.
+ * No-op under reduced motion (M §9: loops/marquees are static there).
+ */
+export function onFrame(cb: FrameCallback): () => void {
+  frameCallbacks.add(cb);
+  return () => {
+    frameCallbacks.delete(cb);
+  };
+}
+
+/** Current scroll velocity in px/s (from Lenis; 0 under reduced motion). */
+export function velocity(): number {
+  return currentVelocity;
 }
 
 export function stop(): void {
