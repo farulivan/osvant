@@ -2,6 +2,15 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-12 — feat: collection PLP — scent card + asymmetric grid (03 §2, 01 §5.3)
+
+- `ScentCard.astro` per 01 §5.3: ink-2 surface, radius xs, `batch 0N` eyebrow, name with serif-italic article, 3 notes (lilac-3), price, `discover ->`; hover = border → `--scent-tint` (via `data-scent`) + bottle −8px drift (0.5s, `no-preference`-gated). Bottle renders pending assets — scent-tinted duotone placeholder (ADR-008).
+- PLP `collection/index.astro`: header (eyebrow `all formulas`, split fragments `five`/`currents`, count `05`), asymmetric 2/3-split editorial grid (cards 1+4 span 2 cols, 5th full-width — layout interpretation flagged), row-hover dims siblings to 60% (0.3s, `:focus-within` mirrors for keyboard).
+- `products.json` gains `notes` — sourced verbatim from the brief's olfactive sketches (00 §5), no invented copy.
+- card-entrance module: per-page stagger override via `data-stagger` (PLP specs 0.05s — 03 §2; default 0.06s unchanged).
+- **Gaps flagged:** PLP nav-theme unspecified (dark); grid rhythm not fully specified (which cards span 2/3); price shows the 50ml variant.
+- 1 new unit test (93 total). Build 62.79KB / 350KB.
+
 ## 2026-08-07 — feat: home campaign + social bands, footer wiring (03 §1.5–1.7)
 
 - `HomeCampaign.astro` (marquee per M §4.7 wired via `data-anim="marquee"`, amber `limited` chip in its canonical scarcity role only — 01 §1 rule 4; campaign still is duotone placeholder pending photography) + `HomeSocial.astro` (split title fragments, 4 link cards, CSS hover tilt 1.5° within the spec'd 3° cap, micro register, `no-preference`-gated).

@@ -3,6 +3,7 @@
     "scent": "volt",
     "name": "the volt",
     "batch": "001",
+    "notes": ["neroli", "yuzu", "mint spark"],
     "variants": [
       {
         "sku": "OSV-VOLT-50",
@@ -28,6 +29,7 @@
     "scent": "nocturne",
     "name": "the nocturne",
     "batch": "002",
+    "notes": ["oud", "black plum", "amber"],
     "variants": [
       {
         "sku": "OSV-NOCTURNE-50",
@@ -53,6 +55,7 @@
     "scent": "static",
     "name": "the static",
     "batch": "003",
+    "notes": ["aldehydes", "white musk", "iris"],
     "variants": [
       {
         "sku": "OSV-STATIC-50",
@@ -78,6 +81,7 @@
     "scent": "fever",
     "name": "the fever",
     "batch": "004",
+    "notes": ["saffron", "chili-rose", "benzoin"],
     "variants": [
       {
         "sku": "OSV-FEVER-50",
@@ -94,6 +98,7 @@
     "scent": "halo",
     "name": "the halo",
     "batch": "005",
+    "notes": ["iris", "cashmeran", "pale musk"],
     "variants": [
       {
         "sku": "OSV-HALO-50",

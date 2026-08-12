@@ -54,6 +54,29 @@ describe("modules/card-entrance (01 §5.3, M §3)", () => {
     module.destroy();
   });
 
+  it("honors data-stagger override from the first card (03 §2 PLP: 0.05s)", async () => {
+    const toMock = (await import("gsap")).default.to as ReturnType<
+      typeof vi.fn
+    >;
+    const module = await load();
+    const a = document.createElement("article");
+    a.dataset.stagger = "0.05";
+    document.body.append(a);
+
+    module.mount(a, ctx(false));
+
+    const batchConfig = batchMock.mock.calls.at(-1)?.[1] as {
+      onEnter: (group: HTMLElement[]) => void;
+    };
+    batchConfig.onEnter([a]);
+    expect(toMock).toHaveBeenCalledWith(
+      [a],
+      expect.objectContaining({ stagger: 0.05 }),
+    );
+
+    module.destroy();
+  });
+
   it("reduced motion: no hiding, no batch — static final state (M §9)", async () => {
     const module = await load();
     const el = document.createElement("article");
