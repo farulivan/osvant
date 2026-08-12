@@ -1,11 +1,124 @@
 ---
+// PLP (03 §2). Header + asymmetric editorial grid of 5 scent cards
+// (01 §5.3). Grid entrance = one stagger group at 0.05s (03 §2 — carried
+// to the card-entrance module via data-stagger). No filters/sort in v1.
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import StubSection from "../../components/StubSection.astro";
+import ScentCard from "../../components/ScentCard.astro";
+import products from "../../data/products.json";
 ---
 
 <BaseLayout
   title="collection"
   description="Five currents — the osvant collection."
 >
-  <StubSection eyebrow="all formulas" title="five currents" theme="light" />
+  <section class="plp" data-nav-theme="dark" aria-labelledby="plp-title">
+    <header class="plp__header">
+      <p class="plp__eyebrow" data-eyebrow>all formulas</p>
+      <h1 class="plp__title" id="plp-title">
+        <span class="plp__fragment" data-anim="split">five</span>
+        <span class="plp__fragment" data-anim="split">currents</span>
+      </h1>
+      <p class="plp__count" aria-label={`${products.length} scents`}>
+        {String(products.length).padStart(2, "0")}
+      </p>
+    </header>
+
+    <!-- Row hover dims non-hovered cards to 60% (0.3s micro) — CSS below. -->
+    <div class="plp__grid">
+      {
+        products.map((product) => (
+          <ScentCard
+            scent={product.scent}
+            name={product.name}
+            batch={product.batch}
+            notes={product.notes}
+            price={product.variants[0].price}
+            stagger={0.05}
+          />
+        ))
+      }
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .plp {
+    min-height: 100vh;
+    padding: 8rem var(--gutter) 6rem;
+    background: var(--color--black);
+  }
+
+  .plp__header {
+    position: relative;
+    margin-bottom: 4rem;
+  }
+
+  .plp__eyebrow {
+    margin: 0 0 1rem;
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .plp__title {
+    margin: 0;
+    font-size: var(--text--h1);
+    font-weight: 900;
+    font-stretch: 125%;
+    line-height: 1.05;
+  }
+
+  .plp__fragment {
+    display: block;
+  }
+
+  .plp__count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    font-size: var(--text--h5);
+    color: var(--color--lilac-3);
+  }
+
+  /* Asymmetric editorial layout (03 §2): alternating 2/3 split rows,
+     fifth card spans full width. */
+  .plp__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--grid-gap);
+  }
+
+  .plp__grid > :nth-child(1),
+  .plp__grid > :nth-child(4) {
+    grid-column: span 2;
+  }
+
+  .plp__grid > :nth-child(5) {
+    grid-column: 1 / -1;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .plp__grid > article {
+      transition: opacity 0.3s;
+    }
+
+    /* 03 §2 row hover — non-hovered cards dim to 60% (0.3s micro).
+       focus-within mirrors it for keyboard users. */
+    .plp__grid:hover > article:not(:hover, :focus-within),
+    .plp__grid:focus-within > article:not(:hover, :focus-within) {
+      opacity: 0.6;
+    }
+  }
+
+  @media (width <= 48rem) {
+    .plp__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .plp__grid > :nth-child(n) {
+      grid-column: auto;
+    }
+  }
+</style>

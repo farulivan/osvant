@@ -35,13 +35,16 @@ export function createCardEntrance(): PageModule {
       mounted.push(el);
       gsap.set(el, { opacity: 0, y: 24 });
 
+      // Page-specific override: data-stagger on the first mounted card
+      // (PLP specifies 0.05s — 03 §2; default stays 0.06s).
+      const stagger = Number(mounted[0]?.dataset.stagger) || CARD_STAGGER;
+
       // (Re)create the group batch whenever the mounted set changes.
       for (const trigger of batch) trigger.kill();
       batch = ScrollTrigger.batch(mounted, {
         start: "top 85%",
         once: true,
-        onEnter: (group) =>
-          gsap.to(group, { opacity: 1, y: 0, stagger: CARD_STAGGER }),
+        onEnter: (group) => gsap.to(group, { opacity: 1, y: 0, stagger }),
       });
     },
 

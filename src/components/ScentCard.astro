@@ -1,0 +1,139 @@
+---
+// Scent card (01 §5.3) — collection grid + home showcase. Surface ink-2,
+// radius xs; hover swaps border → --scent-tint (per scent via data-scent)
+// and drifts the bottle render −8px (0.5s power2.out approx). Bottle
+// renders are pending assets (06 §1) — the duotone tint wash is the
+// placeholder (ADR-008). Motion hook: data-anim="card" (stagger group).
+import { withBase } from "../lib/url";
+
+interface Props {
+  scent: string;
+  name: string; // e.g. "the volt" — article renders in serif italic
+  batch: string;
+  notes: string[];
+  price: number;
+  stagger?: number; // page-specific group stagger (03 §2: 0.05)
+}
+
+const { scent, name, batch, notes, price, stagger } = Astro.props;
+const [article, ...rest] = name.split(" ");
+---
+
+<article
+  class="scent-card"
+  data-scent={scent}
+  data-anim="card"
+  data-stagger={stagger}
+>
+  <p class="scent-card__eyebrow">batch {batch}</p>
+  <h3 class="scent-card__name">
+    <em>{article}</em>
+    {rest.join(" ")}
+  </h3>
+
+  <div class="scent-card__bottle" aria-hidden="true"></div>
+
+  <ul class="scent-card__notes">
+    {notes.map((note) => <li>{note}</li>)}
+  </ul>
+
+  <div class="scent-card__footer">
+    <p class="scent-card__price">€{price}</p>
+    <a class="scent-card__discover" href={withBase(`collection/${scent}/`)}>
+      <span data-btn-label>discover -&gt;</span>
+    </a>
+  </div>
+</article>
+
+<style>
+  .scent-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--color--ink-2);
+    border: 1px solid transparent;
+    border-radius: var(--radius--xs);
+  }
+
+  .scent-card__eyebrow {
+    margin: 0;
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .scent-card__name {
+    margin: 0;
+    font-size: var(--text--h3);
+    font-weight: 800;
+  }
+
+  .scent-card__name em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  /* Bottle render placeholder (ADR-008) — scent-tinted duotone wash */
+  .scent-card__bottle {
+    aspect-ratio: 3 / 4;
+    border-radius: var(--radius--media);
+    background: radial-gradient(
+      ellipse 70% 55% at 50% 62%,
+      color-mix(in oklab, var(--scent-tint) 26%, transparent) 0%,
+      transparent 75%
+    );
+  }
+
+  .scent-card__notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .scent-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+  }
+
+  .scent-card__price {
+    margin: 0;
+    font-size: var(--text--h5);
+  }
+
+  .scent-card__discover {
+    color: var(--color--white);
+    font-size: var(--text--btn);
+    text-decoration: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .scent-card,
+    .scent-card__bottle {
+      transition:
+        border-color 0.3s,
+        transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* 01 §5.3 hover — border → --scent-tint, bottle drifts −8px */
+    .scent-card:hover,
+    .scent-card:focus-within {
+      border-color: var(--scent-tint);
+    }
+
+    .scent-card:hover .scent-card__bottle,
+    .scent-card:focus-within .scent-card__bottle {
+      transform: translateY(-8px);
+    }
+  }
+</style>
