@@ -1,0 +1,258 @@
+---
+// Cart drawer (03 cart drawer, 01 §5.7, 07 §1.3) — global overlay, NOT a
+// route. Persistent chrome: mounted once at boot in main.ts (like the
+// footer). Right slide 0.6s expo.inOut over a dark scrim, ink-1 panel;
+// focus trap + ESC + inert background + lenis.stop() live in
+// modules/cart-drawer.ts. Line rendering is client-side from the
+// commerce port (cart state lives in localStorage).
+import { withBase } from "../lib/url";
+---
+
+<div
+  class="cart-drawer"
+  data-cart-drawer
+  role="dialog"
+  aria-modal="true"
+  aria-label="Cart"
+  hidden
+>
+  <div class="cart-drawer__scrim" data-cart-scrim aria-hidden="true"></div>
+
+  <div class="cart-drawer__panel" data-cart-panel>
+    <header class="cart-drawer__header">
+      <p class="cart-drawer__title">cart</p>
+      <button class="cart-drawer__close" type="button" data-cart-close>
+        close
+      </button>
+    </header>
+
+    <div class="cart-drawer__body" data-cart-body>
+      {/* empty state (03 cart drawer) */}
+      <div class="cart-drawer__empty" data-cart-empty hidden>
+        <p class="cart-drawer__empty-text">nothing decanted yet.</p>
+        <a class="btn-secondary" href={withBase("collection/")}>
+          <span data-btn-label>the collection -&gt;</span>
+        </a>
+      </div>
+
+      <ul class="cart-drawer__lines" data-cart-lines></ul>
+
+      <div class="cart-drawer__summary" data-cart-summary hidden>
+        <p class="cart-drawer__subtotal">
+          subtotal <span data-cart-subtotal>€0</span>
+        </p>
+        <button class="btn-primary" type="button" data-cart-checkout>
+          <span data-btn-label>checkout</span>
+        </button>
+      </div>
+    </div>
+
+    {/* mock checkout confirmation (07 §1.3) */}
+    <div class="cart-drawer__confirmation" data-cart-confirmation hidden>
+      <p class="cart-drawer__confirmation-title">decanted.</p>
+      <ul class="cart-drawer__confirmation-lines" data-cart-confirmation-lines>
+      </ul>
+      <p class="cart-drawer__confirmation-subtotal">
+        subtotal <span data-cart-confirmation-subtotal></span>
+      </p>
+      <p class="cart-drawer__notice">demo store — no real orders</p>
+      <button class="btn-primary" type="button" data-cart-confirmation-close>
+        <span data-btn-label>back to the current</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cart-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+  }
+
+  .cart-drawer__scrim {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in oklab, var(--color--black) 80%, transparent);
+  }
+
+  .cart-drawer__panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    width: min(28rem, 100vw);
+    padding: 1.5rem;
+    background: var(--color--ink-1);
+  }
+
+  .cart-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color--ink-3);
+  }
+
+  .cart-drawer__title {
+    margin: 0;
+    font-size: var(--text--h5);
+    font-weight: 700;
+  }
+
+  .cart-drawer__close {
+    background: none;
+    border: 0;
+    color: var(--color--lilac-3);
+    font-size: var(--text--btn);
+    cursor: pointer;
+  }
+
+  .cart-drawer__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .cart-drawer__empty {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  .cart-drawer__empty-text {
+    margin: 0;
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    font-size: var(--text--h4);
+  }
+
+  .cart-drawer__lines {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-y: auto;
+  }
+
+  .cart-line {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--color--ink-3);
+  }
+
+  .cart-line__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cart-line__name {
+    margin: 0;
+    font-size: var(--text--h6);
+    font-weight: 700;
+  }
+
+  .cart-line__meta {
+    margin: 0.25rem 0 0;
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .cart-line__steppers {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .cart-line__steppers button {
+    width: 1.75rem;
+    height: 1.75rem;
+    background: transparent;
+    border: 1px solid var(--color--ink-3);
+    border-radius: var(--radius--xs);
+    color: var(--color--white);
+    font-size: var(--text--btn);
+    cursor: pointer;
+  }
+
+  .cart-line__qty {
+    min-width: 1.5rem;
+    text-align: center;
+    font-size: var(--text--h6);
+  }
+
+  .cart-line__price {
+    margin: 0;
+    min-width: 3.5rem;
+    text-align: right;
+    font-size: var(--text--h6);
+  }
+
+  .cart-line__remove {
+    background: none;
+    border: 0;
+    color: var(--color--lilac-3);
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+    cursor: pointer;
+  }
+
+  .cart-drawer__summary {
+    padding-top: 1.5rem;
+  }
+
+  .cart-drawer__subtotal {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0 1rem;
+    font-size: var(--text--h5);
+  }
+
+  .cart-drawer__summary .btn-primary {
+    width: 100%;
+  }
+
+  .cart-drawer__confirmation {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.25rem;
+  }
+
+  .cart-drawer__confirmation-title {
+    margin: 0;
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    font-size: var(--text--h3);
+  }
+
+  .cart-drawer__confirmation-lines {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--text--h6);
+    color: var(--color--lilac-3);
+  }
+
+  .cart-drawer__confirmation-subtotal {
+    margin: 0;
+    font-size: var(--text--h5);
+  }
+
+  .cart-drawer__notice {
+    margin: 0;
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+</style>

@@ -11,6 +11,7 @@ import "./modules/home-hero";
 import "./modules/newsletter";
 import "./modules/note-pyramid";
 import "./modules/pdp";
+import "./modules/cart-drawer";
 import gsap from "gsap";
 import { initRouter } from "./core/router";
 import { preloader } from "./core/preloader";
@@ -26,6 +27,18 @@ void preloader.run();
 const footer = document.querySelector("footer");
 if (footer) {
   void registry.mountModules(footer, {
+    url: new URL(window.location.href),
+    firstLoad: true,
+    reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)")
+      .matches,
+  });
+}
+
+// Cart drawer — global overlay chrome (03 cart drawer), same boot-mount
+// pattern as the footer.
+const drawer = document.querySelector("[data-cart-drawer]");
+if (drawer) {
+  void registry.mountModules(drawer, {
     url: new URL(window.location.href),
     firstLoad: true,
     reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)")

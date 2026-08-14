@@ -2,6 +2,13 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-14 — feat: cart drawer — global overlay, steppers, mock checkout (03 cart drawer, 01 §5.7, 07 §1.3)
+
+- `CartDrawer.astro` global chrome (outside `[data-taxi]`, boot-mounted like the footer): ink-1 panel + dark scrim, right slide 0.6s `expo.inOut` (01 §5.7), empty state `nothing decanted yet.` + `btn-secondary` to collection, confirmation step per 07 §1.3 (`demo store — no real orders` + `back to the current`).
+- `cart-drawer.ts`: lines render from the commerce port; qty steppers → new `cartUpdateQuantity(sku, qty)` port method (0 = remove; port extension flagged); remove action; re-renders on `osvant:cart-changed`. Open: background inert + `lenis.stop()`, focus trap, ESC closes + focus returns to trigger. Checkout tracks `begin_checkout` (B7) and advances to the confirmation step. B3: gone-unavailable lines get the amber `no longer available` note.
+- Nav cart chip: `<a href="cart">` → `<button data-cart-open>` — the drawer is an overlay, not a route (03 sitemap); the old link 404'd.
+- RM (M §9): open/close swap instantly, no tweens. 6 new unit tests (106 total). Build 64.81KB / 350KB.
+
 ## 2026-08-14 — feat: PDP ×5 — scent hero, note pyramid, purchase surface, cross-sell (03 §3)
 
 - `[scent].astro` rebuilt: 3.1 hero (eyebrow, impact name with serif-italic article, final one-liner per RFC-001 C1 — `character` added to products.json verbatim) + bottle placeholder (Three.js is M3, ADR-008); purchase row (size chips single-select → price, `add to cart`, sticky bottom bar ≤767px); 3.2 note pyramid via new module (M §4.6 verbatim: divider scaleX 0→1 0.8s expo.out then char cascade 0.015 stagger, triggers at top 75% once); 3.4 cross-sell rail (native overflow-x + scroll-snap, no hijacking). Sold-out per RFC B3: disabled `sold out — next batch soon` + `get notified` → `sold_out_notify_signup` + success swap.

@@ -6,6 +6,7 @@ import "../styles/fonts.css";
 import "../styles/base.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
+import CartDrawer from "../components/CartDrawer.astro";
 import { withBase } from "../lib/url";
 
 interface Props {
@@ -53,6 +54,10 @@ const { title, description = "osvant — eau de parfum, est. batch 001." } =
     </main>
 
     <Footer />
+
+    <!-- Cart drawer — global overlay chrome (03 cart drawer), mounted
+         once at boot; lives outside [data-taxi] like the footer. -->
+    <CartDrawer />
 
     <!-- Rive `page-transition` placeholder scrim (RFC B4.2) — styled and
          driven by core/transition.ts; declared here, outside [data-taxi],
