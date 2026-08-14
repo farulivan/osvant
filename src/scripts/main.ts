@@ -9,6 +9,9 @@ import "./modules/btn-line";
 import "./modules/marquee";
 import "./modules/home-hero";
 import "./modules/newsletter";
+import "./modules/note-pyramid";
+import "./modules/pdp";
+import gsap from "gsap";
 import { initRouter } from "./core/router";
 import { preloader } from "./core/preloader";
 import { registry } from "./core/registry";
@@ -31,15 +34,28 @@ if (footer) {
 }
 
 // Nav cart chip — persistent chrome, so it listens for cart changes
-// instead of living inside a page module.
-async function syncCartCount(): Promise<void> {
+// instead of living inside a page module. On add: badge pops with the
+// M §4.8 recipe (elastic.out(1, 0.75), scale 0→1, 0.9s — playful
+// register), skipped under reduced motion.
+const reducedMotionQuery = window.matchMedia(
+  "(prefers-reduced-motion: reduce)",
+);
+
+async function syncCartCount(pop: boolean): Promise<void> {
   const el = document.querySelector<HTMLElement>("[data-cart-count]");
   if (!el) return;
   const cart = await getCart();
   el.textContent = String(
     cart?.lines.reduce((total, line) => total + line.quantity, 0) ?? 0,
   );
+  if (pop && !reducedMotionQuery.matches) {
+    gsap.fromTo(
+      el,
+      { scale: 0 },
+      { scale: 1, duration: 0.9, ease: "elastic.out(1, 0.75)" },
+    );
+  }
 }
 
-void syncCartCount();
-window.addEventListener(CART_CHANGED_EVENT, () => void syncCartCount());
+void syncCartCount(false);
+window.addEventListener(CART_CHANGED_EVENT, () => void syncCartCount(true));

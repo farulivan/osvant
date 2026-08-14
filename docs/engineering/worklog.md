@@ -2,6 +2,14 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-14 — feat: PDP ×5 — scent hero, note pyramid, purchase surface, cross-sell (03 §3)
+
+- `[scent].astro` rebuilt: 3.1 hero (eyebrow, impact name with serif-italic article, final one-liner per RFC-001 C1 — `character` added to products.json verbatim) + bottle placeholder (Three.js is M3, ADR-008); purchase row (size chips single-select → price, `add to cart`, sticky bottom bar ≤767px); 3.2 note pyramid via new module (M §4.6 verbatim: divider scaleX 0→1 0.8s expo.out then char cascade 0.015 stagger, triggers at top 75% once); 3.4 cross-sell rail (native overflow-x + scroll-snap, no hijacking). Sold-out per RFC B3: disabled `sold out — next batch soon` + `get notified` → `sold_out_notify_signup` + success swap.
+- `pdp.ts` module wires chips/add-to-cart/notify through the commerce port + `track` (add_to_cart, sold_out_notify_signup — B7). Cart badge elastic pop on add (M §4.8: elastic.out(1, 0.75), scale 0→1, 0.9s, RM-gated) in main.ts.
+- **Deferred:** 3.3 formula story — copy `[draft]`, ships w4 per RFC-001 C1; section omitted until copy lands (not invented).
+- **Gaps flagged:** pyramid maps 1 note per row (data has 3 notes; spec doesn't say how many per row); `data-nav-theme="scent"` per 01 §2.3; notify success copy reuses 01 §5.5 message.
+- 7 new unit tests (100 total). Build 63.53KB / 350KB.
+
 ## 2026-08-12 — feat: collection PLP — scent card + asymmetric grid (03 §2, 01 §5.3)
 
 - `ScentCard.astro` per 01 §5.3: ink-2 surface, radius xs, `batch 0N` eyebrow, name with serif-italic article, 3 notes (lilac-3), price, `discover ->`; hover = border → `--scent-tint` (via `data-scent`) + bottle −8px drift (0.5s, `no-preference`-gated). Bottle renders pending assets — scent-tinted duotone placeholder (ADR-008).

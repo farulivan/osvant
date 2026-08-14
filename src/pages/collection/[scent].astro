@@ -1,24 +1,427 @@
 ---
-// PDP stub × 5 (03-page-specs.md §3). Catalog from `lib/commerce.ts`
-// (07 §1.1) — real PDP content lands in M2.
+// PDP × 5 (03-page-specs.md §3) — data-scent theming (01 §2.3: ONE
+// attribute swap, nothing else recolored manually). Sections: 3.1 scent
+// hero, 3.2 note pyramid (M §4.6), 3.4 cross-sell. 3.3 formula story is
+// copy-blocked ([draft], ships w4 per RFC-001 C1) — section omitted until
+// copy lands. Bottle: Three.js is M3 — placeholder wash (ADR-008).
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import StubSection from "../../components/StubSection.astro";
-import { getProducts } from "../../lib/commerce";
+import { withBase } from "../../lib/url";
+import products from "../../data/products.json";
 
-export async function getStaticPaths() {
-  const products = await getProducts();
-  return products.map((product) => ({ params: { scent: product.scent } }));
+export function getStaticPaths() {
+  return products.map((product) => ({
+    params: { scent: product.scent },
+    props: { product },
+  }));
 }
 
-const { scent } = Astro.params;
+const { product } = Astro.props;
+const others = products.filter((p) => p.scent !== product.scent);
+const [article, ...rest] = product.name.split(" ");
+const available = product.variants.filter((v) => v.availableForSale);
+const soldOut = available.length === 0;
+const limited = product.variants.some((v) => v.limited);
+const rows = [
+  { label: "top — the spark", note: product.notes[0] },
+  { label: "heart — the current", note: product.notes[1] },
+  { label: "base — the ground", note: product.notes[2] },
+];
 ---
 
-<BaseLayout title={scent} description={`the ${scent} — osvant eau de parfum.`}>
-  <div data-scent={scent}>
-    <StubSection
-      eyebrow={`batch — eau de parfum`}
-      title={scent}
-      theme="scent"
-    />
+<BaseLayout
+  title={`${product.name} — collection`}
+  description={`${product.name} — ${product.character}`}
+>
+  <div data-scent={product.scent} data-pdp>
+    {/* 3.1 scent hero */}
+    <section class="pdp-hero" data-nav-theme="scent">
+      <div class="pdp-hero__info">
+        <p class="pdp-hero__eyebrow" data-eyebrow>
+          batch {product.batch} — eau de parfum
+        </p>
+        <h1 class="pdp-hero__name">
+          <em>{article}</em>
+          {rest.join(" ")}
+        </h1>
+        <p class="pdp-hero__character">{product.character}</p>
+      </div>
+
+      {/* Three.js bottle is M3 — placeholder wash (ADR-008) */}
+      <div class="pdp-hero__bottle" aria-hidden="true"></div>
+    </section>
+
+    {/* 3.1 purchase row — sticky bottom bar ≤767px (CSS below) */}
+    <div class="pdp-buy">
+      <div class="pdp-buy__chips" role="group" aria-label="size">
+        {
+          product.variants.map((variant, i) => (
+            <button
+              class="pdp-buy__chip"
+              type="button"
+              data-size-chip
+              data-sku={variant.sku}
+              data-price={`€${variant.price}`}
+              aria-pressed={i === 0}
+              {...(i === 0 ? { "data-selected": true } : {})}
+            >
+              {variant.size}
+            </button>
+          ))
+        }
+        {limited && <span class="pdp-buy__limited">limited</span>}
+      </div>
+
+      <p class="pdp-buy__price" data-price>
+        €{available[0]?.price ?? product.variants[0].price}
+      </p>
+
+      {
+        soldOut ? (
+          <>
+            {/* B3 sold-out: disabled primary + get-notified line input */}
+            <button class="btn-primary" type="button" disabled>
+              <span data-btn-label>sold out — next batch soon</span>
+            </button>
+            <form class="pdp-buy__notify" data-notify-form>
+              <label class="visually-hidden" for={`notify-${product.scent}`}>
+                Email
+              </label>
+              <input
+                id={`notify-${product.scent}`}
+                type="email"
+                name="email"
+                placeholder="your email"
+                required
+              />
+              <button class="pdp-buy__notify-btn" type="submit">
+                get notified
+              </button>
+            </form>
+            <p class="pdp-buy__notify-done" data-notify-done hidden>
+              you're in the current.
+            </p>
+          </>
+        ) : (
+          <button class="btn-primary" type="button" data-add-to-cart>
+            <span data-btn-label>add to cart</span>
+          </button>
+        )
+      }
+    </div>
+
+    {/* 3.2 note pyramid (M §4.6) */}
+    <section
+      class="pyramid"
+      data-pyramid
+      data-nav-theme="scent"
+      aria-label="note pyramid"
+    >
+      {
+        rows.map((row) => (
+          <div class="pyramid__row" data-pyramid-row>
+            <p class="pyramid__eyebrow">{row.label}</p>
+            <p class="pyramid__notes" data-pyramid-notes>
+              {row.note}
+            </p>
+            <span
+              class="pyramid__divider"
+              data-pyramid-divider
+              aria-hidden="true"
+            />
+          </div>
+        ))
+      }
+    </section>
+
+    {/* 3.4 cross-sell — native overflow-x + scroll-snap (no hijacking) */}
+    <section class="xsell" data-nav-theme="dark" aria-labelledby="xsell-title">
+      <h2 class="xsell__title" id="xsell-title">also in the current</h2>
+      <ul class="xsell__rail">
+        {
+          others.map((other) => (
+            <li class="xsell__item">
+              <a
+                class="xsell__card"
+                href={withBase(`collection/${other.scent}/`)}
+                data-scent={other.scent}
+              >
+                <span class="xsell__name">{other.name}</span>
+                <span class="xsell__price">€{other.variants[0].price}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
   </div>
 </BaseLayout>
+
+<style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .pdp-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--grid-gap);
+    align-items: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 8rem var(--gutter) 4rem;
+    background: var(--color--black);
+  }
+
+  .pdp-hero__eyebrow {
+    margin: 0 0 1rem;
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .pdp-hero__name {
+    margin: 0;
+    font-size: var(--text--impact);
+    font-weight: 900;
+    font-stretch: 125%;
+    line-height: 1.05;
+  }
+
+  .pdp-hero__name em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .pdp-hero__character {
+    margin: 1.5rem 0 0;
+    font-size: var(--text--lead);
+    max-width: 28ch;
+  }
+
+  /* Bottle placeholder (ADR-008, Three.js lands M3) — scent-tinted rim wash */
+  .pdp-hero__bottle {
+    aspect-ratio: 3 / 4;
+    border-radius: var(--radius--media);
+    background: radial-gradient(
+      ellipse 65% 55% at 50% 60%,
+      color-mix(in oklab, var(--scent-tint) 30%, transparent) 0%,
+      transparent 75%
+    );
+  }
+
+  /* Purchase row — sticky bottom bar ≤767px (03 §3.1) */
+  .pdp-buy {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem var(--gutter);
+    background: var(--color--ink-1);
+    border-top: 1px solid var(--color--ink-3);
+  }
+
+  .pdp-buy__chips {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .pdp-buy__chip {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 1px solid var(--color--ink-3);
+    border-radius: var(--radius--xs);
+    color: var(--color--white);
+    font-size: var(--text--btn);
+    cursor: pointer;
+  }
+
+  .pdp-buy__chip[aria-pressed="true"] {
+    border-color: var(--scent-tint);
+    color: var(--color--white);
+  }
+
+  /* Amber canonical role: scarcity signal (01 §1 rule 4) */
+  .pdp-buy__limited {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--color--amber);
+    border-radius: var(--radius--xs);
+    color: var(--color--amber);
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+  }
+
+  .pdp-buy__price {
+    margin: 0;
+    font-size: var(--text--h5);
+  }
+
+  .pdp-buy .btn-primary {
+    margin-left: auto;
+  }
+
+  .pdp-buy .btn-primary:disabled {
+    background: var(--color--ink-3);
+    color: var(--color--lilac-3);
+    cursor: not-allowed;
+  }
+
+  .pdp-buy__notify {
+    display: flex;
+    gap: 0.75rem;
+    margin-left: auto;
+  }
+
+  .pdp-buy__notify input {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--color--ink-3);
+    border-radius: 0;
+    color: var(--color--white);
+    padding: 0.5rem 0;
+    font-size: var(--text--body);
+  }
+
+  .pdp-buy__notify input:focus-visible {
+    border-bottom-color: var(--color--uv);
+  }
+
+  .pdp-buy__notify-btn {
+    background: none;
+    border: 0;
+    color: var(--color--white);
+    font-size: var(--text--btn);
+    cursor: pointer;
+  }
+
+  .pdp-buy__notify-done {
+    margin: 0;
+    margin-left: auto;
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    font-size: var(--text--h5);
+  }
+
+  /* Note pyramid (03 §3.2) */
+  .pyramid {
+    padding: 6rem var(--gutter);
+    background: var(--color--black);
+  }
+
+  .pyramid__row {
+    position: relative;
+    padding: 2.5rem 0;
+  }
+
+  .pyramid__eyebrow {
+    margin: 0 0 0.75rem;
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .pyramid__notes {
+    margin: 0;
+    font-size: var(--text--h3);
+    font-weight: 800;
+  }
+
+  .pyramid__divider {
+    display: block;
+    height: 1px;
+    margin-top: 2.5rem;
+    background: var(--color--ink-3);
+    transform-origin: left center;
+  }
+
+  /* Cross-sell (03 §3.4) — native overflow-x + scroll-snap only */
+  .xsell {
+    padding: 4rem var(--gutter) 6rem;
+    background: var(--color--black);
+  }
+
+  .xsell__title {
+    margin: 0 0 2rem;
+    font-size: var(--text--h3);
+    font-weight: 800;
+  }
+
+  .xsell__rail {
+    display: flex;
+    gap: var(--grid-gap);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .xsell__item {
+    flex: 0 0 16rem;
+    scroll-snap-align: start;
+  }
+
+  .xsell__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    background: var(--color--ink-2);
+    border: 1px solid transparent;
+    border-radius: var(--radius--xs);
+    text-decoration: none;
+    color: var(--color--white);
+  }
+
+  .xsell__name {
+    font-size: var(--text--h5);
+    font-weight: 700;
+  }
+
+  .xsell__price {
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .xsell__card {
+      transition: border-color 0.3s;
+    }
+
+    .xsell__card:hover,
+    .xsell__card:focus-visible {
+      border-color: var(--scent-tint);
+    }
+  }
+
+  @media (width <= 47.9375rem) {
+    .pdp-hero {
+      grid-template-columns: 1fr;
+      min-height: 0;
+      padding-bottom: 8rem; /* clears the sticky bar */
+    }
+
+    .pdp-buy {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .pdp-buy .btn-primary {
+      flex: 1;
+      margin-left: 0;
+    }
+  }
+</style>

@@ -23,7 +23,8 @@
         "availableForSale": true,
         "limited": false
       }
-    ]
+    ],
+    "character": "the jolt. citrus wired to a live current."
   },
   {
     "scent": "nocturne",
@@ -49,7 +50,8 @@
         "availableForSale": true,
         "limited": false
       }
-    ]
+    ],
+    "character": "the night. oud with the lights off."
   },
   {
     "scent": "static",
@@ -75,7 +77,8 @@
         "availableForSale": true,
         "limited": false
       }
-    ]
+    ],
+    "character": "the white noise. clean until it hums."
   },
   {
     "scent": "fever",
@@ -92,7 +95,8 @@
         "availableForSale": true,
         "limited": true
       }
-    ]
+    ],
+    "character": "the heat. saffron running a temperature."
   },
   {
     "scent": "halo",
@@ -118,6 +122,7 @@
         "availableForSale": true,
         "limited": false
       }
-    ]
+    ],
+    "character": "the glow. iris in soft focus."
   }
 ]
