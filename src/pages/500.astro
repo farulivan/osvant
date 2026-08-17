@@ -1,0 +1,32 @@
+---
+// 500 (RFC-001 C7 — approved `approved`): mirrors the 404 pattern;
+// copy `something spilled.` + btn-primary `back to the current`.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { withBase } from "../lib/url";
+---
+
+<BaseLayout title="error" description="Something spilled — osvant.">
+  <section class="server-error" data-nav-theme="dark">
+    <h1 class="server-error__title">something spilled.</h1>
+    <a class="btn-primary" href={withBase("collection")}>
+      <span data-btn-label>back to the current</span>
+    </a>
+  </section>
+</BaseLayout>
+
+<style>
+  .server-error {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2rem;
+    min-height: 100vh;
+    padding: 0 var(--gutter);
+  }
+
+  .server-error__title {
+    font-size: var(--text--impact);
+    margin: 0;
+  }
+</style>

@@ -1,11 +1,205 @@
 ---
+// Contact (03 §6) — split: business enquiries btn-text at h3 scale
+// (mailto) / press + socials; form per 01 §5.5 line style with RFC-001
+// C3 validation states. Mock relay (C3) — see modules/contact.ts.
 import BaseLayout from "../layouts/BaseLayout.astro";
-import StubSection from "../components/StubSection.astro";
+
+const socials = [
+  { href: "https://instagram.com", label: "instagram" },
+  { href: "https://tiktok.com", label: "tiktok" },
+];
 ---
 
 <BaseLayout
   title="contact"
   description="Business enquiries and press — osvant."
 >
-  <StubSection eyebrow="get in touch" title="contact" theme="dark" />
+  <section class="contact" data-nav-theme="dark">
+    <div class="contact__intro">
+      <p class="contact__eyebrow" data-eyebrow>get in touch</p>
+      <a class="contact__business" href="mailto:business@osvant.com">
+        business enquiries -&gt; business@osvant.com
+      </a>
+      <p class="contact__press">
+        press — <a href="mailto:press@osvant.com">press@osvant.com</a>
+      </p>
+      <ul class="contact__socials">
+        {
+          socials.map((item) => (
+            <li>
+              <a href={item.href} target="_blank" rel="noopener">
+                {item.label} -&gt;
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="contact__form-wrap">
+      <form class="contact__form" data-contact-form novalidate>
+        <div class="contact__field">
+          <label class="visually-hidden" for="contact-name">name</label>
+          <input
+            id="contact-name"
+            type="text"
+            name="name"
+            placeholder="name"
+            autocomplete="name"
+            data-field="name"
+          />
+          <p class="contact__error" data-error-for="name" role="status"></p>
+        </div>
+        <div class="contact__field">
+          <label class="visually-hidden" for="contact-email">email</label>
+          <input
+            id="contact-email"
+            type="email"
+            name="email"
+            placeholder="email"
+            autocomplete="email"
+            data-field="email"
+          />
+          <p class="contact__error" data-error-for="email" role="status"></p>
+        </div>
+        <div class="contact__field">
+          <label class="visually-hidden" for="contact-message">message</label>
+          <textarea
+            id="contact-message"
+            name="message"
+            placeholder="message"
+            rows="4"
+            data-field="message"></textarea>
+          <p class="contact__error" data-error-for="message" role="status"></p>
+        </div>
+        <button class="btn-primary" type="submit" data-contact-submit>
+          <span data-btn-label>send</span>
+        </button>
+        <p class="contact__demo">demo — no message sent.</p>
+      </form>
+
+      <p class="contact__success" data-contact-success hidden role="status">
+        sent. we'll be in touch.
+      </p>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .contact {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--grid-gap);
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 8rem var(--gutter) 6rem;
+    background: var(--color--black);
+  }
+
+  .contact__eyebrow {
+    margin: 0 0 2rem;
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  /* btn-text at h3 scale (03 §6) */
+  .contact__business {
+    display: inline-block;
+    font-size: var(--text--h3);
+    font-weight: 700;
+    color: var(--color--white);
+    text-decoration: none;
+  }
+
+  .contact__press {
+    margin: 2rem 0 0;
+    font-size: var(--text--body);
+    color: var(--color--lilac-3);
+  }
+
+  .contact__press a {
+    color: var(--color--white);
+    text-decoration: none;
+  }
+
+  .contact__socials {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+  }
+
+  .contact__socials a {
+    color: var(--color--lilac-3);
+    font-size: var(--text--btn);
+    text-decoration: none;
+  }
+
+  /* Form — inputs per 01 §5.5 line style */
+  .contact__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  .contact__form input,
+  .contact__form textarea {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--color--ink-3);
+    border-radius: 0;
+    padding: 0.5rem 0;
+    color: var(--color--white);
+    font-size: var(--text--body);
+    font-family: inherit;
+    resize: vertical;
+  }
+
+  .contact__form input:focus-visible,
+  .contact__form textarea:focus-visible {
+    border-bottom-color: var(--color--uv);
+    outline: none;
+  }
+
+  /* C3: validation message at eyebrow size, below field, amber */
+  .contact__error {
+    margin: 0.375rem 0 0;
+    min-height: 1rem;
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+    color: var(--color--amber);
+  }
+
+  .contact__demo {
+    margin: 0;
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .contact__success {
+    margin: 0;
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    font-size: var(--text--h4);
+  }
+
+  @media (width <= 48rem) {
+    .contact {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
