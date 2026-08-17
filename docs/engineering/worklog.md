@@ -2,6 +2,14 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-17 — feat: contact page + 500 (03 §6, 01 §5.5, RFC-001 C3/C7)
+
+- `contact.astro` rebuilt: split layout — `business enquiries -> business@osvant.com` btn-text at h3 scale (mailto), press + socials; form name/email/message per 01 §5.5 line style.
+- `contact.ts` module: C3 validation verbatim (`required` / `check your email` per field, amber at eyebrow size below the field + amber input line), success swap `sent. we'll be in touch.`, failure `didn't send — try again.` (`?demo=fail`); mock relay with ~600ms latency + muted `demo — no message sent.` notice (mirrors the newsletter mock pattern).
+- `500.astro` per RFC-001 C7: `something spilled.` + `btn-primary` `back to the current` — mirrors the 404 pattern.
+- **Gaps flagged:** press email (`press@osvant.com`) and the demo-notice copy are unstated in LAW docs — both flagged in the PR.
+- 5 new unit tests (111 total). Build 65.14KB / 350KB.
+
 ## 2026-08-14 — feat: cart drawer — global overlay, steppers, mock checkout (03 cart drawer, 01 §5.7, 07 §1.3)
 
 - `CartDrawer.astro` global chrome (outside `[data-taxi]`, boot-mounted like the footer): ink-1 panel + dark scrim, right slide 0.6s `expo.inOut` (01 §5.7), empty state `nothing decanted yet.` + `btn-secondary` to collection, confirmation step per 07 §1.3 (`demo store — no real orders` + `back to the current`).

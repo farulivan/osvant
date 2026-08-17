@@ -12,6 +12,7 @@ import "./modules/newsletter";
 import "./modules/note-pyramid";
 import "./modules/pdp";
 import "./modules/cart-drawer";
+import "./modules/contact";
 import gsap from "gsap";
 import { initRouter } from "./core/router";
 import { preloader } from "./core/preloader";
