@@ -51,6 +51,7 @@ export interface CommercePort {
   getCart(): Promise<Cart | null>;
   cartCreate(): Promise<Cart>;
   cartAddLine(sku: string, quantity: number): Promise<Cart>;
+  cartUpdateQuantity(sku: string, quantity: number): Promise<Cart>;
   cartRemoveLine(sku: string): Promise<Cart>;
   checkout(cart: Cart): Promise<CheckoutConfirmation>;
 }
@@ -156,6 +157,23 @@ export function createAdapter(catalog: Product[]): CommercePort {
       return saveCart(cart);
     },
 
+    // Drawer qty steppers (03 cart drawer): quantity 0 removes the line.
+    async cartUpdateQuantity(sku: string, quantity: number) {
+      if (quantity < 0) {
+        throw new CommerceError(`quantity must be >= 0, got ${quantity}`);
+      }
+      const cart = loadCart();
+      if (!cart) throw new CommerceError("no cart to update");
+      const line = cart.lines.find((entry) => entry.sku === sku);
+      if (!line) throw new CommerceError(`sku not in cart: ${sku}`);
+      if (quantity === 0) {
+        cart.lines = cart.lines.filter((entry) => entry.sku !== sku);
+      } else {
+        line.quantity = quantity;
+      }
+      return saveCart(cart);
+    },
+
     async cartRemoveLine(sku: string) {
       const cart = loadCart();
       if (!cart) throw new CommerceError("no cart to remove from");
@@ -192,6 +210,7 @@ export const getProduct = adapter.getProduct;
 export const getCart = adapter.getCart;
 export const cartCreate = adapter.cartCreate;
 export const cartAddLine = adapter.cartAddLine;
+export const cartUpdateQuantity = adapter.cartUpdateQuantity;
 export const cartRemoveLine = adapter.cartRemoveLine;
 export const checkout = adapter.checkout;
 export { CART_CHANGED_EVENT };

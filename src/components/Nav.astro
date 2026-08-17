@@ -48,10 +48,10 @@ const links = [
       }
     </ul>
 
-    <a class="nav__cart" href={withBase("cart")} aria-label="Cart">
+    <button class="nav__cart" type="button" data-cart-open aria-label="Cart">
       cart
       <span class="nav__cart-count" data-cart-count>0</span>
-    </a>
+    </button>
   </div>
 </nav>
 
@@ -130,6 +130,10 @@ const links = [
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
   }
 
   .nav__cart-count {
