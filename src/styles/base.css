@@ -62,6 +62,53 @@ canvas {
   cursor: pointer;
 }
 
+/* btn-secondary (01 §5.1) — 1px ink-3 border, white text; border → UV on
+   hover, 0.3s power2.out. Label y-flip handled by modules/btn-line.ts. */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--color--ink-3);
+  border-radius: var(--radius--xs);
+  padding: 0.75rem 1.5rem;
+  font-size: var(--text--btn);
+  font-weight: 600;
+  color: var(--color--white);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.btn-secondary:hover {
+  border-color: var(--color--uv);
+}
+
+/* btn-text (01 §5.1) — label + arrow, no box; arrow shifts 0.4em right
+   on hover, 0.3s. */
+.btn-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: var(--text--btn);
+  font-weight: 600;
+  color: var(--color--white);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-text::after {
+  content: "->";
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.btn-text:hover::after {
+  transform: translateX(0.4em);
+}
+
 /* Mask for SplitText line wrapping — headline reveal (M §4.2) */
 .line-mask {
   overflow: hidden;
