@@ -8,6 +8,7 @@ import "./modules/media-parallax";
 import "./modules/btn-line";
 import "./modules/marquee";
 import "./modules/home-hero";
+import "./modules/gallery";
 import "./modules/newsletter";
 import "./modules/note-pyramid";
 import "./modules/pdp";

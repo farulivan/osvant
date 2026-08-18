@@ -1,9 +1,9 @@
 ---
-// Home (03 §1). 1.4 collection gallery is the M3 WebGL signature moment
-// (placeholder section keeps nav-theme + order intact).
+// Home (03 §1).
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HomeHero from "../components/HomeHero.astro";
 import HomeDoors from "../components/HomeDoors.astro";
+import HomeGallery from "../components/HomeGallery.astro";
 import HomeCampaign from "../components/HomeCampaign.astro";
 import HomeSocial from "../components/HomeSocial.astro";
 ---
@@ -12,62 +12,10 @@ import HomeSocial from "../components/HomeSocial.astro";
   <HomeHero />
   <HomeDoors />
 
-  <!-- 03 §1.4 placeholder — pinned WebGL bottle procession (M §4.4)
-       lands in M3 with the GLBs (06 §1). Reserve the section so nav
-       theming and section order stay true. -->
-  <section
-    class="gallery-placeholder"
-    data-nav-theme="scent"
-    aria-label="the collection — five currents"
-  >
-    <p class="gallery-placeholder__eyebrow" data-eyebrow>the collection</p>
-    <h2 class="gallery-placeholder__title">
-      <span data-anim="split">five</span>
-      <span data-anim="split">currents</span>
-    </h2>
-    <p class="gallery-placeholder__note">
-      the bottle procession lands in M3 — pending GLB assets (06 §1).
-    </p>
-  </section>
+  <!-- 03 §1.4 — pinned WebGL bottle procession (M §4.4), placeholder
+       bottles per ADR-008 until the GLBs land (06 §1). -->
+  <HomeGallery />
 
   <HomeCampaign />
   <HomeSocial />
 </BaseLayout>
-
-<style>
-  .gallery-placeholder {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 1rem;
-    min-height: 70vh;
-    padding: 0 var(--gutter);
-    background: var(--color--ink-1);
-  }
-
-  .gallery-placeholder__eyebrow {
-    margin: 0;
-    font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--lilac-3);
-  }
-
-  .gallery-placeholder__title {
-    margin: 0;
-    font-size: var(--text--h1);
-    font-weight: 900;
-    font-stretch: 125%;
-    line-height: 1.05;
-  }
-
-  .gallery-placeholder__title span {
-    display: block;
-  }
-
-  .gallery-placeholder__note {
-    margin: 0;
-    color: var(--color--lilac-3);
-    font-size: var(--text--body);
-  }
-</style>

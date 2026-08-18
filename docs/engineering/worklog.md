@@ -2,6 +2,15 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-18 — feat: home collection gallery — WebGL procession (03 §1.4, M §4.4, M §8/§9)
+
+- `webgl/gallery-scene.ts` (lazy chunk, 01-arch module table): 5 procedural placeholder bottles (ADR-008 — `buildBottle()` is the only GLB swap point), scrub-driven procession + active-bottle ±35° rotation, additive idle spin via `gsap.ticker`, 3° pointer parallax lerped 0.08, `--scent-tint` glow following the active bottle, `dispose()` frees renderer/geometry/materials.
+- `modules/gallery.ts`: lazy import on approach (`rootMargin: 200%`), pinned 300% scrub with `snap: 1/4`, SplitText scent-name crossfade + discover-link/data-scent retarget per active bottle, visibility-pause via IntersectionObserver. Fallback path (probe fail / `deviceMemory < 4` / reduced motion) → static procession layout + `track("webgl_fallback")` (RFC C7); turntable WebMs pending GLB delivery (06 §1).
+- HomeGallery component replaces the §1.4 placeholder; fallback list items carry `data-gallery-scent` so tints resolve from `--scent-tint` (tokens.css stays the single source of truth).
+- Added missing global `btn-secondary`/`btn-text` base styles (01 §5.1 table — values were LAW, implementations were absent).
+- **Deviations:** M §8's `setAnimationLoop(null)` pause maps to `gsap.ticker` removal — guide §6.1's single-loop contract wins. **Flag:** three.js (ADR-006) is now a real dependency; bundle 197KB/350KB gzip incl. the lazy webgl chunk.
+- 5 new unit tests (116 total).
+
 ## 2026-08-17 — feat: contact page + 500 (03 §6, 01 §5.5, RFC-001 C3/C7)
 
 - `contact.astro` rebuilt: split layout — `business enquiries -> business@osvant.com` btn-text at h3 scale (mailto), press + socials; form name/email/message per 01 §5.5 line style.
