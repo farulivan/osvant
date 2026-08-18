@@ -155,7 +155,8 @@ describe("modules/gallery (M §4.4, M §8/§9)", () => {
     });
 
     expect(sceneMock.resize).toHaveBeenCalled();
-    expect(sceneMock.start).toHaveBeenCalled();
+    // Render loop starts only on visibility, not at boot (M §8)
+    expect(sceneMock.start).not.toHaveBeenCalled();
     expect(scrollTriggerCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         trigger: root,

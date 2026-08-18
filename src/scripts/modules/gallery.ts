@@ -152,7 +152,9 @@ export const gallery: PageModule = {
         onActiveChange: swapName,
       });
       scene.resize(stage.clientWidth, stage.clientHeight);
-      scene.start();
+      // The render loop starts only when the section scrolls into view —
+      // the visibility observer below is the sole start/stop owner, so a
+      // booted-but-unseen gallery costs zero frames (M §8).
 
       cleanup.push(() => {
         scene?.dispose();
