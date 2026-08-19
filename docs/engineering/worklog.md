@@ -8,7 +8,8 @@
 - `modules/pdp-bottle.ts`: probe/`deviceMemory < 4` → static wash fallback + `webgl_fallback` (RFC C7); pointer-event drag wiring (`touch-action: pan-y` keeps vertical scroll native); same loading contract as the gallery — lazy import on approach (200%), zero frames while unseen.
 - Shared helpers extracted: `webgl/probe.ts` (gallery + PDP), `webgl/bottle.ts` (`buildBottle`/`disposeBottle` — the single GLB swap point for both scenes, ADR-008).
 - Canvas carries `role="img"` + drag hint label; reduced-motion keeps WebGL active (drag works), only idle stops.
-- 5 new unit tests (121 total). Build 198KB / 350KB; LHCI green locally (PDP hero above-fold render loop stays within TBT budget at ~30vw canvas).
+- **Perf finding:** the above-fold PDP render loop burned 6341ms TBT under CI's SwiftShader — the probe now rejects software rasterizers (SwiftShader/llvmpipe/softpipe via `WEBGL_debug_renderer_info`) as "no usable WebGL" (M §8's fallback exists precisely for no-GPU clients).
+- 8 new unit tests (124 total). Build 198KB / 350KB; LHCI green.
 
 ## 2026-08-18 — feat: home collection gallery — WebGL procession (03 §1.4, M §4.4, M §8/§9)
 
