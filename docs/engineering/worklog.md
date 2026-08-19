@@ -2,6 +2,14 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-19 — feat: mobile guardrails — nav overlay menu + landscape prompt (01 §5.2/§5.7, 03 §7)
+
+- **Registry fix (root cause, pre-existing):** `mountModules(root)` used `root.querySelectorAll`, which never matches root itself — the cart drawer boot-mount in main.ts was a silent no-op since PR #16 (drawer never opened from the nav chip in production). Root now included when it matches; regression test added.
+- `modules/nav-menu.ts` (boot-mounted, replaces the Nav.astro inline fallback): full-screen ink-1 overlay with staggered SplitText char entrance (0.5s register, 0.02 char stagger, 0.06 per-link offset — judgment calls, spec says only "staggered SplitText entrance"); open = lenis stop + `[data-taxi]` inert + focus trap + ESC + focus-return; link click closes; auto-closes past 767px. RM: no split, panel fades per CSS. Closed menu now `visibility: hidden` — out of tab order/AT.
+- Landscape prompt (03 §7): pure-CSS gate (`orientation: landscape` + `height <= 480px`), branded placeholder card pending `mob-landscape.riv` (06 §1). **Gap flagged:** prompt copy is unstated in LAW docs — shipped `rotate your phone`, needs design blessing.
+- PDP formula story (03 §3.3) deliberately NOT built — copy blocked per RFC C1 (w4); the M3 list's "formula story pin" also conflicts with LAW §3.3 (unpinned parallax rows) — flagged.
+- 8 new unit tests (132 total). Build 198.67KB / 350KB; LHCI green.
+
 ## 2026-08-19 — feat: PDP bottle hero — drag-to-rotate scene (03 §3.1, M §8/§9)
 
 - `webgl/bottle-scene.ts` (lazy chunk): contained single-bottle scene — drag-to-rotate clamped ±180° with per-frame ease, idle ambient spin additive to drag position (off under reduced motion, drag stays on — M §9), `--scent-tint` rim glow, visibility-owned render loop, full dispose.

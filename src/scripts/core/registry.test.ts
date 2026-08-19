@@ -40,6 +40,24 @@ describe("core/registry", () => {
     expect(order).toEqual(["hero", "marquee"]);
   });
 
+  it("mounts a module on root itself when root matches (chrome boot-mounts)", async () => {
+    const registry = createModuleRegistry();
+    const mount = vi.fn();
+
+    registry.registerModule({
+      selector: "[data-cart-drawer]",
+      mount,
+      destroy: () => {},
+    });
+
+    document.body.innerHTML = `<div data-cart-drawer></div>`;
+    const drawer = document.querySelector<HTMLElement>("[data-cart-drawer]")!;
+
+    await registry.mountModules(drawer, makeCtx());
+
+    expect(mount).toHaveBeenCalledWith(drawer, expect.anything());
+  });
+
   it("returns one destroyer per mounted element, each calling that module's destroy()", async () => {
     const registry = createModuleRegistry();
     const destroy = vi.fn();

@@ -14,6 +14,7 @@ import "./modules/note-pyramid";
 import "./modules/pdp";
 import "./modules/pdp-bottle";
 import "./modules/cart-drawer";
+import "./modules/nav-menu";
 import "./modules/contact";
 import gsap from "gsap";
 import { initRouter } from "./core/router";
@@ -30,6 +31,18 @@ void preloader.run();
 const footer = document.querySelector("footer");
 if (footer) {
   void registry.mountModules(footer, {
+    url: new URL(window.location.href),
+    firstLoad: true,
+    reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)")
+      .matches,
+  });
+}
+
+// Nav — persistent chrome (01 §5.2). The mobile overlay menu module
+// boot-mounts here; the bar itself is static markup + core/nav.ts theming.
+const nav = document.querySelector("[data-nav]");
+if (nav) {
+  void registry.mountModules(nav, {
     url: new URL(window.location.href),
     firstLoad: true,
     reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)")

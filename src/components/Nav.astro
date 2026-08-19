@@ -1,6 +1,7 @@
 ---
 // Fixed nav bar (01-design-system.md §5.2). Lives OUTSIDE [data-taxi] — it
 // persists across navigations; only its theme classes change (core/nav.ts).
+// The mobile overlay menu is driven by modules/nav-menu.ts (boot-mounted).
 import { withBase } from "../lib/url";
 
 const links = [
@@ -183,11 +184,18 @@ const links = [
       gap: 2rem;
       background: var(--color--ink-1);
       transform: translateX(100%);
-      transition: transform 0.3s;
+      visibility: hidden; /* closed menu stays out of the tab order/AT */
+      transition:
+        transform 0.3s,
+        visibility 0s 0.3s;
     }
 
     .nav__menu[data-open="true"] {
       transform: translateX(0);
+      visibility: visible;
+      transition:
+        transform 0.3s,
+        visibility 0s;
     }
 
     .nav__links {
@@ -198,17 +206,3 @@ const links = [
     }
   }
 </style>
-
-<script>
-  // Menu disclosure only — the animated staggered entrance (§5.2) is a
-  // motion-layer concern for a later PageModule; this is the accessible
-  // CSS-only fallback it upgrades from.
-  const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
-  const menu = document.querySelector<HTMLElement>("[data-nav-menu]");
-
-  toggle?.addEventListener("click", () => {
-    const isOpen = menu?.dataset.open === "true";
-    toggle.setAttribute("aria-expanded", String(!isOpen));
-    if (menu) menu.dataset.open = String(!isOpen);
-  });
-</script>

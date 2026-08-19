@@ -64,6 +64,15 @@ const { title, description = "osvant — eau de parfum, est. batch 001." } =
          per 01-arch §7 ("layouts: ... transition scrim"). -->
     <div data-transition-scrim></div>
 
+    <!-- Landscape prompt (03 §7, 01 §5.7) — pure CSS gate: shows only on
+         mobile landscape (height < 480px). Rive `mob-landscape` artboard
+         lands with the asset batch (06 §1); placeholder card until then.
+         Copy is unstated in LAW docs — flagged as a gap. -->
+    <div class="landscape-prompt" role="status">
+      <p class="landscape-prompt__mark" aria-hidden="true">osvant</p>
+      <p class="landscape-prompt__copy">rotate your phone</p>
+    </div>
+
     <script>
       import "../scripts/main";
     </script>
@@ -109,5 +118,37 @@ const { title, description = "osvant — eau de parfum, est. batch 001." } =
     font-size: var(--text--eyebrow);
     font-variant-numeric: tabular-nums;
     margin: 0;
+  }
+
+  /* Landscape prompt (03 §7) — only on mobile landscape */
+  .landscape-prompt {
+    display: none;
+  }
+
+  @media (orientation: landscape) and (height <= 480px) {
+    .landscape-prompt {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--color--ink-1);
+      color: var(--color--white);
+    }
+
+    .landscape-prompt__mark {
+      margin: 0;
+      font-weight: 800;
+      font-stretch: 125%;
+      color: var(--color--uv);
+    }
+
+    .landscape-prompt__copy {
+      margin: 0;
+      font-size: var(--text--h6);
+    }
   }
 </style>
