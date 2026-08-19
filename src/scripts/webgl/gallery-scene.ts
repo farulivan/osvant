@@ -1,10 +1,9 @@
 // webgl/gallery-scene.ts — home collection gallery scene (M §4.4).
 // Lazy chunk: imported on section approach (01-arch § module table).
 //
-// ADR-008 placeholder bottles: procedural cylinder/neck/cap meshes with
-// per-scent tinted materials. When the real GLBs land (06 §1), only
-// buildBottle() swaps to a GLTFLoader path — the scene interface below
-// stays identical.
+// ADR-008 placeholder bottles come from webgl/bottle.ts (the single GLB
+// swap point when assets land, 06 §1) — the scene interface below stays
+// identical either way.
 //
 // Single RAF contract (guide §6.1): rendering is driven by gsap.ticker
 // via start()/stop() — never setAnimationLoop. M §8's "pause via
@@ -16,6 +15,7 @@
 
 import * as THREE from "three";
 import gsap from "gsap";
+import { buildBottle, disposeBottle } from "./bottle";
 
 export interface GallerySceneConfig {
   canvas: HTMLCanvasElement;
@@ -42,47 +42,6 @@ const MAX_TILT = THREE.MathUtils.degToRad(3); // pointer parallax cap (M §4.4)
 const POINTER_LERP = 0.08;
 const IDLE_SPEED = 0.15; // rad/s ambient rotation on the active bottle
 const SCRUB_ROT = THREE.MathUtils.degToRad(35); // ±35° during scrub
-
-function buildBottle(tint: string): THREE.Group {
-  const group = new THREE.Group();
-  const material = new THREE.MeshStandardMaterial({
-    color: new THREE.Color("#1a1820"),
-    roughness: 0.35,
-    metalness: 0.6,
-    emissive: new THREE.Color(tint),
-    emissiveIntensity: 0.18,
-  });
-  const glass = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(tint),
-    roughness: 0.1,
-    metalness: 0.2,
-    transparent: true,
-    opacity: 0.85,
-  });
-
-  const body = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.42, 0.42, 1.7, 48),
-    glass,
-  );
-  const shoulder = new THREE.Mesh(
-    new THREE.SphereGeometry(0.42, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2),
-    glass,
-  );
-  shoulder.position.y = 0.85;
-  const neck = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.14, 0.14, 0.35, 24),
-    material,
-  );
-  neck.position.y = 1.05;
-  const cap = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.18, 0.18, 0.28, 24),
-    material,
-  );
-  cap.position.y = 1.35;
-
-  group.add(body, shoulder, neck, cap);
-  return group;
-}
 
 export function createGalleryScene(config: GallerySceneConfig): GalleryScene {
   const renderer = new THREE.WebGLRenderer({
@@ -182,12 +141,7 @@ export function createGalleryScene(config: GallerySceneConfig): GalleryScene {
     dispose(): void {
       this.stop();
       for (const bottle of bottles) {
-        bottle.traverse((node) => {
-          if (node instanceof THREE.Mesh) {
-            node.geometry.dispose();
-            (node.material as THREE.Material).dispose();
-          }
-        });
+        disposeBottle(bottle);
       }
       renderer.dispose();
       renderer.forceContextLoss();

@@ -12,6 +12,7 @@ import "./modules/gallery";
 import "./modules/newsletter";
 import "./modules/note-pyramid";
 import "./modules/pdp";
+import "./modules/pdp-bottle";
 import "./modules/cart-drawer";
 import "./modules/contact";
 import gsap from "gsap";

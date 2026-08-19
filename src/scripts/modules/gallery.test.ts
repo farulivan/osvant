@@ -90,7 +90,10 @@ function stubWebGL(available: boolean): void {
       if (this.hasAttribute("data-gallery-canvas")) {
         return original.call(this, type);
       }
-      return available ? ({} as RenderingContext) : null;
+      return available
+        ? // No WEBGL_debug_renderer_info → assumed hardware-accelerated
+          ({ getExtension: () => null } as unknown as RenderingContext)
+        : null;
     },
   );
 }

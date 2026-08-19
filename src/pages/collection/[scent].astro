@@ -46,8 +46,25 @@ const rows = [
         <p class="pdp-hero__character">{product.character}</p>
       </div>
 
-      {/* Three.js bottle is M3 — placeholder wash (ADR-008) */}
-      <div class="pdp-hero__bottle" aria-hidden="true"></div>
+      {
+        /* 03 §3.1 — contained Three.js bottle (drag ±180°, tint rim glow).
+          Placeholder mesh per ADR-008 until the GLBs land (06 §1); the
+          wash fallback covers probe fail / low memory (M §8). */
+      }
+      <div class="pdp-hero__bottle" data-pdp-bottle>
+        <canvas
+          class="pdp-hero__bottle-canvas"
+          data-bottle-canvas
+          role="img"
+          aria-label={`${product.name} bottle — drag to rotate`}></canvas>
+        <div
+          class="pdp-hero__bottle-fallback"
+          data-bottle-fallback
+          hidden
+          aria-hidden="true"
+        >
+        </div>
+      </div>
     </section>
 
     {/* 3.1 purchase row — sticky bottom bar ≤767px (CSS below) */}
@@ -205,9 +222,30 @@ const rows = [
     max-width: 28ch;
   }
 
-  /* Bottle placeholder (ADR-008, Three.js lands M3) — scent-tinted rim wash */
+  /* Bottle stage (03 §3.1) — contained canvas; the wash behind it is the
+     M §8 fallback surface (shown by modules/pdp-bottle.ts on probe fail). */
   .pdp-hero__bottle {
+    position: relative;
     aspect-ratio: 3 / 4;
+    border-radius: var(--radius--media);
+  }
+
+  .pdp-hero__bottle-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    touch-action: pan-y; /* vertical scroll stays native; horizontal drags rotate */
+  }
+
+  .pdp-hero__bottle-canvas:active {
+    cursor: grabbing;
+  }
+
+  .pdp-hero__bottle-fallback {
+    position: absolute;
+    inset: 0;
     border-radius: var(--radius--media);
     background: radial-gradient(
       ellipse 65% 55% at 50% 60%,

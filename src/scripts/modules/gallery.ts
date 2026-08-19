@@ -25,6 +25,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { registry, type PageModule } from "../core/registry";
 import { track } from "../core/track";
+import { webglAvailable } from "../webgl/probe";
 
 const SCENT_RE = /volt|nocturne|static|fever|halo/;
 
@@ -33,21 +34,6 @@ interface ScentEntry {
   name: string;
   href: string;
   tint: string;
-}
-
-function webglAvailable(): boolean {
-  const memory = (navigator as Navigator & { deviceMemory?: number })
-    .deviceMemory;
-  if (typeof memory === "number" && memory < 4) return false;
-  try {
-    const probe = document.createElement("canvas");
-    return !!(
-      window.WebGLRenderingContext &&
-      (probe.getContext("webgl2") ?? probe.getContext("webgl"))
-    );
-  } catch {
-    return false;
-  }
 }
 
 function readScents(root: HTMLElement): ScentEntry[] {
