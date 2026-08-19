@@ -50,7 +50,14 @@ export function createModuleRegistry(): ModuleRegistry {
     const destroyers: Array<() => void> = [];
 
     for (const module of modules) {
-      const elements = root.querySelectorAll<HTMLElement>(module.selector);
+      // querySelectorAll never matches root itself — but chrome boot-mounts
+      // (main.ts) pass the nav/drawer root directly, so include it.
+      const elements = [
+        ...(root instanceof HTMLElement && root.matches(module.selector)
+          ? [root]
+          : []),
+        ...root.querySelectorAll<HTMLElement>(module.selector),
+      ];
 
       for (const el of elements) {
         await module.mount(el, ctx);
