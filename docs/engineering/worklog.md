@@ -2,6 +2,14 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-19 — feat: PDP bottle hero — drag-to-rotate scene (03 §3.1, M §8/§9)
+
+- `webgl/bottle-scene.ts` (lazy chunk): contained single-bottle scene — drag-to-rotate clamped ±180° with per-frame ease, idle ambient spin additive to drag position (off under reduced motion, drag stays on — M §9), `--scent-tint` rim glow, visibility-owned render loop, full dispose.
+- `modules/pdp-bottle.ts`: probe/`deviceMemory < 4` → static wash fallback + `webgl_fallback` (RFC C7); pointer-event drag wiring (`touch-action: pan-y` keeps vertical scroll native); same loading contract as the gallery — lazy import on approach (200%), zero frames while unseen.
+- Shared helpers extracted: `webgl/probe.ts` (gallery + PDP), `webgl/bottle.ts` (`buildBottle`/`disposeBottle` — the single GLB swap point for both scenes, ADR-008).
+- Canvas carries `role="img"` + drag hint label; reduced-motion keeps WebGL active (drag works), only idle stops.
+- 5 new unit tests (121 total). Build 198KB / 350KB; LHCI green locally (PDP hero above-fold render loop stays within TBT budget at ~30vw canvas).
+
 ## 2026-08-18 — feat: home collection gallery — WebGL procession (03 §1.4, M §4.4, M §8/§9)
 
 - `webgl/gallery-scene.ts` (lazy chunk, 01-arch module table): 5 procedural placeholder bottles (ADR-008 — `buildBottle()` is the only GLB swap point), scrub-driven procession + active-bottle ±35° rotation, additive idle spin via `gsap.ticker`, 3° pointer parallax lerped 0.08, `--scent-tint` glow following the active bottle, `dispose()` frees renderer/geometry/materials.
