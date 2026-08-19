@@ -60,7 +60,10 @@ function makeRoot(): HTMLElement {
 
 function stubWebGL(available: boolean): void {
   vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(() =>
-    available ? ({} as RenderingContext) : null,
+    available
+      ? // No WEBGL_debug_renderer_info → assumed hardware-accelerated
+        ({ getExtension: () => null } as unknown as RenderingContext)
+      : null,
   );
 }
 
