@@ -15,6 +15,7 @@ import "./modules/pdp";
 import "./modules/pdp-bottle";
 import "./modules/cart-drawer";
 import "./modules/nav-menu";
+import "./modules/house-manifesto";
 import "./modules/contact";
 import gsap from "gsap";
 import { initRouter } from "./core/router";
