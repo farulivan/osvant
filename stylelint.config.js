@@ -40,6 +40,13 @@ export default {
     {
       files: ["**/*.astro"],
       customSyntax: "postcss-html",
+      rules: {
+        // Astro's scoped-style escape hatch (markdown body styling)
+        "selector-pseudo-class-no-unknown": [
+          true,
+          { ignorePseudoClasses: ["global"] },
+        ],
+      },
     },
   ],
 };
