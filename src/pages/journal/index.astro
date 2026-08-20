@@ -1,8 +1,124 @@
 ---
+// Journal index (03 §5): title `transmissions`, article cards (image,
+// eyebrow date, title h3), stagger entrance via data-anim="card" (M §4.3
+// shared behavior). Content = `journal` collection (07 §2, ADR-010).
+// Lead images are wash placeholders until photography lands (ADR-008).
+import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import StubSection from "../../components/StubSection.astro";
+import { withBase } from "../../lib/url";
+
+const articles = (await getCollection("journal")).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+
+const dateFmt = new Intl.DateTimeFormat("en-GB", {
+  year: "numeric",
+  month: "short",
+});
 ---
 
 <BaseLayout title="journal" description="Transmissions — the osvant journal.">
-  <StubSection eyebrow="editorial" title="transmissions" theme="light" />
+  <section
+    class="journal"
+    data-nav-theme="dark"
+    aria-labelledby="journal-title"
+  >
+    <h1 class="journal__title" id="journal-title">transmissions</h1>
+
+    <ul class="journal__list">
+      {
+        articles.map((article) => (
+          <li class="journal__item" data-anim="card">
+            <a
+              class="journal__card"
+              href={withBase(`journal/${article.id.replace(/\.md$/, "")}/`)}
+              data-scent={article.data.scent}
+            >
+              {/* ADR-008: wash placeholder until leadImage photography lands */}
+              <span class="journal__media" aria-hidden="true" />
+              <span class="journal__date">
+                <time datetime={article.data.date.toISOString()}>
+                  {dateFmt.format(article.data.date).toLowerCase()}
+                </time>
+              </span>
+              <span class="journal__name">{article.data.title}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
 </BaseLayout>
+
+<style>
+  .journal {
+    min-height: 100vh;
+    padding: 20vh var(--gutter) 15vh;
+    background: var(--color--black);
+  }
+
+  .journal__title {
+    margin: 0 0 4rem;
+    font-size: var(--text--impact);
+    font-weight: 800;
+    font-stretch: 125%;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--color--white);
+  }
+
+  .journal__list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--grid-gap);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .journal__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    text-decoration: none;
+  }
+
+  .journal__media {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius--media);
+    background: radial-gradient(
+      ellipse 70% 60% at 50% 55%,
+      color-mix(
+          in oklab,
+          var(--scent-tint, var(--color--uv)) 22%,
+          var(--color--ink-1)
+        )
+        0%,
+      var(--color--ink-1) 80%
+    );
+  }
+
+  .journal__date {
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .journal__name {
+    font-size: var(--text--h3);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--color--white);
+  }
+
+  .journal__card:hover .journal__name {
+    color: var(--scent-tint, var(--color--uv));
+  }
+
+  @media (width <= 47.9375rem) {
+    .journal__list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

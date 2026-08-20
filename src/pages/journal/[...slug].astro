@@ -1,0 +1,217 @@
+---
+// Journal article template (03 §5): lead image parallax (M §4.5),
+// --text--body two-thirds column, pull-quotes (markdown blockquote) in
+// Instrument Serif italic, ends with a cross-sell band. Content renders
+// fully at build — zero content JS ships (07 §2, ADR-010).
+// Lead image is a wash placeholder until photography lands (ADR-008).
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { withBase } from "../../lib/url";
+import products from "../../data/products.json";
+
+export async function getStaticPaths() {
+  const articles = await getCollection("journal");
+  return articles.map((article) => ({
+    params: { slug: article.id.replace(/\.md$/, "") },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+
+const linked = article.data.scent
+  ? products.find((p) => p.scent === article.data.scent)
+  : undefined;
+---
+
+<BaseLayout
+  title={article.data.title}
+  description={`${article.data.title} — the osvant journal.`}
+>
+  <article class="article" data-nav-theme="dark">
+    <header class="article__header">
+      <p class="article__date" data-eyebrow>
+        <time datetime={article.data.date.toISOString()}>
+          {
+            new Intl.DateTimeFormat("en-GB", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })
+              .format(article.data.date)
+              .toLowerCase()
+          }
+        </time>
+      </p>
+      <h1 class="article__title">{article.data.title}</h1>
+    </header>
+
+    {
+      /* ADR-008: wash placeholder until leadImage photography lands —
+        data-anim="parallax" wires the M §4.5 scrub with real media. */
+    }
+    <div
+      class="article__lead"
+      data-anim="parallax"
+      role="img"
+      aria-label={article.data.leadImage.alt}
+    >
+    </div>
+
+    <div class="article__body">
+      <Content />
+    </div>
+
+    {
+      /* Cross-sell band (03 §5): the scent this article belongs to, or the
+        full collection when the article is scent-agnostic (RFC B6). */
+    }
+    <footer class="article__xsell">
+      {
+        linked ? (
+          <a
+            class="article__xsell-link"
+            href={withBase(`collection/${linked.scent}/`)}
+            data-scent={linked.scent}
+          >
+            <span class="article__xsell-eyebrow" data-eyebrow>
+              in this story
+            </span>
+            <span class="article__xsell-name">{linked.name}</span>
+            <span class="article__xsell-price">
+              €{linked.variants[0].price} — discover
+            </span>
+          </a>
+        ) : (
+          <a class="article__xsell-link" href={withBase("collection")}>
+            <span class="article__xsell-eyebrow" data-eyebrow>
+              the collection
+            </span>
+            <span class="article__xsell-name">five currents</span>
+            <span class="article__xsell-price">shop the collection</span>
+          </a>
+        )
+      }
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .article {
+    padding: 20vh var(--gutter) 0;
+    background: var(--color--black);
+  }
+
+  .article__header {
+    max-width: 20ch;
+  }
+
+  .article__date {
+    margin: 0 0 1.5rem;
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .article__title {
+    margin: 0 0 4rem;
+    font-size: var(--text--h2);
+    font-weight: 800;
+    font-stretch: 125%;
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    color: var(--color--white);
+  }
+
+  .article__lead {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius--media);
+    overflow: hidden;
+    background: radial-gradient(
+      ellipse 70% 60% at 50% 55%,
+      color-mix(
+          in oklab,
+          var(--scent-tint, var(--color--uv)) 22%,
+          var(--color--ink-1)
+        )
+        0%,
+      var(--color--ink-1) 80%
+    );
+  }
+
+  /* --text--body two-thirds column (03 §5) */
+  .article__body {
+    max-width: 66.667%;
+    margin: 5rem auto 0;
+    font-size: var(--text--body);
+    line-height: 1.6;
+    color: var(--color--lilac-2);
+  }
+
+  .article__body :global(p) {
+    margin: 0 0 1.5em;
+  }
+
+  .article__body :global(h3) {
+    margin: 3em 0 1em;
+    font-size: var(--text--h3);
+    font-weight: 700;
+    color: var(--color--white);
+  }
+
+  /* Pull-quotes (03 §5): Instrument Serif italic */
+  .article__body :global(blockquote) {
+    margin: 3em 0;
+    padding: 0 0 0 1.5rem;
+    border-left: 1px solid var(--color--uv);
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    font-size: var(--text--h3);
+    line-height: 1.2;
+    color: var(--color--white);
+  }
+
+  .article__body :global(blockquote p) {
+    margin: 0;
+  }
+
+  .article__xsell {
+    margin: 8rem calc(var(--gutter) * -1) 0;
+    padding: 4rem var(--gutter);
+    background: var(--color--ink-1);
+  }
+
+  .article__xsell-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-decoration: none;
+  }
+
+  .article__xsell-eyebrow {
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .article__xsell-name {
+    font-size: var(--text--h2);
+    font-weight: 800;
+    font-stretch: 125%;
+    color: var(--scent-tint, var(--color--white));
+  }
+
+  .article__xsell-price {
+    font-size: var(--text--btn);
+    color: var(--color--white);
+  }
+
+  @media (width <= 47.9375rem) {
+    .article__body {
+      max-width: 100%;
+    }
+  }
+</style>

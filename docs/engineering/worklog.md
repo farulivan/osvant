@@ -2,6 +2,15 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-20 — feat: journal — collection schema + index + article template (03 §5, 07 §2, ADR-010)
+
+- `src/content.config.ts`: zod-validated `journal` collection (title, date, leadImage{src,alt}, ogOverride?, scent? per RFC B6 deep-links). Authors = markdown commits through PR flow; zero content JS ships.
+- Index `transmissions`: cards (media/date/title) with `data-anim="card"` stagger (M §4.3 reuse), per-card `data-scent` tinting. Article template: lead parallax (M §4.5), two-thirds `--text--body` column, blockquote pull-quotes in Instrument Serif italic, cross-sell band (scent PDP when tagged, else collection).
+- One pipeline-fixture entry (`001-next-drop.md`, `[draft]`) exercises the schema→index→article path; replaced by the w4 copy batch (RFC C1). Lead images are ADR-008 washes until photography lands.
+- Stylelint: allowed Astro's `:global()` in .astro styles (markdown body styling) — config-level allowance, scoped to .astro override.
+- **Judgment calls flagged:** cross-sell band content unspecified in 03 §5 (chose scent PDP link / collection fallback); card date format `mon YYYY` unstated.
+- 132 tests green. Build 198.67KB / 350KB; LHCI green (journal routes auto-covered by dist crawl).
+
 ## 2026-08-19 — feat: mobile guardrails — nav overlay menu + landscape prompt (01 §5.2/§5.7, 03 §7)
 
 - **Registry fix (root cause, pre-existing):** `mountModules(root)` used `root.querySelectorAll`, which never matches root itself — the cart drawer boot-mount in main.ts was a silent no-op since PR #16 (drawer never opened from the nav chip in production). Root now included when it matches; regression test added.
