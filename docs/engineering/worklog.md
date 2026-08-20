@@ -2,6 +2,13 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-20 — feat: the house — hero, pinned manifesto scrub, craft grid, CTA (03 §4)
+
+- Page structure per 03 §4: `the lab` / `behind osvant` fragments (M §4.2 via shared headline-reveal), manifesto lead `[draft]` (copy w5, RFC C1), craft grid of 3 parallax washes (ADR-008), CTA band → collection.
+- `modules/house-manifesto.ts`: pinned scrub, 3 statements char-highlight `--color--ink-3 → --color--white` — colors resolved from computed tokens at mount (no hardcoded values); `ease: "none"` children, reversible by construction (03 §4 acceptance). RM: no pin/scrub, statements sit statically lit (CSS default = final state, M §9).
+- **Judgment calls flagged:** scrub distance `+=250%` unstated; statement drafts are placeholders awaiting w5 copy.
+- 4 new unit tests (136 total). Build 198.82KB / 350KB; LHCI green.
+
 ## 2026-08-20 — feat: journal — collection schema + index + article template (03 §5, 07 §2, ADR-010)
 
 - `src/content.config.ts`: zod-validated `journal` collection (title, date, leadImage{src,alt}, ogOverride?, scent? per RFC B6 deep-links). Authors = markdown commits through PR flow; zero content JS ships.
