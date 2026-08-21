@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!--
+    ADR-008 placeholder per the asset pipeline ledger (06 §1): OG images
+    are "house-default only" until the w6 batch of per-scent composited
+    bottle stills lands (RFC-001 C4).
+
+    This file is the editable source; the shipped artifact is the
+    rasterized twin at public/assets/img/og/og-house-default.png — social
+    crawlers do not accept SVG, and astro:assets cannot rasterize it.
+    Regenerate after edits (one-off, no repo dependency added):
+
+      npx -y sharp-cli -i src/assets/og/og-house-default.svg \
+        -o public/assets/img/og/og-house-default.png resize 1200 630
+
+    Design's w6 delivery replaces the PNG directly and this source retires.
+  -->
+  <rect width="1200" height="630" fill="#111013" />
+  <circle cx="1000" cy="140" r="260" fill="#be29ff" opacity="0.18" />
+  <text
+    x="80"
+    y="520"
+    font-family="Archivo, Helvetica, Arial, sans-serif"
+    font-weight="800"
+    font-size="120"
+    letter-spacing="-2"
+    fill="#f5f3f7"
+  >osvant</text>
+  <text
+    x="80"
+    y="568"
+    font-family="Archivo, Helvetica, Arial, sans-serif"
+    font-weight="500"
+    font-size="28"
+    letter-spacing="2"
+    fill="#be29ff"
+  >scent beyond the visible</text>
+</svg>

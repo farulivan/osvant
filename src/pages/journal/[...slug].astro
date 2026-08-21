@@ -7,7 +7,8 @@
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { withBase } from "../../lib/url";
-import products from "../../data/products.json";
+import { pageTitle } from "../../lib/seo";
+import { catalog as products } from "../../lib/commerce";
 
 export async function getStaticPaths() {
   const articles = await getCollection("journal");
@@ -26,8 +27,10 @@ const linked = article.data.scent
 ---
 
 <BaseLayout
-  title={article.data.title}
+  title={pageTitle(article.data.title)}
   description={`${article.data.title} — the osvant journal.`}
+  ogType="article"
+  ogImage={article.data.ogOverride}
 >
   <article class="article" data-nav-theme="dark">
     <header class="article__header">

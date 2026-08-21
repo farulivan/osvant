@@ -5,6 +5,7 @@
 // Lead images are wash placeholders until photography lands (ADR-008).
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { pageTitle } from "../../lib/seo";
 import { withBase } from "../../lib/url";
 
 const articles = (await getCollection("journal")).sort(
@@ -17,7 +18,10 @@ const dateFmt = new Intl.DateTimeFormat("en-GB", {
 });
 ---
 
-<BaseLayout title="journal" description="Transmissions — the osvant journal.">
+<BaseLayout
+  title={pageTitle("journal")}
+  description="transmissions — the osvant journal."
+>
   <section
     class="journal"
     data-nav-theme="dark"

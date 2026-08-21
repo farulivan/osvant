@@ -23,6 +23,10 @@ export interface Product {
   scent: string;
   name: string;
   batch: string;
+  /** Note pyramid rows, top → heart → base (03 §3.2). */
+  notes: string[];
+  /** One-line character copy (03 §3.1); also the JSON-LD description. */
+  character: string;
   variants: ProductVariant[];
 }
 
@@ -203,7 +207,12 @@ export function createAdapter(catalog: Product[]): CommercePort {
   };
 }
 
-const adapter = createAdapter(catalogJson as Product[]);
+/** The one typed view of `products.json`. JSON imports widen literal
+ * types (`currency: string`), so every consumer — adapter, pages, SEO —
+ * shares this single narrowing instead of casting locally. */
+export const catalog = catalogJson as Product[];
+
+const adapter = createAdapter(catalog);
 
 export const getProducts = adapter.getProducts;
 export const getProduct = adapter.getProduct;

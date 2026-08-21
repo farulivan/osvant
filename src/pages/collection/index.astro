@@ -3,12 +3,13 @@
 // (01 §5.3). Grid entrance = one stagger group at 0.05s (03 §2 — carried
 // to the card-entrance module via data-stagger). No filters/sort in v1.
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { pageTitle } from "../../lib/seo";
 import ScentCard from "../../components/ScentCard.astro";
-import products from "../../data/products.json";
+import { catalog as products } from "../../lib/commerce";
 ---
 
 <BaseLayout
-  title="collection"
+  title={pageTitle("collection")}
   description="Five currents — the osvant collection."
 >
   <section class="plp" data-nav-theme="dark" aria-labelledby="plp-title">

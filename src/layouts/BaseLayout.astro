@@ -8,14 +8,38 @@ import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import CartDrawer from "../components/CartDrawer.astro";
 import { withBase } from "../lib/url";
+import {
+  absoluteUrl,
+  OG_ALT,
+  OG_DEFAULT_PATH,
+  OG_HEIGHT,
+  OG_WIDTH,
+} from "../lib/seo";
 
 interface Props {
+  /** Complete document title — compose it with the `lib/seo` formatters
+   * (`homeTitle`/`pdpTitle`/`pageTitle`), never inline (RFC-001 C4). */
   title: string;
   description?: string;
+  /** `article` for journal posts; `website` everywhere else. */
+  ogType?: "website" | "article";
+  /** BASE_URL-relative OG image path; defaults to the house placeholder. */
+  ogImage?: string;
+  /** Error/utility routes keep themselves out of the index. */
+  noindex?: boolean;
 }
 
-const { title, description = "osvant — eau de parfum, est. batch 001." } =
-  Astro.props;
+const {
+  title,
+  description = "osvant — eau de parfum, est. batch 001.",
+  ogType = "website",
+  ogImage = OG_DEFAULT_PATH,
+  noindex = false,
+} = Astro.props;
+
+// Canonical + OG absolutes resolve against `site` (astro.config.mjs).
+const canonical = absoluteUrl(Astro.url.pathname, Astro.site);
+const ogImageUrl = absoluteUrl(withBase(ogImage), Astro.site);
 ---
 
 <html lang="en">
@@ -24,8 +48,33 @@ const { title, description = "osvant — eau de parfum, est. batch 001." } =
     <link rel="icon" type="image/svg+xml" href={withBase("favicon.svg")} />
     <link rel="icon" href={withBase("favicon.ico")} />
     <meta name="viewport" content="width=device-width" />
-    <meta name="description" content={description} />
+    <meta name="description" content={description} data-meta-description />
     <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} data-canonical />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    {
+      /* Sharing (RFC-001 C4). og:image is the house default until the w6
+        per-scent composites land (06 §1 ledger, ADR-008). */
+    }
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="osvant" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:title" content={title} data-og-title />
+    <meta property="og:description" content={description} data-og-description />
+    <meta property="og:url" content={canonical} data-og-url />
+    <meta property="og:image" content={ogImageUrl} data-og-image />
+    <meta property="og:image:width" content={String(OG_WIDTH)} />
+    <meta property="og:image:height" content={String(OG_HEIGHT)} />
+    <meta property="og:image:alt" content={OG_ALT} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} data-twitter-title />
+    <meta
+      name="twitter:description"
+      content={description}
+      data-twitter-description
+    />
+    <meta name="twitter:image" content={ogImageUrl} data-twitter-image />
     <link
       rel="preload"
       href={withBase("assets/fonts/archivo-var.woff2")}
@@ -33,7 +82,10 @@ const { title, description = "osvant — eau de parfum, est. batch 001." } =
       type="font/woff2"
       crossorigin
     />
-    <title>{title} — osvant</title>
+    <title>{title}</title>
+
+    {/* Per-page head extras — Product JSON-LD on PDPs (RFC-001 C4). */}
+    <slot name="head" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

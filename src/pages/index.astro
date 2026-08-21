@@ -1,6 +1,7 @@
 ---
 // Home (03 §1).
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { homeTitle } from "../lib/seo";
 import HomeHero from "../components/HomeHero.astro";
 import HomeDoors from "../components/HomeDoors.astro";
 import HomeGallery from "../components/HomeGallery.astro";
@@ -8,7 +9,10 @@ import HomeCampaign from "../components/HomeCampaign.astro";
 import HomeSocial from "../components/HomeSocial.astro";
 ---
 
-<BaseLayout title="home" description="osvant — eau de parfum, est. batch 001.">
+<BaseLayout
+  title={homeTitle()}
+  description="osvant — eau de parfum, est. batch 001."
+>
   <HomeHero />
   <HomeDoors />
 

@@ -6,7 +6,14 @@
 // copy lands. Bottle: Three.js is M3 — placeholder wash (ADR-008).
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { withBase } from "../../lib/url";
-import products from "../../data/products.json";
+import {
+  absoluteUrl,
+  buildProductJsonLd,
+  jsonLdScript,
+  OG_DEFAULT_PATH,
+  pdpTitle,
+} from "../../lib/seo";
+import { catalog as products } from "../../lib/commerce";
 
 export function getStaticPaths() {
   return products.map((product) => ({
@@ -21,6 +28,16 @@ const [article, ...rest] = product.name.split(" ");
 const available = product.variants.filter((v) => v.availableForSale);
 const soldOut = available.length === 0;
 const limited = product.variants.some((v) => v.limited);
+// Product structured data (RFC-001 C4, approved with B2 data). The image
+// is the OG house placeholder until per-scent bottle stills land (06 §1).
+const pdpUrl = absoluteUrl(Astro.url.pathname, Astro.site);
+const jsonLd = jsonLdScript(
+  buildProductJsonLd(
+    product,
+    pdpUrl,
+    absoluteUrl(withBase(OG_DEFAULT_PATH), Astro.site),
+  ),
+);
 const rows = [
   { label: "top — the spark", note: product.notes[0] },
   { label: "heart — the current", note: product.notes[1] },
@@ -29,9 +46,10 @@ const rows = [
 ---
 
 <BaseLayout
-  title={`${product.name} — collection`}
+  title={pdpTitle(product.name)}
   description={`${product.name} — ${product.character}`}
 >
+  <script slot="head" type="application/ld+json" is:inline set:html={jsonLd} />
   <div data-scent={product.scent} data-pdp>
     {/* 3.1 scent hero */}
     <section class="pdp-hero" data-nav-theme="scent">

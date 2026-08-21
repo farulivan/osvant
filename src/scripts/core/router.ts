@@ -13,6 +13,7 @@
 
 import { Core, Renderer, Transition } from "@unseenco/taxi";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { syncHead } from "./head";
 import { registry, type PageContext } from "./registry";
 import * as scroll from "./scroll";
 import { transition } from "./transition";
@@ -32,8 +33,10 @@ export function initRouter(): Core {
 
   class OsvantRenderer extends Renderer {
     onEnter(): void {
-      // Trap #1 (guide §8): taxi never touches document.title itself.
+      // Trap #1 (guide §8): taxi never touches document.title itself, and
+      // nothing else in <head> swaps either — sync both by hand.
       document.title = this.title;
+      syncHead(this.page as Document);
 
       const url = new URL(window.location.href);
 

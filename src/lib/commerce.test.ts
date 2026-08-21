@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import catalogJson from "../data/products.json";
 import {
   CART_CHANGED_EVENT,
   CommerceError,
@@ -7,6 +6,7 @@ import {
   cartCreate,
   cartRemoveLine,
   checkout,
+  catalog,
   createAdapter,
   getCart,
   getProduct,
@@ -15,14 +15,14 @@ import {
   type Product,
 } from "./commerce";
 
-const catalog = catalogJson as Product[];
-
 function fixtureCatalog(overrides?: Partial<Product["variants"][number]>) {
   return [
     {
       scent: "test",
       name: "the test",
       batch: "000",
+      notes: ["test top", "test heart", "test base"],
+      character: "the test. a fixture, not a fragrance.",
       variants: [
         {
           sku: "OSV-TEST-50",

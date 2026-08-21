@@ -3,6 +3,7 @@
 // (mailto) / press + socials; form per 01 §5.5 line style with RFC-001
 // C3 validation states. Mock relay (C3) — see modules/contact.ts.
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { pageTitle } from "../lib/seo";
 
 const socials = [
   { href: "https://instagram.com", label: "instagram" },
@@ -11,7 +12,7 @@ const socials = [
 ---
 
 <BaseLayout
-  title="contact"
+  title={pageTitle("contact")}
   description="Business enquiries and press — osvant."
 >
   <section class="contact" data-nav-theme="dark">
