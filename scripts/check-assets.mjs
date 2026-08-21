@@ -42,8 +42,27 @@ for (const file of files) {
     }
   }
 
-  if (topDir === "img" && RASTER_BANNED.has(ext)) {
-    violations.push(`${rel(file)} — raster images must be AVIF (06 §2)`);
+  // OG images are the one raster exception: social crawlers do not decode
+  // AVIF, and 06 §3 names the delivery as `img/og/og-<scent|house>.avif→png`
+  // — the PNG is the shipped artifact, the AVIF its master.
+  const isOgImage = topDir === "img" && within.startsWith("img/og/");
+
+  if (
+    topDir === "img" &&
+    RASTER_BANNED.has(ext) &&
+    !(isOgImage && ext === ".png")
+  ) {
+    violations.push(
+      isOgImage
+        ? `${rel(file)} — OG images must be PNG or AVIF (06 §3, RFC-001 C4)`
+        : `${rel(file)} — raster images must be AVIF (06 §2)`,
+    );
+  }
+
+  if (isOgImage && ![".png", ".avif"].includes(ext)) {
+    violations.push(
+      `${rel(file)} — OG images must be PNG or AVIF (06 §3, RFC-001 C4)`,
+    );
   }
 
   if (topDir === "video" && ![".webm", ".mp4"].includes(ext)) {

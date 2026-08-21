@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { pageTitle } from "../../lib/seo";
 import StubSection from "../../components/StubSection.astro";
 ---
 
-<BaseLayout title="terms" description="Terms of service — osvant.">
+<BaseLayout title={pageTitle("terms")} description="terms of service — osvant.">
   <StubSection eyebrow="legal" title="terms" theme="dark" />
 </BaseLayout>

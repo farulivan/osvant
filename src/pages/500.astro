@@ -2,10 +2,15 @@
 // 500 (RFC-001 C7 — approved `approved`): mirrors the 404 pattern;
 // copy `something spilled.` + btn-primary `back to the current`.
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { pageTitle } from "../lib/seo";
 import { withBase } from "../lib/url";
 ---
 
-<BaseLayout title="error" description="Something spilled — osvant.">
+<BaseLayout
+  title={pageTitle("error")}
+  description="something spilled — osvant."
+  noindex
+>
   <section class="server-error" data-nav-theme="dark">
     <h1 class="server-error__title">something spilled.</h1>
     <a class="btn-primary" href={withBase("collection")}>

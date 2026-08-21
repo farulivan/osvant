@@ -4,6 +4,7 @@
 // manifesto scrub (modules/house-manifesto.ts), craft grid with parallax
 // washes (ADR-008 until macro photography lands), CTA band → collection.
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { pageTitle } from "../lib/seo";
 import { withBase } from "../lib/url";
 
 const statements = [
@@ -13,7 +14,10 @@ const statements = [
 ];
 ---
 
-<BaseLayout title="the house" description="Behind osvant — brand story.">
+<BaseLayout
+  title={pageTitle("the house")}
+  description="behind osvant — the brand story."
+>
   {/* Hero — stacked fragments per 01 §3.3, reveal via data-anim="split" */}
   <section
     class="house-hero"

@@ -2,10 +2,15 @@
 // 404 (03-page-specs.md §7). Uses BaseLayout directly (not StubSection) —
 // this page's copy/CTA are final per spec, not a placeholder.
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { pageTitle } from "../lib/seo";
 import { withBase } from "../lib/url";
 ---
 
-<BaseLayout title="not found" description="Nothing to smell here — osvant.">
+<BaseLayout
+  title={pageTitle("not found")}
+  description="nothing to smell here — osvant."
+  noindex
+>
   <section class="not-found" data-nav-theme="dark">
     <h1 class="not-found__title">nothing to smell here.</h1>
     <a class="btn-primary" href={withBase("collection")}>
