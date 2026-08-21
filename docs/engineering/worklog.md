@@ -2,6 +2,15 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-21 — feat: SEO — canonical/OG/Twitter, C4 titles, Product JSON-LD, robots + sitemap (RFC-001 C4, 04-qa §7)
+
+- `lib/seo.ts`: the three RFC C4 title formats as functions (`homeTitle`/`pdpTitle`/`pageTitle`) so the format lives in one testable place — BaseLayout now renders `<title>` verbatim instead of appending the brand. Head gains canonical, full OG set (image = the 06 §1 house placeholder), Twitter `summary_large_image`, and a named `head` slot carrying Product JSON-LD on the 5 PDPs.
+- `core/head.ts`: taxi swaps only the view, so meta/canonical/JSON-LD/robots were frozen at first load — router now syncs them from the incoming document (guide §8 trap #1). Marked nodes carry `data-*` hooks so layout and sync stay mechanically paired.
+- `robots.txt` + `sitemap.xml` as static endpoints (not `public/` files) so both resolve against `site`; `lib/routes.ts` derives the 13 indexable routes from the pages tree + catalog + journal collection — a new page cannot silently miss the sitemap. `@astrojs/sitemap` deliberately not added (18 routes, ADR discipline).
+- **Judgment calls flagged:** `site` is the placeholder `https://osvant.example` — C4 fixes formats, never a host; meta descriptions remain engineering placeholders pending the w4 copy batch; PDP `<scent>` reads as the full product name (`the volt`), matching every other surface; `og:type`/`og:locale`/`twitter:card`/`noindex` on 404+500 are conventional defaults, unstated in LAW. OG ships as a rasterized PNG (crawlers reject SVG, `astro:assets` cannot convert) — asset guard gained an `img/og/*.png` exception per 06 §3.
+- Side effect: typing `Product` with its real `notes`/`character` fields exposed a latent JSON widening (`currency: string`), so `commerce.ts` now exports one typed `catalog` and every consumer reads through it instead of casting locally.
+- 19 new unit tests (155 total). Build 199.06KB / 350KB; LHCI home + fever: perf 99, a11y 95/96, SEO 100, LCP 2.0s, CLS ≤0.001.
+
 ## 2026-08-20 — feat: the house — hero, pinned manifesto scrub, craft grid, CTA (03 §4)
 
 - Page structure per 03 §4: `the lab` / `behind osvant` fragments (M §4.2 via shared headline-reveal), manifesto lead `[draft]` (copy w5, RFC C1), craft grid of 3 parallax washes (ADR-008), CTA band → collection.
