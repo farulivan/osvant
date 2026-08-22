@@ -26,7 +26,7 @@ Per the research methodology (one tension, two axes):
 | Axis | Expression | Where it lives |
 |---|---|---|
 | **Precision** (the lab) | Structure, grid, near-black surfaces, expanded grotesk type, technical eyebrow labels, note pyramids, batch numbers | Layout, typography, information design |
-| **Provocation** (the cult) | Ultraviolet accent, oversized lowercase display type, serif-italic whispers, fast motion ripples, elastic UI toys, WebGL vapor | Color accents, motion, 3D, copy voice |
+| **Provocation** (the cult) | Ultraviolet accent, oversized lowercase display type, serif-italic whispers, fast motion ripples, elastic UI toys, drifting vapor and raking light | Color accents, motion, light, copy voice |
 
 **Rule of thumb for any undefined decision:** structure decides *where* things go (precision); motion and accent decide *how* they feel (provocation). Every animated moment must resolve into a CTA (research §1).
 
@@ -53,16 +53,18 @@ Five scents. Each has a scent-scoped accent tint (used ONLY on its detail page a
 | 04 | **fever** | saffron, chili-rose, benzoin | the heat | `#FFB000` |
 | 05 | **halo** | iris, cashmeran, pale musk | the glow | `#EBD9FF` |
 
-Bottle design assumption for 3D: identical bottle silhouette across the five, differentiated by liquid/label color — keeps the WebGL gallery coherent and asset budget low.
+**Bottle design (settled 2026-08-21):** a **heavy squat rectangular flacon** — roughly 1:1.2 width-to-height, thick pressed-glass walls with a visible glass floor, sharp square shoulders, no neck taper, and a solid machined cap flush with the body width, so the silhouette is one unbroken block. Label: a small silk-screened rectangle, lowercase, batch number in mono.
+
+Identical silhouette across all five, differentiated by liquid and label colour only. The shape reads laboratory rather than boutique, matches the square-corner / no-shadow rules of `01 §4.3`, and holds up as a still — which matters, because the bottle is now presented as a composited image rather than a 3D model (ADR-013, `M §8`).
 
 ## 6. Success Criteria (what "done" means)
 
 1. A first-time visitor understands *this is a perfume house with attitude* within 3 seconds (hero).
 2. The collection gallery is the memorable moment — the thing people screen-record (our "helmet hall of fame").
-3. Every page scores ≥ 90 Lighthouse Performance on mid-tier mobile **except** pages with active WebGL scenes, which must stay ≥ 75 (conscious trade-off, research §6).
-4. All five motion layers (Lenis / ScrollTrigger / SplitText / Rive / WebGL) ship as specified in `02-motion-guidelines.md` — no silent downgrades.
+3. **Every page scores ≥ 90 Lighthouse Performance on mid-tier mobile.** The former ≥75 carve-out for WebGL pages is withdrawn with ADR-013 — there are no WebGL pages, so there is no exemption to hide behind.
+4. All five motion layers (Lenis / ScrollTrigger / SplitText / Rive / **composited light**, `M §8`) ship as specified in `02-motion-guidelines.md` — no silent downgrades. Layer 5 changed medium, not status: a bottle shown as a flat unlit image is a missing layer.
 5. Add-to-cart reachable within 2 clicks from any point on the site.
-6. **Animation parity (phase 1):** all 13 reference beats in `02-motion-guidelines.md §11` are present and recognizable next to landonorris.com. Reading like a "lite" version of the reference is acceptable now; reading like a static site is not. Differentiation is a later-phase goal, density is not negotiable.
+6. **Animation parity (phase 1):** all 13 reference beats in `02-motion-guidelines.md §11` are present and recognizable next to landonorris.com — beat 5 assessed as *equivalent*, not literal (ADR-013). Reading like a "lite" version of the reference is acceptable now; reading like a static site is not. Differentiation is a later-phase goal, density is not negotiable.
 
 ## 7. References
 
@@ -73,5 +75,6 @@ Bottle design assumption for 3D: identical bottle silhouette across the five, di
 
 - No scent quiz / finder tools in v1.
 - No account system in v1 — guest checkout only.
-- No ambient full-page WebGL background (research §8 anti-pattern).
+- No ambient full-page WebGL background (research §8 anti-pattern) — and since ADR-013, no WebGL at all.
+- No real-time 3D. The bottle is a composited still under moving light (`M §8`); revisit only if the asset budget changes.
 - No dark/light theme toggle — the near-black world IS the brand.

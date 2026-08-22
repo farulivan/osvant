@@ -21,7 +21,9 @@
 | 2 | Scroll storytelling | **GSAP + ScrollTrigger** | pins, scrubs, entrances |
 | 3 | Type reveals | **GSAP SplitText** (or SplitType) | char/line cascades |
 | 4 | Brand motion | **Rive** | logo, page transition wipe, button micro-UI, vapor motifs, landscape prompt |
-| 5 | 3D spectacle | **Three.js** | the collection gallery + PDP bottle — contained scenes ONLY |
+| 5 | Depth & light | **CSS/Canvas compositing** (no library) | the collection gallery + PDP bottle — the light study, §8 |
+
+> **Layer 5 changed 2026-08-21 (ADR-013).** It was Three.js. Real-time 3D is out of budget, so the bottle is a composited still under moving light rather than a mesh under a moving camera. The layer is still a required layer — a bottle presented as a flat image with no light behaviour fails `§0.1` exactly as a static section would.
 
 Page routing: SPA-style transitions via **taxi.js** (matching reference) or the framework router's transition hooks — either way, the Rive wipe contract in §5 must hold. Register `ScrollTrigger`, `SplitText`, `CustomEase`, `CustomWiggle`, `CustomBounce`.
 
@@ -96,12 +98,25 @@ All child tweens inside scrubbed timelines: `ease: "none"`. Pin budget: **max 3 
 
 ### 4.4 The collection gallery (signature moment — "helmet hall of fame" equivalent)
 
-- Pinned full-viewport Three.js scene, 5 bottles in a horizontal procession.
-- Scroll scrub (300% duration) drives: procession x-position, active bottle Y-rotation (±35°), scent name crossfade (SplitText swap), `--scent-tint` glow behind active bottle.
-- Idle: active bottle slow-rotates (ambient register) via `gsap.ticker`, additive to scrub position.
-- Pointer parallax: scene group tilts max 3° toward cursor, lerped `0.08`.
+> Rebuilt on the light study (§8) 2026-08-21, ADR-013. Everything below except the drawing layer is unchanged from the 3D version — the pin, the scrub, the snap, the theming and the CTA contract all survive.
+
+- Pinned full-viewport section, 5 bottle stills in a horizontal procession track (CSS transform on one track element — no canvas, no camera).
+- Scroll scrub (300% duration) drives: track x-position, the active bottle's `--light-angle` (0.35 → 0.65 across its dwell), scent name crossfade (SplitText swap), `--scent-tint` bloom behind the active bottle.
+- **Depth is differential parallax, not geometry.** Three rates, back to front: tint wash `0.4×`, bottle track `1×`, vapor plate `1.6×`. This ratio is the contract — matching rates collapse the illusion.
+- Active bottle: `scale: 1.08`, full opacity, light study live. Inactive: `scale: 0.86`, `opacity: 0.5`, light frozen at `0.5`.
+- Idle: active bottle's `--light-angle` oscillates `0.45 ↔ 0.55` (ambient register, `power1.inOut`, 2.5s) via `gsap.ticker` — replaces the old idle rotation, additive to scrub position.
+- Pointer parallax: layers tilt toward cursor at `1° / 3° / 5°` (wash / track / vapor), lerped `0.08`. Differential again — a uniform tilt reads as a flat plane rocking.
 - Snap: `snap: 1/4` so a bottle is always resolved when scrolling stops.
 - Each bottle resolves to a `discover ->` btn-text → PDP.
+- **Type safe zone:** the overlay occupies the left 38% of the stage; the track's x-range must keep every bottle out of it. Enforced by layout, not by a scrim.
+
+### 4.4b PDP bottle — drag-to-light (replaces drag-to-rotate)
+
+- The same `--light-angle` parameter, driven by horizontal pointer/touch drag across the bottle instead of by scroll. Range `0 → 1` over a drag of one bottle-width; no wrap, clamped at both ends.
+- Release: settles to the nearest of `0.25 / 0.5 / 0.75` (UI-move register, 0.6s `power2.inOut`) so the bottle always rests in a composed lighting state.
+- Idle when untouched: the same `0.45 ↔ 0.55` ambient oscillation as §4.4.
+- Touch: `touch-action: pan-y` on the drag surface so vertical page scroll is never captured.
+- Keyboard equivalent (required, §9): the bottle is a `tabindex="0"` group; `←`/`→` step `--light-angle` by `0.05`, `Home`/`End` jump to `0`/`1`.
 
 ### 4.5 Media parallax (default for imagery)
 
@@ -143,7 +158,7 @@ The hero never just scrolls away. Scrubbed timeline (`start: "top top", end: "+=
 ## 6. Preloader
 
 1. Black screen, `decanting…` (Archivo, `--text--h5`) + percent counter (`--text--eyebrow`, tabular numerals).
-2. Real asset progress — gates **Archivo woff2 + `logo.riv` + `page-transition.riv` + `vapor.riv` only**; GLBs stream with the lazy gallery chunk after first paint, Instrument Serif stays idle-loaded. Never faked below 90%; ~3s hard cap on a median connection (RFC-001 A2).
+2. Real asset progress — gates **Archivo woff2 + `logo.riv` + `page-transition.riv` + `vapor.riv` only**; bottle stills load with their sections after first paint (the gallery's first bottle at `fetchpriority="high"`, never a preloader gate), Instrument Serif stays idle-loaded. Never faked below 90%; ~3s hard cap on a median connection (RFC-001 A2).
 3. Exit: counter fades 0.3s → viewport wipe with same `page-transition` artboard (1.2s) → hero impact reveal overlaps at 50%.
 4. Shown once per session (`sessionStorage`), skipped on internal navigations.
 
@@ -159,33 +174,67 @@ The hero never just scrolls away. Scrubbed timeline (`start: "top top", end: "+=
 
 All `.riv` files lazy-loaded except `logo` and `page-transition` (preloaded — they gate first paint and first navigation).
 
-## 8. 3D / WebGL Rules (research §6, §8)
+## 8. The Light Study — bottle presentation contract (ADR-013)
 
-- **Contained scenes only** — canvas mounts inside gallery/PDP sections, never a persistent page-wide canvas.
-- Budget: ≤ 1.5MB per bottle GLB (Draco), one 2K HDR environment shared across scenes, `renderer.setPixelRatio(Math.min(devicePixelRatio, 2))`.
-- Scene pauses (`renderer.setAnimationLoop(null)`) when off-viewport.
-- **Fallback:** no WebGL / `navigator.deviceMemory < 4` → pre-rendered WebM turntable loops in identical layout. The page must work with zero WebGL.
+> Replaces the former "3D / WebGL Rules". Read this before building anything that shows a bottle.
+
+**The principle: the object is fixed, the light moves.** Depth comes from differential motion between layers, never from geometry. This is not a downgrade dressed as a concept — it is the more literal expression of `brief §2` ("scent beyond the visible"): illumination is what makes an invisible thing legible, and a rotating bottle never said that.
+
+### 8.1 The layer stack (binding — exactly six layers, back to front)
+
+| z | Layer | Asset | Blend | Motion |
+|---|---|---|---|---|
+| 0 | `tint-wash` | none — CSS radial gradient in `--scent-tint` | normal | slowest parallax (`0.4×`); blooms on active |
+| 1 | `caustic` | none — blurred ellipse, `--scent-tint` | `screen` | slides **inverse** to `--light-angle` |
+| 2 | `bottle` | **AVIF, alpha, flat-lit** — the only produced asset | normal | `1×` parallax; scale on active |
+| 3 | `sheen` | none — linear gradient, masked to layer 2's alpha | `overlay` | x-position + angle track `--light-angle` |
+| 4 | `rim` | none — same alpha mask, offset, `--scent-tint` | `screen` | opposite the sheen |
+| 5 | `vapor` | Rive `vapor` (or AVIF plate) | `screen` | fastest parallax (`1.6×`) |
+
+Layers 3 and 4 clip to the bottle silhouette via `mask-image` reading layer 2's own alpha channel — one asset, reused as its own mask. Do not ship a separate mask file.
+
+### 8.2 The parameter
+
+One custom property, `--light-angle`, range `0 → 1`, is the entire interface. Scroll drives it in the gallery (§4.4); drag drives it on the PDP (§4.4b); an ambient oscillation drives it at rest. Nothing else in the system may write to it.
+
+Because there is exactly one parameter, the mechanic is **source-agnostic**: it reads an N-frame bottle source. `N=1` (CSS-composited, ships now) → `N=8` (a lit-state sequence) → `N=24–36` (sprite-sheet turntable, restores true rotation) are asset-only upgrades requiring **no code change**. Do not design anything that would break that property.
+
+### 8.3 Asset rule that everything depends on
+
+**The bottle master must be flat-lit** — even frontal illumination, no baked specular, no baked rim, no cast shadow. Layers 1/3/4 supply all lighting. A dramatically-lit master double-lights and reads as a compositing error. This is the single most important line in `03 §8`.
+
+### 8.4 Performance
+
+- Images `decoding="async"`; the gallery's first bottle `fetchpriority="high"`, the rest lazy.
+- Reserve space with `aspect-ratio` on every bottle slot — CLS budget is unchanged (`§10`).
+- Animate `transform`/`opacity`/`--light-angle` only. No layout-triggering properties inside a scrub.
+- `content-visibility: auto` on off-screen procession items; the ambient ticker unsubscribes when the section leaves the viewport (`IntersectionObserver`).
+- No fallback tier exists, because the primary *is* the image. There is nothing to probe and nothing to degrade to.
 
 ## 9. Accessibility & Reduced Motion (non-negotiable)
 
 `prefers-reduced-motion: reduce` →
 
 - Lenis disabled (native scroll); all `scrub`/`pin` ScrollTriggers not created — content lays out statically in final-state
-- SplitText reveals → simple 0.3s opacity fades; marquees static; bottle idle-rotation stopped (drag-to-rotate still works)
+- SplitText reveals → simple 0.3s opacity fades; marquees static
+- **Light study:** ambient oscillation stopped and `--light-angle` frozen at `0.5`; parallax rates all collapse to `1×`. **Drag still works** — it is a user-initiated control, not decoration (unchanged intent from the drag-to-rotate ruling). The gallery becomes a static 5-up row of composed bottles with the overlay resolved to the first scent.
 - Page transitions → 0.3s opacity crossfade; preloader → counter only, no wipe
 
-Focus states: 2px `--color--uv` outline, `outline-offset: 3px` — never removed. All Rive/WebGL interactive elements need keyboard-reachable DOM equivalents.
+Focus states: 2px `--color--uv` outline, `outline-offset: 3px` — never removed. Every Rive and light-study control needs a keyboard-reachable DOM equivalent (§4.4b defines the bottle's).
 
 ## 10. Performance Budget (research §6)
 
-- JS per page ≤ 350KB gzip excluding Three.js chunk (lazy-loaded with gallery via dynamic import)
-- Code-split: transitions chunk, WebGL chunk, Rive runtime — all separate; `defer` everything; SRI on CDN assets
-- LCP ≤ 2.5s (hero text is LCP — never an image/canvas; on preloader first visits the counter text is the accepted LCP element, RFC-001 A2); CLS < 0.1 (reserve canvas/media space); INP < 200ms (no long tasks from scroll handlers — all rAF-batched via the single gsap.ticker)
-- Lighthouse mobile: ≥ 90 standard pages, ≥ 75 WebGL pages (brief §6)
+- JS per page ≤ 350KB gzip — **flat, no carve-out.** The former "excluding the Three.js chunk" exemption is withdrawn (ADR-013); the light study adds no runtime library.
+- Code-split: transitions chunk, Rive runtime — separate; `defer` everything; SRI on CDN assets
+- LCP ≤ 2.5s (hero text is LCP — never an image; on preloader first visits the counter text is the accepted LCP element, RFC-001 A2); CLS < 0.1 (reserve every media slot with `aspect-ratio`); INP < 200ms (no long tasks from scroll handlers — all rAF-batched via the single gsap.ticker)
+- Lighthouse mobile: **≥ 90 on every page** (brief §6.3). The ≥75 WebGL carve-out is withdrawn with ADR-013 — there are no WebGL pages.
+- Bottle stills ≤ 180KB each at 1×; total bottle payload on `/` ≤ 900KB across the five.
 
 ## 11. Reference Parity Map (Lando moment → Osvant equivalent)
 
 Phase-1 target: someone who knows landonorris.com should recognize every one of these beats. Check off during build review.
+
+> **Beat 5 is scoped as *equivalent* since ADR-013.** It must read as the same kind of moment — pinned, scrubbed, per-item themed, spatial — but it is not a 3D scene and reviewers must not fail it for lacking rotation. Every other beat is unchanged and still assessed literally.
 
 | # | Reference moment (research §4.4) | Osvant equivalent | Spec |
 |---|---|---|---|
@@ -193,7 +242,7 @@ Phase-1 target: someone who knows landonorris.com should recognize every one of 
 | 2 | Viewport-filling name, split-char reveal | `osvant` impact hero | §4.2, pages §1.2 |
 | 3 | Hero next-race chip ("Spagp") | `next drop` chip → journal | pages §1.2 |
 | 4 | Stacked-fragment titles ("ON / TRACK") line reveals | `the / lab`, `five / currents` etc. | §4.2 |
-| 5 | Scroll-scrubbed 3D helmet gallery, per-item themes | bottle procession + `--scent-tint` swap | §4.4 |
+| 5 | Scroll-scrubbed 3D helmet gallery, per-item themes | pinned bottle procession + `--scent-tint` swap + layered parallax depth — **equivalent, not literal: no real-time 3D (ADR-013)** | §4.4, §8 |
 | 6 | Per-section nav theme swap (`hero-nav-theme.is-N`) | `data-nav-theme` ScrollTriggers | §4.9 |
 | 7 | Marquee impact bands ("World Drivers' Champion") | `fever — limited batch 001`, footer tagline | §4.7 |
 | 8 | Rive logo + signature flourishes | Rive `logo`, footer flourish | §7 |

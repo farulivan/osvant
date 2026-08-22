@@ -123,15 +123,15 @@ Note: the reference build sizes its `h2` token above `h1` (research §3.2). We n
 }
 ```
 
-- 12-column fluid grid inside the container. Full-bleed allowed for: hero, WebGL gallery, marquee bands, footer.
+- 12-column fluid grid inside the container. Full-bleed allowed for: hero, collection gallery, marquee bands, footer.
 - Section vertical padding: `10rem` desktop / `6rem` ≤767px.
 
 ### 4.2 Breakpoints
 
 | Token | Range | Notes |
 |---|---|---|
-| `desktop` | ≥ 992px | full motion + WebGL |
-| `tablet` | 768–991px | WebGL kept, pins simplified |
+| `desktop` | ≥ 992px | full motion; light study at full layer count |
+| `tablet` | 768–991px | light study kept, pins simplified |
 | `mobile` | 480–767px | designed experience, not collapsed desktop (research §5) |
 | `tiny` | ≤ 479px | single column, impact type at clamp floor |
 
@@ -140,7 +140,7 @@ Note: the reference build sizes its `h2` token above `h1` (research §3.2). We n
 ```css
 :root {
   --radius--xs: 3px;      /* chips, tags, inputs */
-  --radius--media: 1vw;   /* imagery & video, fluid */
+  --radius--media: 1vw;   /* imagery, fluid */
   /* circles: 50%; no other radii exist */
 }
 ```
@@ -199,4 +199,6 @@ Full-bleed `--color--black`. Rows: (1) marquee tagline `provocation, bottled.` a
 
 - Icons: 1.5px stroke, square terminals, monochrome `--color--white` — Lucide with adjusted stroke works. No filled icons.
 - Photography: high-contrast on-black studio product shots; skin/vapor imagery duotoned toward violet. No lifestyle-stock aesthetics.
-- All media in AVIF/WebM with lazy-loading (research §6). Bottle renders: transparent AVIF.
+- All media in AVIF with lazy-loading (research §6). No video ships in v1 — the alpha-turntable path was withdrawn with ADR-013.
+- **Bottle renders: transparent AVIF, flat-lit.** The bottle is never shipped pre-lit: every highlight, rim and caustic is a composited layer driven by `--light-angle` (`02-motion-guidelines.md §8`). A dramatically-lit master double-lights and is rejected at handoff (`06 §2`). All five share one camera, one framing, one scale.
+- Bottle silhouette per `00-design-brief.md §5` — squat rectangular flacon, square shoulders, cap flush to body width.
