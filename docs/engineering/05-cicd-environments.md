@@ -27,7 +27,7 @@ install → lint + stylelint + tsc ──┐
 ```
 
 - Nightly (main): full Playwright suite + axe scan + full LHCI on all routes (`04 §2`).
-- Asset guard step: fails if any GLB > 1.5MB, any image not AVIF, any video not WebM/HEVC pair (`06-asset-pipeline.md`).
+- Asset guard step: fails on any `.glb`/`.gltf`/`.hdr` or anything under `assets/video/` (withdrawn by ADR-013), any raster image not AVIF, any bottle still > 180KB, any font not woff2 (`06-asset-pipeline.md`).
 
 ## 3. Content updates
 

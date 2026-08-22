@@ -22,7 +22,7 @@ Nightly full adds:
 - All 5 PDPs: size chips (fever = single 50ml + `limited` chip, RFC B2), scent-tint attribute applied.
 - Sold-out (data flag): disabled CTA + `get notified` variant + card chip (RFC B3).
 - Cart edge: line goes unavailable → amber note + remove (RFC B3).
-- Fallback: WebGL blocked context → turntable layout renders, `webgl_fallback` event fires (RFC C7).
+- Light study: `--light-angle` responds to drag on the PDP and to scrub in the gallery; keyboard arrows step it (`M §4.4b`); a failed bottle image still renders the silhouette placeholder with layers composited.
 - Reduced-motion emulation: no pinned sections exist, content fully readable, transitions are crossfades (`M §9`).
 - Keyboard: tab order, drawer/menu focus trap + ESC, skip link, visible focus (`03 §9`).
 - Zero third-party requests: E2E asserts NO external network calls anywhere (ADR-012) — regression guard for the perf story.
@@ -43,10 +43,10 @@ Automated tests cannot judge feel. Weekly build review runs this manually:
 |---|---|---|
 | `core + transitions` JS | ≤ 350KB gzip (`M §10`) | size-limit |
 | Lighthouse perf, standard pages | ≥ 90 mobile (brief §6) | LHCI, throttled, Pixel-class emulation |
-| Lighthouse perf, WebGL pages (home, PDP) | ≥ 75 mobile | LHCI |
+| Lighthouse perf, **every page** | ≥ 90 mobile | LHCI |
 | LCP / CLS / INP | ≤ 2.5s / < 0.1 / < 200ms (`M §10`) | LHCI assertions |
 | A11y score | ≥ 95 all pages | LHCI |
-| GLB size | ≤ 1.5MB each (`M §8`) | asset check script in CI |
+| Bottle still size | ≤ 180KB each at 1× (`M §10`) | asset check script in CI |
 
 LHCI runs against the preview deploy (real CDN), not localhost. Regressions block merge; overrides require a `perf:` label + head-of-eng approval.
 
@@ -65,7 +65,7 @@ Post-launch: no RUM by default (zero third-party, ADR-012); field CWV via CrUX/P
 - **Desktop:** Chrome/Edge/Firefox last 2, Safari ≥ 16.4.
 - **Mobile:** iOS Safari ≥ 16.4 (iPhone 12 baseline), Android Chrome ≥ 110 (Pixel 7a baseline).
 - **CI emulation** covers the matrix; **physical devices** (the two baselines) used in weekly motion QA.
-- Feature floors this buys: AVIF everywhere, `backdrop-filter`, WebGL2, HEVC-alpha on Safari — no legacy encode paths.
+- Feature floors this buys: AVIF everywhere, `backdrop-filter`, `mask-image` with AVIF alpha (`M §8.1`), CSS custom-property transitions via `@property` — no legacy encode paths.
 
 ## 7. Launch QA (once, launch −1w)
 

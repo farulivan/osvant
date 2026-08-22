@@ -1,8 +1,8 @@
 /*
- * Asset guard (05-cicd §2, budgets from M §8 / 06-asset-pipeline):
- *   - GLB models ≤ 1.5MB each
+ * Asset guard (05-cicd §2, budgets from M §10 / 06-asset-pipeline):
  *   - raster images must be AVIF (SVG allowed for vectors)
- *   - every video ships as a WebM/MP4(HEVC) pair
+ *   - bottle stills ≤ 180KB each (M §10)
+ *   - no 3D models and no video ship in v1 (ADR-013)
  *   - fonts must be woff2
  * Zero dependencies — runs on bare Node in CI.
  */
@@ -12,7 +12,7 @@ import { extname, join, relative } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const ASSETS = join(ROOT, "public", "assets");
-const GLB_LIMIT_BYTES = 1.5 * 1024 * 1024;
+const BOTTLE_LIMIT_BYTES = 180 * 1024;
 const RASTER_BANNED = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif"]);
 
 /** @returns {string[]} all file paths under dir, recursively */
@@ -33,11 +33,27 @@ for (const file of files) {
   const within = relative(ASSETS, file);
   const topDir = within.split("/")[0];
 
-  if (ext === ".glb") {
+  // ADR-013 withdrew real-time 3D and the alpha-turntable path. These asset
+  // classes are not "too big" — they must not exist at all.
+  if (ext === ".glb" || ext === ".gltf" || ext === ".hdr") {
+    violations.push(
+      `${rel(file)} — 3D assets were withdrawn by ADR-013; the bottle ships as AVIF (M §8)`,
+    );
+  }
+
+  if (topDir === "video") {
+    violations.push(
+      `${rel(file)} — no video asset class ships in v1 (ADR-013, 06 §1)`,
+    );
+  }
+
+  // Bottle stills carry the signature moment and load with the section, not
+  // the preloader — the budget keeps `/` under 900KB across the five (M §10).
+  if (within.startsWith("img/stills/") && ext === ".avif") {
     const { size } = statSync(file);
-    if (size > GLB_LIMIT_BYTES) {
+    if (size > BOTTLE_LIMIT_BYTES) {
       violations.push(
-        `${rel(file)} — GLB is ${(size / 1024 / 1024).toFixed(2)}MB, limit 1.5MB (M §8)`,
+        `${rel(file)} — bottle still is ${(size / 1024).toFixed(0)}KB, limit 180KB (M §10)`,
       );
     }
   }
@@ -65,31 +81,8 @@ for (const file of files) {
     );
   }
 
-  if (topDir === "video" && ![".webm", ".mp4"].includes(ext)) {
-    violations.push(`${rel(file)} — videos must be WebM or MP4/HEVC (06 §2)`);
-  }
-
   if (topDir === "fonts" && ext !== ".woff2") {
     violations.push(`${rel(file)} — fonts must be woff2 (06 §1)`);
-  }
-}
-
-// Pair rule: each video basename must exist as BOTH .webm and .mp4 (05 §2).
-const videoFiles = files.filter((f) =>
-  relative(ASSETS, f).startsWith("video/"),
-);
-const videoBases = new Map();
-for (const file of videoFiles) {
-  const ext = extname(file).toLowerCase();
-  if (![".webm", ".mp4"].includes(ext)) continue;
-  const base = file.slice(0, -ext.length);
-  videoBases.set(base, [...(videoBases.get(base) ?? []), ext]);
-}
-for (const [base, exts] of videoBases) {
-  for (const missing of [".webm", ".mp4"].filter((e) => !exts.includes(e))) {
-    violations.push(
-      `${rel(base)}${missing} — missing half of the WebM/HEVC pair (05 §2)`,
-    );
   }
 }
 

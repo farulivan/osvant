@@ -5,7 +5,7 @@
 
 ## 1. Project in one paragraph
 
-OSVANT is a fictional luxury fragrance brand site — a **portfolio showcase** whose product is animation, design, and performance. It reproduces the interaction grammar of landonorris.com (13 named "parity beats") across a compact static Astro sitemap (home, collection, 5 PDPs, the house, journal, contact, legal): GSAP + Lenis + taxi.js page transitions + Rive + a WebGL bottle gallery. There is no real backend: commerce, journal content, forms, and analytics are all local/mocked behind ports (ADR-009..012). Hosting is S3 + CloudFront via GitHub Actions. Success = all 13 beats recognizable + Lighthouse ≥90 mobile (≥75 on WebGL pages) + the acceptance boxes in `docs/design/03-page-specs.md`.
+OSVANT is a fictional luxury fragrance brand site — a **portfolio showcase** whose product is animation, design, and performance. It reproduces the interaction grammar of landonorris.com (13 named "parity beats") across a compact static Astro sitemap (home, collection, 5 PDPs, the house, journal, contact, legal): GSAP + Lenis + taxi.js page transitions + Rive + a composited-light bottle gallery (`M §8`, ADR-013). There is no real backend: commerce, journal content, forms, and analytics are all local/mocked behind ports (ADR-009..012). Hosting is S3 + CloudFront via GitHub Actions. Success = all 13 beats recognizable (beat 5 as *equivalent*, ADR-013) + Lighthouse ≥90 mobile **on every page** + the acceptance boxes in `docs/design/03-page-specs.md`.
 
 ## 2. Reading order & doc map
 
@@ -51,7 +51,7 @@ Read in this order before writing any code:
 | `lenis` | 1.x | package name is `lenis` (not `@studio-freight/lenis`) |
 | `@unseenco/taxi` | 1.x | page transitions (ADR-002) |
 | `@rive-app/canvas` | 2.x | web runtime for `.riv` files |
-| `three` | latest at install | + `GLTFLoader`/`DRACOLoader` from `three/addons` |
+| ~~`three`~~ | — | **Removed (ADR-013)** — the light study needs no 3D runtime |
 | `typescript` | 5.x | strict mode |
 | `vitest`, `@playwright/test`, `size-limit`, `@lhci/cli` | latest | wired per `04-qa` / `05-cicd` |
 
@@ -72,14 +72,14 @@ Work top-to-bottom; each row ≈ one PR. Acceptance = the listed doc sections.
 | 1.6 | Base layout: nav (all 3 themes via `data-nav-theme` observer), footer markup, transition scrim, skip link; stub pages for every route | `01 §5.2/§5.6`, `03 §sitemap` |
 | 1.7 | Preloader: `decanting…` + counter, sessionStorage once-per-session, gates per RFC A2, reduced-motion = counter only | `M §6` |
 | 1.8 | `products.json` + `lib/commerce.ts` port + local adapter + unit tests | `07 §1` |
-| 1.9 | `/dev` harnesses (rive, glb, motion) — staging only, `noindex` | `06-assets §2` |
+| 1.9 | `/dev` harnesses (rive, light, motion) — staging only, `noindex` | `06-assets §2` |
 | 1.10 | Capture landonorris.com parity recordings, 13 beats, archive in repo or linked storage | R11, `M §11` |
 
 ### M2 — Motion system + core pages (w3–4)
 Headline reveal module (`M §4.2`) → shared behaviors `data-anim="card|parallax|btn-line"` (`M §4.3/§4.5`, `01 §5.1`) → marquee (`M §4.7`) → Home sections in `03 §1` order → PLP (`03 §2`) → cart drawer + mock checkout (`01 §5.3`, `07 §1.3`) → mobile guardrails (RFC C5: sticky ATC bar, hamburger overlay `M §4.10`, landscape prompt) → swap in `logo.riv`/`page-transition.riv` when delivered (EOW3).
 
 ### M3 — Signature moments (w5–6)
-WebGL gallery (`M §4.4`, fallback `M §8`) → PDP template ×5 (`03 §3`: scent hero + drag bottle, pyramid `M §4.6`, formula story pin, cross-sell, sold-out variants RFC B3) → turntable fallback path → remaining Rive (`btn-ui`, `vapor`, `mob-landscape`) → journal collection + article template (`03 §5`, `07 §2`) → the-house (`03 §4`) → contact (`03 §6`, `07 §4`).
+Collection gallery (`M §4.4`, light study `M §8`) → PDP template ×5 (`03 §3`: scent hero + drag-to-light bottle `M §4.4b`, pyramid `M §4.6`, formula story pin, cross-sell, sold-out variants RFC B3) → remaining Rive (`btn-ui`, `vapor`, `mob-landscape`) → journal collection + article template (`03 §5`, `07 §2`) → the-house (`03 §4`) → contact (`03 §6`, `07 §4`).
 
 ### M4 — Content & hardening (w7–8)
 Final copy/photography swaps → SEO/meta/JSON-LD/OG (RFC C4 formats) → legal pages → 404/500 (`03 §7`, RFC C7) → perf tuning on device → full a11y pass → launch QA (`04-qa §7`) → freeze.
@@ -118,7 +118,7 @@ Registry: scans the incoming taxi view for `[data-module]`, mounts matching modu
 
 ### 6.3 Canonical `data-module` names
 
-`hero` · `doors` · `gallery` (WebGL procession) · `campaign` · `social` · `plp-grid` · `pdp-hero` (bottle scene) · `pyramid` · `formula` · `cross-sell` · `journal-index` · `article` · `house` · `contact-form` · `newsletter` · `marquee`. Cart drawer + nav + preloader are core singletons, not page modules. New names = kebab-case, added to this list via PR.
+`hero` · `doors` · `gallery` (light-study procession) · `campaign` · `social` · `plp-grid` · `pdp-hero` (bottle light study) · `pyramid` · `formula` · `cross-sell` · `journal-index` · `article` · `house` · `contact-form` · `newsletter` · `marquee`. Cart drawer + nav + preloader are core singletons, not page modules. New names = kebab-case, added to this list via PR.
 
 ### 6.4 `products.json` entry shape (`07 §1.1`)
 
@@ -160,7 +160,7 @@ Everything else — file structure detail, test organization, internal naming wi
 4. **ScrollTrigger + pinned sections after swap:** create triggers in mount order top-to-bottom, then one `ScrollTrigger.refresh()`; set `ScrollTrigger.config({ ignoreMobileResize: true })` once — iOS URL-bar resize otherwise re-layouts pins mid-scroll.
 5. **Scroll restoration:** `history.scrollRestoration = "manual"`; router resets to top during cover (except back/forward — restore saved position after mount).
 6. **Lenis + overlay scroll lock:** drawer/menu open = `lenis.stop()`, close = `lenis.start()` (`M §4.10`); focus trap + ESC per `03 §9`; `inert` on background content.
-7. **WebGL teardown:** on destroy — `renderer.dispose()`, dispose geometries/materials/textures, `forceContextLoss()`, remove canvas. Orphaned contexts on repeat navigation = the classic leak (R4). Cap `devicePixelRatio` at 2 (`M §8`), pause scene via IntersectionObserver.
+7. **Light-study teardown:** on destroy — unsubscribe the ambient `gsap.ticker` callback, remove pointer/drag and keyboard listeners, disconnect the `IntersectionObserver`. Trap #7 was WebGL context disposal (retired with ADR-013); the leak class it guarded against now lives in the ticker subscription, which is just as easy to orphan on repeat navigation (R4).
 8. **Rive teardown:** `rive.cleanup()` on destroy; instantiate per artboard from one loaded `.riv` buffer; respect the exact artboard/input names in `M §7` — they are the design-side contract.
 9. **Preloader vs LCP:** the counter is live HTML text (LCP-eligible, RFC A2) — no canvas/image may paint larger before hero `h1`. Preloader runs once per session (`sessionStorage`), never on internal navs.
 10. **Marquees:** CSS-transform loop driven by `gsap.ticker` with velocity from Lenis, duplicated content for seamlessness, `aria-hidden` on duplicates, paused off-viewport via IntersectionObserver (`M §4.7`).
