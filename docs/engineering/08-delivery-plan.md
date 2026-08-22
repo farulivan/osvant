@@ -13,7 +13,7 @@ Headline reveal, parallax, marquee, nav theming, buttons; Home (hero, doors, cam
 **Exit:** Home + PLP at parity beats 1–4, 6–9, 12–13 recognizable; add-to-cart → mock checkout confirmation works on staging.
 
 ### M3 — Signature moments (w5–6)
-WebGL gallery (first GLB w4, all w6), PDP ×5 (scent hero + drag bottle, pyramid, formula story, cross-sell, sold-out states), turntable fallbacks, remaining Rive artboards, journal (content collections) + the-house + contact.
+Collection gallery (first bottle still w4, all w6), PDP ×5 (scent hero + drag-to-light bottle, pyramid, formula story, cross-sell, sold-out states), remaining Rive artboards, journal (content collections) + the-house + contact.
 **Exit:** all 13 parity beats present; full sitemap navigable; nightly E2E green.
 
 ### M4 — Conversion, content & hardening (w7–8)
@@ -24,12 +24,12 @@ Final copy/photography in (w4–6 batches), form mock states + `track()` instrum
 
 ```
 w3: logo.riv + page-transition.riv ──► M2 exit (real transitions)
-w4: first GLB ──► gallery build start (M3)   w4: copy batch ──► PDP content
+w4: first still ──► gallery build start (M3)  w4: copy batch ──► PDP content
 w6: full assets + photography ──► M4 content pass
 launch−2w: legal copy        launch−1w: QA + freeze
 ```
 
-Slack: gallery is buildable against the placeholder GLB from w3 — first real GLB slipping to w5 costs polish time, not the milestone (escalation rule in `06 §5`).
+Slack: gallery is buildable against the placeholder silhouette from w3 — the first real bottle still slipping to w5 costs polish time, not the milestone (escalation rule in `06 §5`).
 
 ## 3. Cadence & rituals
 
@@ -41,9 +41,9 @@ Slack: gallery is buildable against the placeholder GLB from w3 — first real G
 
 | Workstream | R | A | C/I |
 |---|---|---|---|
-| Front-end build, motion, WebGL | engineering | head of eng | design (weekly review) |
+| Front-end build, motion, light study | engineering | head of eng | design (weekly review) |
 | Design-doc patches | engineering | head of design | — |
-| Rive/GLB/photo/video assets | design contractors | head of design | eng (acceptance, `06 §2`) |
+| Rive / bottle stills / photography | design contractors | head of design | eng (acceptance, `06 §2`) |
 | Copy, legal, pricing data (`products.json`) | product | head of product | eng (integration) |
 | Launch go/no-go | — | both heads jointly | — |
 

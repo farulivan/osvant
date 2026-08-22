@@ -2,6 +2,15 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-22 — docs: no-3D re-scope — Three.js out, bottle becomes a composited light study (ADR-013)
+
+- Owner decision (budget): real-time 3D is unaffordable. Recorded as **ADR-013**, superseding the Three.js entry in ADR-006 and the primitive-GLB placeholder in ADR-008. Spec updates land across all 4 design LAW docs + 8 engineering docs + the CI asset guard; `rfc-001` and this worklog left untouched as historical record per the ADR doc's own supersede rule.
+- **New mechanic — the light study (`M §8`).** The object is fixed, the light moves: one flat-lit transparent AVIF per scent under a 6-layer composite (tint wash / caustic / bottle / sheen / rim / vapor), all driven by a single `--light-angle` property. Scroll drives it in the gallery (`M §4.4`), drag drives it on the PDP (`M §4.4b`) — the existing interaction contracts survive, only the payload changes. Depth is differential parallax (`0.4× / 1× / 1.6×`), an acceptance box in `03 §1.4` rather than polish.
+- **Design call flagged:** rotation was never the strongest expression of "scent beyond the visible" — illumination is. But losing it costs material intimacy, so `03 §3.3` now mandates a bottle detail macro (AST-03b) as formula-story row 1. Bottle silhouette settled in `00 §5` (squat rectangular flacon) since a still has to carry what a turntable used to.
+- **Consequences:** `three` dropped (~150KB gzip); `M §10` budget carve-out withdrawn (flat 350KB); Lighthouse ≥75 WebGL exemption withdrawn — **≥90 everywhere** (brief §6.3); bottle assets 20 files → 10; R8 (HEVC-alpha) retired, R1 6→3, R2 6→4, **R12 added** (signature moment now rests on 5 images alone). Parity beat 5 explicitly downgraded to *equivalent, not literal* — we don't claim a 3D beat we no longer ship.
+- `scripts/check-assets.mjs` now **rejects** `.glb`/`.gltf`/`.hdr` and anything under `assets/video/` outright (not a size limit — these classes must not exist), and enforces ≤180KB per bottle still. Verified: rejects all three cases, passes clean tree.
+- **Not done here:** the code still contains `src/scripts/webgl/`, the `three` dependency and `/dev/glb` — deleting them is engineering work tracked as review OSV-02, not a docs change.
+
 ## 2026-08-21 — feat: SEO — canonical/OG/Twitter, C4 titles, Product JSON-LD, robots + sitemap (RFC-001 C4, 04-qa §7)
 
 - `lib/seo.ts`: the three RFC C4 title formats as functions (`homeTitle`/`pdpTitle`/`pageTitle`) so the format lives in one testable place — BaseLayout now renders `<title>` verbatim instead of appending the brand. Head gains canonical, full OG set (image = the 06 §1 house placeholder), Twitter `summary_large_image`, and a named `head` slot carrying Product JSON-LD on the 5 PDPs.

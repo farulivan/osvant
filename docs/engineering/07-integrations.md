@@ -51,7 +51,7 @@ Astro content collection `journal`, zod schema: `title`, `slug`, `date`, `leadIm
 | `gallery_bottle_engaged` | scent | bottle resolved ≥2s in gallery (RFC B7) |
 | `scent_discover_click` | scent | gallery → PDP |
 | `next_drop_click` | — | hero chip |
-| `webgl_fallback` | reason: `nogl|memory|timeout` | fallback swap (RFC C7) |
+| ~~`webgl_fallback`~~ | **Retired (ADR-013)** — no WebGL, no fallback tier | — |
 
 - Implementation: `track(event, params)` in `core/track.ts` — console table (dev) + `window.dataLayer` push (always). Zero network. Wiring a real vendor later = one sink function.
 - Event names keep RFC B7 review — instrumentation discipline is itself part of the portfolio story.

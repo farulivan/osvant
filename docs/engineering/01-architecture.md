@@ -10,7 +10,7 @@
 |---|---|---|
 | Framework | **Astro 5 + TypeScript**, full static output (SSG) | ADR-001 |
 | Page transitions | **taxi.js** over static pages (SPA-feel, MPA reality) | ADR-002 |
-| Animation | GSAP 3.13+ (ScrollTrigger, SplitText, CustomEase/Wiggle/Bounce), Lenis, Rive web runtime, Three.js | ADR-006 |
+| Animation | GSAP 3.13+ (ScrollTrigger, SplitText, CustomEase/Wiggle/Bounce), Lenis, Rive web runtime | ADR-006, ADR-013 |
 | Commerce | Local mock adapter — `lib/commerce.ts` port + `products.json` | ADR-009 |
 | Content | Astro content collections (markdown journal) | ADR-010 |
 | Hosting | AWS S3 + CloudFront, GitHub Actions deploys | ADR-011 |
@@ -22,7 +22,7 @@
                       build time                          runtime (browser)
   src/data/products.json ─┐                        ┌─ taxi.js router ─ Rive wipe
   src/content/journal ────┼─► Astro build ─► static┤  page modules (GSAP/Lenis)
-  (markdown + zod)        │      HTML/CSS/JS       ├─ WebGL scenes (lazy chunk)
+  (markdown + zod)        │      HTML/CSS/JS       ├─ light study (CSS/canvas)
                           └─ zero runtime backend  └─ cart module ─► local adapter
 ```
 
@@ -58,7 +58,7 @@ Rules:
 
 1. Modules NEVER call `ScrollTrigger.getAll().forEach(kill)` — each kills only what it created (store instances locally). The router does the global sweep as a safety net only.
 2. `SplitText.revert()` on destroy and on debounced resize re-split (`M §4.2`).
-3. WebGL modules dispose renderer/geometry/textures on destroy and pause via `IntersectionObserver` (`M §8`).
+3. Light-study modules unsubscribe their ambient ticker and drag listeners on destroy, and pause via `IntersectionObserver` (`M §8.4`).
 4. Modules read config exclusively from `data-*` attributes — markup is the API (matches design docs' motion hooks).
 
 ### 3.3 Router orchestration (taxi.js)
@@ -77,7 +77,7 @@ Reduced-motion path: transition = 0.3s opacity crossfade, same hooks (`M §9`).
 |---|---|---|
 | `core` | Lenis, GSAP + plugins, router, nav, cart UI, module registry | deferred, every page |
 | `transitions` | Rive runtime + `page-transition.riv` + `logo.riv` wiring | preloaded (gates first nav, `M §7`) |
-| `webgl` | Three.js, GLTF/Draco loaders, gallery + PDP scenes | dynamic import on section approach (`rootMargin: 200%`) |
+| ~~`webgl`~~ | **Removed (ADR-013)** — the light study is CSS/canvas in the page bundle, no separate chunk | — |
 | `rive-extras` | `btn-ui`, `vapor`, `mob-landscape` | idle (`requestIdleCallback`) |
 
 Budget gates in CI: `core + transitions` ≤ 350KB gzip (`M §10`); enforced via size-limit (see `04-testing-qa-plan.md`).
@@ -95,8 +95,7 @@ Budget gates in CI: `core + transitions` ≤ 350KB gzip (`M §10`); enforced via
 | Condition | Detection | Behavior |
 |---|---|---|
 | Reduced motion | `prefers-reduced-motion` | native scroll, no pins/scrubs, opacity fades, static marquees (`M §9`) |
-| No WebGL / low memory | context probe fail or `deviceMemory < 4` | turntable video layout, identical DOM (`M §8`) |
-| GLB fetch > 8s | loader timeout | swap to turntable + fire `webgl_fallback` (RFC C7/B7) |
+| Bottle still fails to load | `img` error event | silhouette block placeholder, identical DOM; light layers still composite (`M §8.1`) |
 | Safari alpha video | feature-detect via `canPlayType` | HEVC-alpha `.mov`, else black-composited loop (RFC B4.3) |
 | JS disabled | n/a | full content + native links render (Astro static); no cart |
 
@@ -111,7 +110,6 @@ src/
   scripts/
     core/              # scroll.ts, router.ts, transition.ts, nav.ts, cart.ts, track.ts
     modules/           # one file per PageModule (hero, gallery, pyramid, marquee…)
-    webgl/             # scenes, loaders (lazy chunk)
   lib/                 # commerce.ts (port + local adapter), content helpers
   content/             # journal markdown + zod schema (ADR-010)
   data/                # products.json — SKUs/prices per RFC B2

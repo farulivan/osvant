@@ -52,12 +52,15 @@ Two stacked full-width doors (each ~70vh). Door A `the lab` → `/the-house` (cr
 - [ ] both doors resolve to routes; entire door is the hit area
 
 ### 1.4 The collection gallery — SIGNATURE MOMENT
-Per `M §4.4` (pinned Three.js procession, 5 bottles). Section eyebrow: `the collection`. Title fragments: `five` / `currents`. Per-bottle overlay: scent name (impact scale, serif-italic article), 3 notes, price, `discover ->`.
+Per `M §4.4` (pinned procession of 5 bottle stills under the light study, `M §8`). Section eyebrow: `the collection`. Title fragments: `five` / `currents` — **an `h2`, masked-reveal like every other heading** (`§9`). Per-bottle overlay: scent name (impact scale, serif-italic article), 3 notes, price, `discover ->`.
 
 - [ ] scroll fully scrubs procession; snap resolves a bottle
-- [ ] active scent swaps name (SplitText crossfade) + `--scent-tint` glow
-- [ ] WebM fallback renders identical layout (`M §8`)
-- [ ] max 1 pinned WebGL scene on Home (this one)
+- [ ] active scent swaps name (SplitText crossfade) + `--scent-tint` bloom
+- [ ] three parallax rates present and distinct (`0.4× / 1× / 1.6×`) — a single rate fails this box
+- [ ] active bottle's `--light-angle` visibly sweeps as it crosses centre
+- [ ] every bottle stays clear of the left-38% type safe zone at every scrub position
+- [ ] overlay carries notes **and price**, not just the name
+- [ ] max 1 pinned section on Home (this one)
 
 ### 1.5 Campaign band — featured drop
 Full-bleed `--color--ink-1`. Marquee (`M §4.7`): `fever — limited batch 001`. Content: campaign still (parallax), lead: `saffron, chili-rose, benzoin. the heat, bottled.` (final, RFC-001 C1), `btn-primary` `shop fever`, amber `limited` chip.
@@ -92,11 +95,13 @@ Per `01 §5.6`. Tagline marquee `provocation, bottled.`; newsletter `join the cu
 Template with `data-scent` theming (`01 §2.3`). Order: volt, nocturne, static, fever, halo.
 
 ### 3.1 Scent hero
-Split: left — eyebrow `batch 0N — eau de parfum`, name at impact scale (article in serif italic: `the *jolt*`), one-line character (final copy per RFC-001 C1); right — contained Three.js bottle (drag-to-rotate ±180°, idle ambient rotation, `--scent-tint` rim glow). Price + size selector (50/100ml chips) + `btn-primary` `add to cart` — sticky bottom bar ≤767px.
+Split, **fitting one viewport at ≥725px tall**: left — eyebrow `batch 0N — eau de parfum`, name at impact scale (article in serif italic: `the *jolt*`), one-line character (final copy per RFC-001 C1), then price + size selector (50/100ml chips) + `btn-primary` `add to cart` **inline in this column at desktop**; right — the bottle light study (`M §8`), drag-to-light per `M §4.4b`, `--scent-tint` rim on layer 4. The buy row becomes a fixed bottom bar **only** ≤767px.
 
+- [ ] hero fits one viewport — product, price and add-to-cart all visible without scrolling, every breakpoint
 - [ ] `--scent-tint` applied via ONE attribute swap, nothing else recolored manually
-- [ ] bottle drag works on touch; idle rotation stops under reduced-motion
-- [ ] add-to-cart reachable without scrolling on all breakpoints
+- [ ] drag works on touch and does not capture vertical scroll (`touch-action: pan-y`)
+- [ ] keyboard equivalent present (`M §4.4b`); ambient oscillation stops under reduced-motion, drag still works
+- [ ] a single size variant renders as a spec line (`50ml · limited`), never as a one-option "selector"
 
 ### 3.2 Note pyramid
 Per `M §4.6`. Eyebrows: `top — the spark`, `heart — the current`, `base — the ground`.
@@ -105,6 +110,11 @@ Per `M §4.6`. Eyebrows: `top — the spark`, `heart — the current`, `base —
 
 ### 3.3 The formula story
 Alternating image/text rows (parallax per `M §4.5`), 2–3 rows, copy `[draft]`. One pull-quote line in Instrument Serif italic at `--text--h3`.
+
+**Row 1 is the bottle detail macro** (`§8` AST-03b) — a close crop of cap, label edge or liquid meniscus. This row carries the material intimacy that drag-to-rotate used to provide (ADR-013) and is not optional: without it the PDP never shows the object closer than the hero framing.
+
+- [ ] row 1 is a bottle macro, not an ingredient macro
+- [ ] exactly one pull-quote per page, serif italic, `--text--h3`
 
 ### 3.4 Cross-sell
 `also in the current` — remaining 4 scents as compact cards, horizontal drag-scroll (Lenis-friendly: native overflow-x + scroll-snap).
@@ -147,15 +157,24 @@ Rive `mob-landscape` full-screen when `orientation: landscape` and viewport heig
 
 ## 8. Asset Production List
 
-| Asset | Spec | Used in |
-|---|---|---|
-| Bottle GLB × 5 | ≤1.5MB each, Draco, shared silhouette, per-scent liquid/label material | gallery, PDP |
-| Bottle turntable × 5 | 1080×1080, 6s loop; VP9-alpha WebM **+ HEVC-alpha `.mov` twin** (Safari); if clean HEVC alpha unachievable by w6 → black-composited with baked `--scent-tint` glow (RFC-001 B4.3) | WebGL fallback |
-| Bottle still AVIF × 5 | 1200px transparent | cards, cart, OG |
-| Rive files × 5 | `logo`, `page-transition`, `btn-ui`, `vapor`, `mob-landscape` (`M §7`) | global |
-| Campaign photography | fever campaign, duotone-violet grade | home §1.5, PDP |
-| Macro ingredient set | ≥8 images | the house, doors |
-| Fonts | Archivo Variable woff2 (preload), Instrument Serif woff2 (idle-load) | global |
+> **Revised 2026-08-21 (ADR-013).** GLBs, turntable videos and the shared HDR are withdrawn. The bottle ships as two AVIF sets. Twenty bottle files become ten.
+
+| ID | Asset | Spec | Used in |
+|---|---|---|---|
+| AST-03a | **Bottle still × 5** | 2000px long edge, transparent AVIF, **flat-lit** (`M §8.3`), identical camera/framing/scale across all five, ≥12% transparent margin on every side for the sheen and rim layers, no baked shadow | gallery, PDP hero, cards, cart, OG |
+| AST-03b | **Bottle detail macro × 5** | 1600px AVIF, close crop of cap / label edge / liquid meniscus, same lighting family as AST-03a | PDP formula story row 1 (`§3.3`) |
+| AST-04 | Rive files × 5 | `logo`, `page-transition`, `btn-ui`, `vapor`, `mob-landscape` (`M §7`) | global |
+| AST-05 | Campaign photography | fever campaign, duotone-violet grade, ≥2400px master | home §1.5, PDP |
+| AST-06 | Macro ingredient set | ≥8 images, duotone violet, covering the collection's notes | the house, doors, PDP formula rows 2–3 |
+| AST-07 | Door media × 2 | 2400×1000, `the lab` / `the cult`, bottom-scrim safe | home §1.3 |
+| AST-08 | Journal lead images × 3 | 2000×1250 lead + 1200×750 card | journal |
+| AST-09 | Social band plates × 4 | 800×500, no platform logos | home §1.6 |
+| AST-10 | OG images × 9 | 1200×630; per-scent cards composite AST-03a on `--color--black` — generate at build, not by hand | global |
+| — | Fonts | Archivo Variable woff2 (preload), Instrument Serif woff2 (idle-load) | global |
+
+**Flat-lit is the load-bearing constraint.** Layers 1/3/4 of the light study supply every highlight, rim and caustic (`M §8.1`). A master that already carries dramatic lighting double-lights and reads as a compositing error — it will be rejected at handoff (`06 §2`).
+
+**Upgrade path (`M §8.2`), asset-only, no code change:** AST-03a at `N=1` ships now. `N=8` (lit-state sequence) and `N=24–36` (sprite-sheet turntable, which restores true rotation) drop in later if budget returns.
 
 ## 9. Global Acceptance (every page, pre-merge)
 
@@ -169,7 +188,8 @@ Rive `mob-landscape` full-screen when `orientation: landscape` and viewport heig
 - [ ] keyboard pass: focus visible everywhere, drawer/menu trap focus
 - [ ] perf: LCP ≤2.5s, CLS <0.1, budgets per `M §10`
 - [ ] max 3 pins/page; max 1 playful-register animation per view
+- [ ] every bottle presentation uses the light study (`M §8`) — a flat, unlit bottle image fails `M §0.1`
 - [ ] every animated section resolves to a visible CTA (brief §3)
 - [ ] **every section has at least one motion behavior** (`M §0` fidelity mandate) — no static sections
 - [ ] **every section declares `data-nav-theme`**; nav visibly re-themes while scrolling (`M §4.9`)
-- [ ] **all 13 parity beats present** on their respective pages (`M §11`) — reviewed against landonorris.com side-by-side
+- [ ] **all 13 parity beats present** on their respective pages (`M §11`) — reviewed against landonorris.com side-by-side; **beat 5 is assessed as equivalent, not literal** (ADR-013)
