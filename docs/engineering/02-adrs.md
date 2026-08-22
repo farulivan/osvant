@@ -41,8 +41,10 @@
 
 ## ADR-006 — Animation stack & licensing
 
+> **Three.js entry SUPERSEDED by ADR-013** (2026-08-21, no-3D re-scope). The rest of this ADR stands.
+
 - **Context:** stack fixed by `M §1`. Licensing check performed.
-- **Decision:** GSAP 3.13+ (100% free since Webflow acquisition, incl. SplitText/CustomEase/CustomWiggle/CustomBounce), Lenis (MIT), `@rive-app/canvas` (MIT runtime; design needs Rive editor seats), Three.js (MIT), taxi.js (MIT). Fonts: Archivo + Instrument Serif (OFL, self-hosted).
+- **Decision:** GSAP 3.13+ (100% free since Webflow acquisition, incl. SplitText/CustomEase/CustomWiggle/CustomBounce), Lenis (MIT), `@rive-app/canvas` (MIT runtime; design needs Rive editor seats), ~~Three.js (MIT)~~ *(dropped — ADR-013)*, taxi.js (MIT). Fonts: Archivo + Instrument Serif (OFL, self-hosted).
 - **Consequences:** no license fees or blockers; pin exact versions in lockfile; SplitText import from `gsap/SplitText` (no club bundle needed).
 
 ## ADR-007 — Analytics & consent: GA4 + Consent Mode v2 + iubenda
@@ -55,8 +57,10 @@
 
 ## ADR-008 — Placeholder-first asset strategy
 
+> **GLB placeholder SUPERSEDED by ADR-013** (2026-08-21). The placeholder-first principle stands and now applies to the bottle AVIF.
+
 - **Context:** RFC B4 approved: Rive/GLB/photography arrive weeks 3–6; engineering must never block.
-- **Decision:** every external asset has a code-compatible placeholder behind the same interface: clip-path wipe (= Rive transition API), primitive GLB bottle, duotone image blocks, CSS button fallback. Swaps are asset-file replacements, not code changes.
+- **Decision:** every external asset has a code-compatible placeholder behind the same interface: clip-path wipe (= Rive transition API), ~~primitive GLB bottle~~ *(now: duotone bottle silhouette behind the same `--light-angle` contract — ADR-013)*, duotone image blocks, CSS button fallback. Swaps are asset-file replacements, not code changes.
 - **Consequences:** build reviews before week 4 show placeholder fidelity — expectation set with stakeholders; interface contracts in `06-asset-pipeline.md` are binding for design deliverables.
 
 ---
@@ -84,3 +88,20 @@
 
 - **Decision:** no GA4, no CMP, no Klaviyo, no third-party JS at all. `track(event, params)` = local no-op emitter (console + `window.dataLayer` push) — the `07 §5` tracking plan stays implemented as instrumentation, vendor-free. Newsletter/notify/contact forms render all RFC C3/C7 validation/success/error states against a local mock with `demo` microcopy.
 - **Consequences:** no consent banner, no GDPR surface, maximum perf headroom; forms non-functional by design (honest demo labels); Sentry optional post-launch, off by default.
+
+---
+
+> ADR-013 records the 2026-08-21 **no-3D re-scope** (owner decision, budget-driven): real-time 3D is removed from the stack; the bottle is presented as a composited still.
+
+## ADR-013 — Drop Three.js; bottle presentation is a composited light study (supersedes the 3D parts of ADR-006 and ADR-008)
+
+- **Context:** producing five bottle GLBs (modelling, glass/liquid materials, Draco, HDR, `gltf-validator` acceptance) plus the VP9-alpha + HEVC-alpha turntable twins is outside budget. The 3D layer served exactly two moments — the collection gallery (`M §4.4`) and the PDP bottle (`03 §3.1`) — and the *felt* qualities it delivered there are depth, tactility and revelation, not geometry per se.
+- **Decision:** remove `three` from the runtime stack. Both moments are rebuilt on **the light study** (`M §8`): one flat-lit transparent AVIF per scent, composited under CSS/canvas light layers driven by a single `--light-angle` parameter. Depth comes from differential parallax between layers, not from a camera. Scroll drives the angle in the gallery; drag drives it on the PDP — the same interaction contracts, a different payload.
+- **Consequences:**
+  - **Removed:** `three` dependency (~150KB gzip), the `webgl` lazy chunk, `GLTFLoader`/`DRACOLoader`, the shared HDR, the WebGL context probe, the `deviceMemory < 4` branch, the GLB-timeout path, the turntable fallback tier, the `webgl_fallback` event, and WebGL teardown discipline (guide trap #7).
+  - **Budget simplifies:** `M §10`'s "excluding the Three.js chunk" carve-out is withdrawn — the 350KB gzip budget is now flat and honest. The Lighthouse ≥75 carve-out for WebGL pages is withdrawn: **every page targets ≥90** (brief §6.3).
+  - **Asset count for the bottle drops from 20 files to 10** — 5 GLB + 5 WebM + 5 MOV + 5 AVIF becomes 5 bottle AVIF + 5 macro detail AVIF (`03 §8`).
+  - **Risk retired:** R8 (HEVC-alpha encode) — no alpha video ships. R1 rescoped: the budget risk was WebGL-specific.
+  - **Genuinely lost:** true 360° rotation (the back of the bottle is never seen), real-time refraction and caustics, and per-frame lighting response. Parity beat 5 is downgraded from literal to **equivalent** and labelled as such in `M §11` — we do not claim a 3D beat we no longer ship.
+  - **Upgrade path, no code change:** the light study reads an N-frame source. N=1 (CSS-composited) ships now; N=8 (a lit-state sequence) and N=24–36 (a true sprite-sheet turntable, which restores rotation) drop in later as asset-only PRs if budget returns.
+- **Rejected alternatives:** (a) *keep Three.js with primitive geometry* — the current placeholder already demonstrates that a bad mesh reads as "this is the product" rather than "art direction pending" (review OSV-02); (b) *static stills with no motion layer* — fails `M §0.1` (every section carries a motion behaviour) and forfeits the signature moment outright; (c) *pre-rendered turntable video as the primary* — reintroduces the HEVC-alpha risk (R8) for a beat we can composite more cheaply and control more precisely.
