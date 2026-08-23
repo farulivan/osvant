@@ -56,18 +56,21 @@ export function initRouter(): Core {
 
       void registry.mountModules(this.content, ctx).then((mounted) => {
         destroyers = mounted;
+        // Trap #4 (guide §8) + guide §6.2: ONE refresh, and it has to be
+        // here rather than in onEnterCompleted. mountModules is async but
+        // taxi calls onEnter/onEnterCompleted synchronously, so refreshing
+        // there measured a page whose triggers did not exist yet — which
+        // is why entrance tweens sat unplayed until the next scroll
+        // (review OSV-06).
+        ScrollTrigger.refresh();
       });
     }
 
-    onEnterCompleted(): void {
-      // Trap #4 (guide §8): one refresh after mount, not per-module.
-      ScrollTrigger.refresh();
-    }
-
     initialLoad(): void {
-      // Taxi does not call onEnter/onEnterCompleted for the first visit.
+      // Taxi does not call onEnter for the first visit. The refresh rides
+      // along inside onEnter's mount promise, so there is nothing else to
+      // call here.
       this.onEnter();
-      this.onEnterCompleted();
     }
   }
 
