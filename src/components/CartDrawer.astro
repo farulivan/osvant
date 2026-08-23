@@ -67,7 +67,10 @@ import { withBase } from "../lib/url";
   .cart-drawer {
     position: fixed;
     inset: 0;
-    z-index: 30;
+
+    /* Above the nav (100), below the transition scrim (2000) — review
+       OSV-07. At 30 the drawer opened underneath the nav. */
+    z-index: 1500;
   }
 
   .cart-drawer__scrim {
