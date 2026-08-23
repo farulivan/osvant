@@ -10,8 +10,13 @@
 import { withBase } from "../lib/url";
 ---
 
-<section class="doors" id="doors" aria-label="the lab and the cult">
-  <a class="door" href={withBase("the-house/")} data-nav-theme="dark">
+<section
+  class="doors"
+  id="doors"
+  aria-label="the lab and the cult"
+  data-nav-theme="dark"
+>
+  <a class="door" href={withBase("the-house/")}>
     <div class="door__media door__media--lab" aria-hidden="true"></div>
     <h2 class="door__title">
       <span class="door__fragment" data-anim="split">the</span>
@@ -20,7 +25,7 @@ import { withBase } from "../lib/url";
     <span class="door__arrow" aria-hidden="true">-&gt;</span>
   </a>
 
-  <a class="door" href={withBase("journal/")} data-nav-theme="dark">
+  <a class="door" href={withBase("journal/")}>
     <div class="door__media door__media--cult" aria-hidden="true"></div>
     <h2 class="door__title">
       <span class="door__fragment" data-anim="split">the</span>

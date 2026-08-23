@@ -57,8 +57,9 @@ describe("modules/headline-reveal (M §4.2)", () => {
     module.mount(el, ctx(false));
 
     expect(splitConstructor).toHaveBeenCalledWith(el, {
-      type: "chars,lines",
+      type: "words,chars,lines",
       linesClass: "line-mask",
+      wordsClass: "split-word",
     });
     expect(fromMock).toHaveBeenCalledWith(
       splitInstances[0].chars,

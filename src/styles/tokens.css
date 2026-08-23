@@ -50,6 +50,11 @@
   --gutter: clamp(1.25rem, 4vw, 5rem); /* page side padding */
   --grid-gap: 1.25rem;
 
+  /* Fixed-nav clearance — the height the bar actually occupies, so
+     in-page anchors and section tops can reserve it (review OSV-07).
+     Kept in sync with the nav's own ScrollTrigger offsets in core/nav.ts. */
+  --nav-height: 4rem;
+
   /* ---- Radius (01 §4.3) — circles: 50%; no other radii exist ---- */
   --radius--xs: 3px; /* chips, tags, inputs */
   --radius--media: 1vw; /* imagery & video, fluid */

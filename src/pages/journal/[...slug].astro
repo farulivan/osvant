@@ -70,34 +70,39 @@ const linked = article.data.scent
       /* Cross-sell band (03 §5): the scent this article belongs to, or the
         full collection when the article is scent-agnostic (RFC B6). */
     }
-    <footer class="article__xsell">
-      {
-        linked ? (
-          <a
-            class="article__xsell-link"
-            href={withBase(`collection/${linked.scent}/`)}
-            data-scent={linked.scent}
-          >
-            <span class="article__xsell-eyebrow" data-eyebrow>
-              in this story
-            </span>
-            <span class="article__xsell-name">{linked.name}</span>
-            <span class="article__xsell-price">
-              €{linked.variants[0].price} — discover
-            </span>
-          </a>
-        ) : (
-          <a class="article__xsell-link" href={withBase("collection")}>
-            <span class="article__xsell-eyebrow" data-eyebrow>
-              the collection
-            </span>
-            <span class="article__xsell-name">five currents</span>
-            <span class="article__xsell-price">shop the collection</span>
-          </a>
-        )
-      }
-    </footer>
   </article>
+
+  <section
+    class="article__xsell"
+    data-nav-theme={linked ? "scent" : "dark"}
+    data-scent={linked?.scent}
+    aria-label="keep browsing"
+  >
+    {
+      linked ? (
+        <a
+          class="article__xsell-link"
+          href={withBase(`collection/${linked.scent}/`)}
+        >
+          <span class="article__xsell-eyebrow" data-eyebrow>
+            in this story
+          </span>
+          <span class="article__xsell-name">{linked.name}</span>
+          <span class="article__xsell-price">
+            €{linked.variants[0].price} — discover
+          </span>
+        </a>
+      ) : (
+        <a class="article__xsell-link" href={withBase("collection")}>
+          <span class="article__xsell-eyebrow" data-eyebrow>
+            the collection
+          </span>
+          <span class="article__xsell-name">five currents</span>
+          <span class="article__xsell-price">shop the collection</span>
+        </a>
+      )
+    }
+  </section>
 </BaseLayout>
 
 <style>
