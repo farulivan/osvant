@@ -1,5 +1,9 @@
 allowBuilds:
   esbuild: true
+  # sharp — Astro's image pipeline (06 §4 assigns AVIF derivative
+  # generation to engineering) and scripts/prepare-stills.mjs.
+  # Build-time only; ships nothing to the client.
+  sharp: true
 
 # eslint-plugin-jsx-a11y (hard dep of eslint-plugin-astro) hasn't bumped its
 # peer range to eslint 10 yet; its rules API is compatible.

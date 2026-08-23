@@ -1,41 +1,106 @@
 ---
-// Home collection gallery (03 §1.4, M §4.4).
+// Home collection gallery — the signature moment (03 §1.4, M §4.4).
 //
-// INTERIM (ADR-013): the Three.js procession is deleted. The light study
-// (M §8) rebuilds this section as a pinned track of five composited
-// stills; until then the honest placeholder is the static 5-up
-// procession, which already carries the section's information
-// architecture. Entrance rides the shared card behaviour (M §4.3) so the
-// section still declares a motion behaviour (M §0.1).
+// Rebuilt on the light study (M §8, ADR-013): a pinned, scroll-scrubbed
+// horizontal procession of five composited stills. No canvas, no camera —
+// depth is differential parallax between the layers inside each stage.
 //
-// Everything still missing here is tracked: no h2 (OSV-09), no notes or
-// price in the overlay (OSV-09/20).
+// The overlay carries scent name, three notes, price and `discover`
+// (03 §1.4). It previously carried only a name, which left the home page
+// with no price or product information anywhere on it (review OSV-09/20),
+// and the section had no `h2` at all, so the signature moment was
+// invisible to search and to screen readers.
+//
+// Type safe zone: the overlay owns the left 38% of the stage and the
+// track is inset to match, so no bottle can enter it at any scrub
+// position — by layout, not by a scrim (M §4.4, review OSV-10).
+import LightStudy from "./LightStudy.astro";
 import { withBase } from "../lib/url";
 import { getProducts } from "../lib/commerce";
+import { stillFor } from "../lib/stills";
 
 const scents = await getProducts();
 ---
 
 <section
   class="home-gallery"
+  data-module="gallery"
   data-nav-theme="scent"
   data-scent={scents[0]?.scent}
-  aria-label="the collection — five currents"
+  aria-labelledby="gallery-title"
 >
-  <p class="home-gallery__eyebrow" data-eyebrow>the collection</p>
+  <div class="home-gallery__stage" data-gallery-stage>
+    <div class="home-gallery__track" data-gallery-track aria-hidden="true">
+      {
+        scents.map((scent, index) => (
+          <div
+            class="home-gallery__item"
+            data-gallery-item
+            data-scent={scent.scent}
+            data-name={scent.name}
+            data-notes={scent.notes.join("|")}
+            data-price={`€${scent.variants[0].price}`}
+            data-href={withBase(`collection/${scent.scent}/`)}
+          >
+            <LightStudy
+              scent={scent.scent}
+              alt=""
+              image={stillFor(scent.scent)}
+              width={720}
+              eager={index === 0}
+            />
+          </div>
+        ))
+      }
+    </div>
 
-  <ul class="home-gallery__procession">
+    <div class="home-gallery__overlay">
+      <p class="home-gallery__eyebrow" data-eyebrow>the collection</p>
+
+      {/* Stacked fragments — restores parity beat 4 (M §11) */}
+      <h2 class="home-gallery__title" id="gallery-title">
+        <span class="home-gallery__fragment" data-anim="split">five</span>
+        <span class="home-gallery__fragment" data-anim="split">currents</span>
+      </h2>
+
+      <div class="home-gallery__readout" aria-live="polite">
+        <p class="home-gallery__name" data-gallery-name>{scents[0]?.name}</p>
+        <ul class="home-gallery__notes" data-gallery-notes>
+          {scents[0]?.notes.map((note) => <li>{note}</li>)}
+        </ul>
+        <p class="home-gallery__price" data-gallery-price>
+          €{scents[0]?.variants[0].price}
+        </p>
+      </div>
+
+      <a
+        class="btn-secondary"
+        data-gallery-discover
+        href={withBase(`collection/${scents[0]?.scent}/`)}
+      >
+        <span data-btn-label>discover -&gt;</span>
+      </a>
+    </div>
+  </div>
+
+  {
+    /* Reduced motion (M §9): no pin, no scrub — the procession lays out
+      as a static row with every scent readable. The module swaps to this. */
+  }
+  <ul class="home-gallery__static" data-gallery-static hidden>
     {
       scents.map((scent) => (
-        <li
-          class="home-gallery__item"
-          data-scent={scent.scent}
-          data-anim="card"
-        >
-          <div class="home-gallery__media" aria-hidden="true" />
-          <p class="home-gallery__name">{scent.name}</p>
+        <li class="home-gallery__static-item" data-scent={scent.scent}>
+          <LightStudy
+            scent={scent.scent}
+            alt={`the ${scent.scent} bottle`}
+            image={stillFor(scent.scent)}
+            width={420}
+          />
+          <p class="home-gallery__static-name">{scent.name}</p>
+          <p class="home-gallery__static-notes">{scent.notes.join(" · ")}</p>
           <a class="btn-text" href={withBase(`collection/${scent.scent}/`)}>
-            discover
+            <span data-btn-label>€{scent.variants[0].price} — discover</span>
           </a>
         </li>
       ))
@@ -45,8 +110,44 @@ const scents = await getProducts();
 
 <style>
   .home-gallery {
-    padding: 10rem var(--gutter);
     background: var(--color--black);
+  }
+
+  .home-gallery__stage {
+    position: relative;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  /* Inset to the overlay's width so the type safe zone is structural. */
+  .home-gallery__track {
+    position: absolute;
+    inset: 0 auto 0 38%;
+    display: flex;
+    align-items: center;
+    gap: 6vw;
+    padding-inline: 6vw;
+    width: max-content;
+    will-change: transform;
+  }
+
+  .home-gallery__item {
+    flex: 0 0 auto;
+    width: min(34vw, 26rem);
+  }
+
+  .home-gallery__overlay {
+    position: absolute;
+    inset: 0 auto 0 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1.25rem;
+    width: 38%;
+    padding-inline: var(--gutter);
   }
 
   .home-gallery__eyebrow {
@@ -57,33 +158,80 @@ const scents = await getProducts();
     color: var(--color--lilac-3);
   }
 
-  .home-gallery__procession {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-    gap: 2rem;
-    margin: 2rem 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .home-gallery__item {
+  .home-gallery__title {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    align-items: flex-start;
+    margin: 0;
+    font-size: var(--text--h2);
+    font-weight: 900;
+    font-stretch: 125%;
+    line-height: 0.95;
   }
 
-  .home-gallery__media {
-    width: 100%;
-    aspect-ratio: 3 / 4;
-    background: color-mix(in oklab, var(--scent-tint) 20%, var(--color--ink-1));
+  .home-gallery__readout {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .home-gallery__name {
     margin: 0;
-    font-family: var(--font--serif);
+    overflow: hidden;
+    font-family: "Instrument Serif", serif;
     font-size: var(--text--h3);
     font-style: italic;
-    color: var(--scent-tint);
+    line-height: 1.1;
+  }
+
+  .home-gallery__notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    margin: 0;
+    padding: 0;
+    font-size: var(--text--h6);
+    color: var(--color--lilac-2);
+    list-style: none;
+  }
+
+  .home-gallery__notes li + li::before {
+    content: "· ";
+    color: var(--color--lilac-3);
+  }
+
+  .home-gallery__price {
+    margin: 0;
+    font-size: var(--text--h5);
+  }
+
+  /* --- reduced-motion layout (M §9) --- */
+  .home-gallery__static {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 2.5rem;
+    margin: 0;
+    padding: 6rem var(--gutter);
+    list-style: none;
+  }
+
+  .home-gallery__static-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .home-gallery__static-name {
+    margin: 0.5rem 0 0;
+    font-family: "Instrument Serif", serif;
+    font-size: var(--text--h4);
+    font-style: italic;
+  }
+
+  .home-gallery__static-notes {
+    margin: 0;
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
   }
 </style>

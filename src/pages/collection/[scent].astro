@@ -3,9 +3,13 @@
 // attribute swap, nothing else recolored manually). Sections: 3.1 scent
 // hero, 3.2 note pyramid (M §4.6), 3.4 cross-sell. 3.3 formula story is
 // copy-blocked ([draft], ships w4 per RFC-001 C1) — section omitted until
-// copy lands. Bottle: light study (M §8, ADR-013) — placeholder wash
-// until the composited stills land (06 §1).
+// copy lands. Bottle: the light study (M §8, ADR-013) with drag-to-light
+// per M §4.4b — the hero is laid out to fit one viewport at ≥725px so
+// product, price and add-to-cart are all reachable without scrolling
+// (03 §3.1 acceptance, review OSV-05).
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LightStudy from "../../components/LightStudy.astro";
+import { stillFor } from "../../lib/stills";
 import { withBase } from "../../lib/url";
 import {
   absoluteUrl,
@@ -54,85 +58,110 @@ const rows = [
   <div data-scent={product.scent} data-pdp>
     {/* 3.1 scent hero */}
     <section class="pdp-hero" data-nav-theme="scent">
-      <div class="pdp-hero__info">
-        <p class="pdp-hero__eyebrow" data-eyebrow>
-          batch {product.batch} — eau de parfum
-        </p>
-        <h1 class="pdp-hero__name">
-          <em>{article}</em>{" "}
-          {rest.join(" ")}
-        </h1>
-        <p class="pdp-hero__character">{product.character}</p>
+      <div class="pdp-hero__column">
+        <div class="pdp-hero__info">
+          <p class="pdp-hero__eyebrow" data-eyebrow>
+            batch {product.batch} — eau de parfum
+          </p>
+          <h1 class="pdp-hero__name">
+            <em>{article}</em>{" "}
+            {rest.join(" ")}
+          </h1>
+          <p class="pdp-hero__character">{product.character}</p>
+        </div>
+
+        {
+          /* 3.1 purchase row — inline in the hero's left column at desktop,
+          fixed bottom bar ≤767px (03 §3.1). Its own grid area so the
+          mobile bar can detach without reflowing the column. */
+        }
+        <div class="pdp-buy">
+          <div class="pdp-buy__chips" role="group" aria-label="size">
+            {
+              product.variants.map((variant, i) => (
+                <button
+                  class="pdp-buy__chip"
+                  type="button"
+                  data-size-chip
+                  data-sku={variant.sku}
+                  data-price={`€${variant.price}`}
+                  aria-pressed={i === 0}
+                  {...(i === 0 ? { "data-selected": true } : {})}
+                >
+                  {variant.size}
+                </button>
+              ))
+            }
+            {limited && <span class="pdp-buy__limited">limited</span>}
+          </div>
+
+          <p class="pdp-buy__price" data-price>
+            €{available[0]?.price ?? product.variants[0].price}
+          </p>
+
+          {
+            soldOut ? (
+              <>
+                {/* B3 sold-out: disabled primary + get-notified line input */}
+                <button class="btn-primary" type="button" disabled>
+                  <span data-btn-label>sold out — next batch soon</span>
+                </button>
+                <form class="pdp-buy__notify" data-notify-form>
+                  <label
+                    class="visually-hidden"
+                    for={`notify-${product.scent}`}
+                  >
+                    Email
+                  </label>
+                  <input
+                    id={`notify-${product.scent}`}
+                    type="email"
+                    name="email"
+                    placeholder="your email"
+                    required
+                  />
+                  <button class="pdp-buy__notify-btn" type="submit">
+                    get notified
+                  </button>
+                </form>
+                <p class="pdp-buy__notify-done" data-notify-done hidden>
+                  you're in the current.
+                </p>
+              </>
+            ) : (
+              <button class="btn-primary" type="button" data-add-to-cart>
+                <span data-btn-label>add to cart</span>
+              </button>
+            )
+          }
+        </div>
       </div>
 
       {
-        /* 03 §3.1 — the bottle. INTERIM (ADR-013): the Three.js scene is
-          deleted; the light study (M §8) rebuilds this with drag-to-light
-          in the next PR. Duotone wash placeholder until then (ADR-008). */
+        /* 03 §3.1 — the bottle as a light study (M §8). Drag moves the
+          light, not the object (M §4.4b); modules/pdp-bottle.ts wires the
+          pointer and keyboard controls to this stage. */
       }
-      <div class="pdp-hero__bottle">
-        <div class="pdp-hero__bottle-wash" aria-hidden="true"></div>
+      <div
+        class="pdp-hero__bottle"
+        data-pdp-bottle
+        tabindex="0"
+        role="slider"
+        aria-label={`lighting on the ${product.name} bottle`}
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="50"
+        aria-valuetext="centred"
+      >
+        <LightStudy
+          scent={product.scent}
+          alt={`${product.name} bottle`}
+          image={stillFor(product.scent)}
+          width={900}
+          eager
+        />
       </div>
     </section>
-
-    {/* 3.1 purchase row — sticky bottom bar ≤767px (CSS below) */}
-    <div class="pdp-buy">
-      <div class="pdp-buy__chips" role="group" aria-label="size">
-        {
-          product.variants.map((variant, i) => (
-            <button
-              class="pdp-buy__chip"
-              type="button"
-              data-size-chip
-              data-sku={variant.sku}
-              data-price={`€${variant.price}`}
-              aria-pressed={i === 0}
-              {...(i === 0 ? { "data-selected": true } : {})}
-            >
-              {variant.size}
-            </button>
-          ))
-        }
-        {limited && <span class="pdp-buy__limited">limited</span>}
-      </div>
-
-      <p class="pdp-buy__price" data-price>
-        €{available[0]?.price ?? product.variants[0].price}
-      </p>
-
-      {
-        soldOut ? (
-          <>
-            {/* B3 sold-out: disabled primary + get-notified line input */}
-            <button class="btn-primary" type="button" disabled>
-              <span data-btn-label>sold out — next batch soon</span>
-            </button>
-            <form class="pdp-buy__notify" data-notify-form>
-              <label class="visually-hidden" for={`notify-${product.scent}`}>
-                Email
-              </label>
-              <input
-                id={`notify-${product.scent}`}
-                type="email"
-                name="email"
-                placeholder="your email"
-                required
-              />
-              <button class="pdp-buy__notify-btn" type="submit">
-                get notified
-              </button>
-            </form>
-            <p class="pdp-buy__notify-done" data-notify-done hidden>
-              you're in the current.
-            </p>
-          </>
-        ) : (
-          <button class="btn-primary" type="button" data-add-to-cart>
-            <span data-btn-label>add to cart</span>
-          </button>
-        )
-      }
-    </div>
 
     {/* 3.2 note pyramid (M §4.6) */}
     <section
@@ -191,15 +220,32 @@ const rows = [
     white-space: nowrap;
   }
 
+  /* 03 §3.1 — the hero has to FIT one viewport: product, price and
+     add-to-cart all reachable without scrolling. It previously ran to
+     149vh with `align-items: center`, which centred the content out of
+     view and pushed the bottle 291px below the fold (review OSV-05).
+     Rows are sized to content and the whole grid is centred as a block,
+     so the column can never grow taller than the section. */
   .pdp-hero {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--grid-gap);
+    grid-template-areas: "column bottle";
     align-items: center;
+    gap: var(--grid-gap);
     min-height: 100vh;
     min-height: 100svh;
-    padding: 8rem var(--gutter) 4rem;
+    padding: calc(var(--nav-height) + 3rem) var(--gutter) 3rem;
     background: var(--color--black);
+  }
+
+  /* Name block and buy row travel together — the bottle spans the full
+     hero height, so any slack has to land outside this column rather
+     than opening a void between the character line and the CTA. */
+  .pdp-hero__column {
+    grid-area: column;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
   }
 
   .pdp-hero__eyebrow {
@@ -230,33 +276,30 @@ const rows = [
     max-width: 28ch;
   }
 
-  /* Bottle stage (03 §3.1). The light study mounts here (M §8); the wash
-     is the ADR-008 placeholder until the composited stills land. */
+  /* Bottle stage (03 §3.1) — the light study mounts here (M §8).
+     Capped so the hero always clears one viewport. */
   .pdp-hero__bottle {
-    position: relative;
-    aspect-ratio: 3 / 4;
-    border-radius: var(--radius--media);
+    grid-area: bottle;
+    place-self: center center;
+    width: 100%;
+    max-width: min(72vh, 40rem);
+
+    /* Horizontal drags move the light; vertical scroll stays native
+       (M §4.4b). */
+    touch-action: pan-y;
+    cursor: grab;
   }
 
-  .pdp-hero__bottle-wash {
-    position: absolute;
-    inset: 0;
-    border-radius: var(--radius--media);
-    background: radial-gradient(
-      ellipse 65% 55% at 50% 60%,
-      color-mix(in oklab, var(--scent-tint) 30%, transparent) 0%,
-      transparent 75%
-    );
+  .pdp-hero__bottle:active {
+    cursor: grabbing;
   }
 
-  /* Purchase row — sticky bottom bar ≤767px (03 §3.1) */
+  /* Purchase row — inline in the hero at desktop (03 §3.1) */
   .pdp-buy {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 1.5rem;
-    padding: 1.25rem var(--gutter);
-    background: var(--color--ink-1);
-    border-top: 1px solid var(--color--ink-3);
+    gap: 1rem 1.5rem;
   }
 
   .pdp-buy__chips {
@@ -297,6 +340,29 @@ const rows = [
 
   .pdp-buy .btn-primary {
     margin-left: auto;
+  }
+
+  /* ≤767px the buy row detaches into the fixed bottom bar the spec asks
+     for — below the nav (100), above page content. */
+  @media (width <= 48rem) {
+    .pdp-hero {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "bottle"
+        "column";
+      align-items: start;
+      padding-bottom: 8rem;
+    }
+
+    .pdp-buy {
+      position: fixed;
+      inset: auto 0 0;
+      z-index: 90;
+      gap: 0.75rem 1rem;
+      padding: 1rem var(--gutter);
+      background: var(--color--ink-1);
+      border-top: 1px solid var(--color--ink-3);
+    }
   }
 
   .pdp-buy .btn-primary:disabled {

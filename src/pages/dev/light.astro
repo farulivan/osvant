@@ -1,0 +1,291 @@
+---
+// /dev/light — the bottle-still acceptance harness (06 §2, M §8).
+//
+// This is the instrument the handoff checklist names. A candidate master
+// is accepted only when, in here:
+//   1. sweeping --light-angle 0 → 1 makes the highlight visibly MOVE —
+//      if it doesn't, the master carries its own baked lighting and
+//      double-lights against layers 3 and 4 (M §8.3);
+//   2. the silhouette edge stays clean against both grounds — the same
+//      alpha masks layers 3 and 4, so a contaminated edge reads as a
+//      glowing outline;
+//   3. all five overlaid register within 2px, or the procession jitters.
+//
+// Staging only, `noindex` — DevHarness handles both.
+import DevHarness from "../../layouts/DevHarness.astro";
+import LightStudy from "../../components/LightStudy.astro";
+import bottleVolt from "../../assets/img/stills/bottle-volt.png";
+
+const SCENTS = ["volt", "nocturne", "static", "fever", "halo"] as const;
+
+// Every scent points at the same master until the remaining four land —
+// which is exactly what the registration check needs to be meaningful.
+const stills = SCENTS.map((scent) => ({ scent, image: bottleVolt }));
+---
+
+<DevHarness title="light study" spec="M §8 · 06 §2">
+  <section class="panel" data-light-harness>
+    <div class="controls">
+      <label class="control">
+        <span class="control__label">
+          --light-angle <output data-angle-out>0.50</output>
+        </span>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value="0.5"
+          data-angle
+        />
+      </label>
+
+      <label class="control control--inline">
+        <input type="checkbox" data-ambient checked />
+        <span class="control__label">ambient oscillation (0.45 ↔ 0.55)</span>
+      </label>
+
+      <label class="control control--inline">
+        <input type="checkbox" data-sweep />
+        <span class="control__label">auto-sweep 0 → 1 (acceptance check 1)</span
+        >
+      </label>
+
+      <label class="control control--inline">
+        <input type="checkbox" data-light-ground />
+        <span class="control__label">light ground (edge/fringe check)</span>
+      </label>
+
+      <fieldset class="control control--layers">
+        <legend class="control__label">isolate layer</legend>
+        {
+          ["all", "wash", "caustic", "bottle", "sheen", "rim", "vapor"].map(
+            (layer, i) => (
+              <label class="control--inline">
+                <input
+                  type="radio"
+                  name="layer"
+                  value={layer}
+                  checked={i === 0}
+                  data-layer
+                />
+                <span>{layer}</span>
+              </label>
+            ),
+          )
+        }
+      </fieldset>
+    </div>
+
+    <div class="stages" data-stages>
+      {
+        stills.map(({ scent, image }) => (
+          <figure class="stage" data-stage>
+            <LightStudy
+              scent={scent}
+              alt={`the ${scent} bottle`}
+              image={image}
+              width={620}
+              eager
+            />
+            <figcaption>{scent}</figcaption>
+          </figure>
+        ))
+      }
+    </div>
+
+    <div class="registration">
+      <p class="registration__note">
+        Registration check — all five stacked at 40% opacity. Any silhouette
+        that does not sit exactly on the others will read as a double edge here,
+        and as a jitter in the procession.
+      </p>
+      <div class="registration__stack">
+        {
+          stills.map(({ scent, image }) => (
+            <LightStudy scent={scent} alt="" image={image} width={620} eager />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</DevHarness>
+
+<script>
+  import { createLightStudy } from "../../scripts/modules/light-study";
+  import gsap from "gsap";
+
+  const root = document.querySelector<HTMLElement>("[data-light-harness]");
+  const stages = root?.querySelectorAll<HTMLElement>("[data-light-study]");
+  if (root && stages?.length) {
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const studies = [...stages].map((stage) =>
+      createLightStudy(stage, { reducedMotion }),
+    );
+
+    const angleInput = root.querySelector<HTMLInputElement>("[data-angle]");
+    const angleOut = root.querySelector<HTMLOutputElement>("[data-angle-out]");
+    const ambient = root.querySelector<HTMLInputElement>("[data-ambient]");
+    const sweep = root.querySelector<HTMLInputElement>("[data-sweep]");
+    const ground = root.querySelector<HTMLInputElement>("[data-light-ground]");
+
+    const show = (angle: number) => {
+      if (angleOut) angleOut.textContent = angle.toFixed(2);
+      if (angleInput) angleInput.value = String(angle);
+    };
+
+    const setAll = (angle: number) => {
+      for (const study of studies) study.set(angle);
+      show(angle);
+    };
+
+    angleInput?.addEventListener("input", () => {
+      if (ambient) ambient.checked = false;
+      if (sweep) sweep.checked = false;
+      sweepTween?.kill();
+      setAll(Number(angleInput.value));
+    });
+
+    ambient?.addEventListener("change", () => {
+      if (ambient.checked) {
+        for (const study of studies) study.resumeAmbient();
+      } else {
+        for (const study of studies) study.stopAmbient();
+      }
+    });
+
+    let sweepTween: gsap.core.Tween | null = null;
+    sweep?.addEventListener("change", () => {
+      sweepTween?.kill();
+      if (!sweep.checked) return;
+      if (ambient) ambient.checked = false;
+      const carrier = { angle: 0 };
+      sweepTween = gsap.fromTo(
+        carrier,
+        { angle: 0 },
+        {
+          angle: 1,
+          duration: 4,
+          ease: "none",
+          yoyo: true,
+          repeat: -1,
+          onUpdate: () => setAll(carrier.angle),
+        },
+      );
+    });
+
+    ground?.addEventListener("change", () => {
+      root.classList.toggle("panel--light", ground.checked);
+    });
+
+    root.querySelectorAll<HTMLInputElement>("[data-layer]").forEach((radio) => {
+      radio.addEventListener("change", () => {
+        root.dataset.isolate = radio.value;
+      });
+    });
+  }
+</script>
+
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 2.5rem;
+    align-items: flex-start;
+    padding: 1.25rem;
+    background: var(--color--ink-1);
+    border-radius: var(--radius--xs);
+  }
+
+  .control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 16rem;
+  }
+
+  .control--inline {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .control--layers {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 0.75rem;
+    border: 1px solid var(--color--ink-3);
+    border-radius: var(--radius--xs);
+    padding: 0.75rem;
+  }
+
+  .control__label {
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1.5rem;
+  }
+
+  .stage {
+    margin: 0;
+  }
+
+  .stage figcaption {
+    margin-top: 0.5rem;
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .registration__note {
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.06em;
+    color: var(--color--lilac-3);
+    max-width: 60ch;
+  }
+
+  .registration__stack {
+    position: relative;
+    display: grid;
+    max-width: 24rem;
+  }
+
+  .registration__stack > :global(*) {
+    grid-area: 1 / 1;
+    opacity: 0.4;
+  }
+
+  /* Alpha/fringe check — the same silhouette against a pale ground. */
+  .panel--light {
+    background: var(--color--lilac-1);
+    padding: 1.5rem;
+    border-radius: var(--radius--xs);
+  }
+
+  /* Layer isolation. Names match the M §8.1 table.
+     `visibility`, never `display: none` — hiding a grid child collapses
+     the stage box, which rescales the mask and makes the diagnostic
+     report a registration fault that isn't there. */
+  [data-isolate="wash"] :global(.light-study > *:not(.light-study__wash)),
+  [data-isolate="caustic"] :global(.light-study > *:not(.light-study__caustic)),
+  [data-isolate="bottle"] :global(.light-study > *:not(.light-study__bottle)),
+  [data-isolate="sheen"] :global(.light-study > *:not(.light-study__sheen)),
+  [data-isolate="rim"] :global(.light-study > *:not(.light-study__rim)),
+  [data-isolate="vapor"] :global(.light-study > *:not(.light-study__vapor)) {
+    visibility: hidden;
+  }
+</style>
