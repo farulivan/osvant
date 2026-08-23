@@ -1,8 +1,15 @@
 ---
-// Home collection gallery (03 §1.4, M §4.4). Pinned WebGL procession of
-// the five scents — placeholder procedural bottles per ADR-008 until the
-// GLBs land (06 §1). [data-gallery-fallback] is the M §8 / §9 static
-// layout: no WebGL, low memory, or reduced motion all resolve here.
+// Home collection gallery (03 §1.4, M §4.4).
+//
+// INTERIM (ADR-013): the Three.js procession is deleted. The light study
+// (M §8) rebuilds this section as a pinned track of five composited
+// stills; until then the honest placeholder is the static 5-up
+// procession, which already carries the section's information
+// architecture. Entrance rides the shared card behaviour (M §4.3) so the
+// section still declares a motion behaviour (M §0.1).
+//
+// Everything still missing here is tracked: no h2 (OSV-09), no notes or
+// price in the overlay (OSV-09/20).
 import { withBase } from "../lib/url";
 import { getProducts } from "../lib/commerce";
 
@@ -11,46 +18,22 @@ const scents = await getProducts();
 
 <section
   class="home-gallery"
-  data-module="gallery"
   data-nav-theme="scent"
   data-scent={scents[0]?.scent}
   aria-label="the collection — five currents"
 >
-  <div class="home-gallery__stage" data-gallery-stage>
-    <canvas class="home-gallery__canvas" data-gallery-canvas aria-hidden="true"
-    ></canvas>
+  <p class="home-gallery__eyebrow" data-eyebrow>the collection</p>
 
-    <div class="home-gallery__label">
-      <p class="home-gallery__eyebrow" data-eyebrow>the collection</p>
-      <p class="home-gallery__name" data-gallery-name aria-live="polite">
-        {scents[0]?.name}
-      </p>
-      <a
-        class="btn-secondary"
-        data-gallery-discover
-        href={withBase(`collection/${scents[0]?.scent}/`)}
-      >
-        <span data-btn-label>discover -&gt;</span>
-      </a>
-    </div>
-  </div>
-
-  {
-    /* M §8 fallback — turntable WebMs land with the GLBs (06 §1); until
-      then duotone tint blocks carry the identical IA. */
-  }
-  <ul class="home-gallery__fallback" data-gallery-fallback hidden>
+  <ul class="home-gallery__procession">
     {
       scents.map((scent) => (
         <li
-          class="home-gallery__fallback-item"
+          class="home-gallery__item"
           data-scent={scent.scent}
-          data-gallery-scent
-          data-name={scent.name}
-          data-href={withBase(`collection/${scent.scent}/`)}
+          data-anim="card"
         >
-          <div class="home-gallery__fallback-media" aria-hidden="true" />
-          <p class="home-gallery__fallback-name">{scent.name}</p>
+          <div class="home-gallery__media" aria-hidden="true" />
+          <p class="home-gallery__name">{scent.name}</p>
           <a class="btn-text" href={withBase(`collection/${scent.scent}/`)}>
             discover
           </a>
@@ -62,31 +45,8 @@ const scents = await getProducts();
 
 <style>
   .home-gallery {
+    padding: 10rem var(--gutter);
     background: var(--color--black);
-  }
-
-  .home-gallery__stage {
-    position: relative;
-    height: 100vh;
-    height: 100dvh;
-    overflow: hidden;
-  }
-
-  .home-gallery__canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .home-gallery__label {
-    position: absolute;
-    left: var(--gutter);
-    bottom: 12vh;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
   }
 
   .home-gallery__eyebrow {
@@ -97,40 +57,29 @@ const scents = await getProducts();
     color: var(--color--lilac-3);
   }
 
-  .home-gallery__name {
-    margin: 0;
-    overflow: hidden;
-    font-family: var(--font--serif);
-    font-size: var(--text--h1);
-    font-style: italic;
-    line-height: 1.1;
-    color: var(--scent-tint);
-  }
-
-  /* Fallback (M §8/§9): static procession, same IA as the 3D moment */
-  .home-gallery__fallback {
+  .home-gallery__procession {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
     gap: 2rem;
-    margin: 0;
-    padding: 15vh var(--gutter);
+    margin: 2rem 0 0;
+    padding: 0;
     list-style: none;
   }
 
-  .home-gallery__fallback-item {
+  .home-gallery__item {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
     align-items: flex-start;
   }
 
-  .home-gallery__fallback-media {
+  .home-gallery__media {
     width: 100%;
     aspect-ratio: 3 / 4;
     background: color-mix(in oklab, var(--scent-tint) 20%, var(--color--ink-1));
   }
 
-  .home-gallery__fallback-name {
+  .home-gallery__name {
     margin: 0;
     font-family: var(--font--serif);
     font-size: var(--text--h3);
