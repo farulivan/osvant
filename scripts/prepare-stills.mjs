@@ -102,7 +102,7 @@ function deMatte(data, width, height) {
  * The edge is then softened over a two-pixel band using colour distance,
  * so the cutout is anti-aliased rather than stair-stepped.
  */
-async function keyBackground(data, width, height) {
+async function keyBackground(data, width, height, borrowedSilhouette) {
   const at = (x, y) => (y * width + x) * 4;
 
   // Backdrop colour, averaged over the four corners.
@@ -133,73 +133,120 @@ async function keyBackground(data, width, height) {
 
   // Tight tolerance so the flood stops at the faintest glass contour;
   // anything it leaks through would take the whole silhouette with it.
-  // Tight. Nocturne's clear glass is all but identical to its backdrop,
-  // so at 10 the fill walked straight through the contour and swallowed
-  // the entire panel — not a thin channel the seal could close, but the
-  // whole glass body, leaving a floating liquid blob. Background noise
-  // this misses is left as small clusters, which `dropSpecks` clears.
-  const FLOOD_TOLERANCE = 5;
+  // Two tolerances, because one cannot do both jobs. A backdrop is never
+  // perfectly flat — it drifts by several levels across the frame — so a
+  // single global threshold either stops early and leaves unflooded
+  // patches clinging to the bottle, or is loosened until it walks through
+  // the glass contour and swallows the panel. Nocturne failed both ways.
+  //
+  // So the fill grows LOCALLY: a pixel joins the background when it
+  // matches the neighbour it spread from, which follows a smooth gradient
+  // indefinitely while still stopping dead at the step the glass edge
+  // makes. The global bound only decides where the fill may start.
+  const SEED_TOLERANCE = 12;
+  const LOCAL_TOLERANCE = 2;
+  /**
+   * Colour similarity alone is not enough to contain the fill. The
+   * silhouette's contour is strong everywhere it matters — measured at a
+   * 59–150 level step across all five masters — but it only takes ONE
+   * weak point for the fill to slip inside, and once in, the clear glass
+   * is indistinguishable from the backdrop so it consumes the whole
+   * panel. Nocturne failed exactly that way while its neighbours did not.
+   *
+   * So the contour is made an explicit wall: the fill may not enter any
+   * pixel whose local gradient says an edge runs through it. Backdrop
+   * gradient is 0–3, so the fill still moves freely across it.
+   */
+  const EDGE_WALL = 12;
   /** Colour distance at which the outer edge counts as fully opaque. */
   const SOLID_AT = 22;
-  // Clear glass transmits whatever is behind it, so on a white backdrop
-  // the panels photograph white — and a binary cut ships that white onto
-  // a near-black page as frosted plastic. Alpha INSIDE the silhouette
-  // therefore tracks colour distance too: backdrop-coloured glass becomes
-  // transmissive while liquid, cap and label stay solid. That is also
-  // what lets the tint wash and caustic (layers 0 and 1, behind the
-  // bottle) glow through the glass, which is the point of the stack
-  // (M §8.1).
-  // Brightness distance alone cannot separate clear glass from a PALE
-  // liquid: static and halo sit only a few levels off a white backdrop,
-  // so a ramp tuned to spare the glass drains their liquid to grey, and
-  // one tuned to keep the liquid turns ordinary refraction into patchy,
-  // ragged glass. Chroma settles it — clear glass is neutral (R≈G≈B)
-  // whatever its brightness, and any liquid carries hue. Solidity takes
-  // whichever signal is stronger.
-  const GLASS_RAMP = 96;
-  /** Chroma at which a pixel is unambiguously liquid, not glass. Low,
-   * because static and halo are the palest liquids in the set and were
-   * mottling — their hue is faint, but it is still hue. */
+
+  // Inside the silhouette the bottle is SOLID. Deriving per-pixel alpha
+  // from a clear object photographed on white amplifies noise instead of
+  // revealing glass — clear glass barely differs from the backdrop, so
+  // any alpha computed from that difference is mostly grain, and the
+  // panels came out blotchy and torn. The glass is handled in colour.
+  //
+  // The trick is that the matte inverts. On white, glass structure reads
+  // DARK (edges bend light away from the lens); on near-black the same
+  // structure would catch light and read BRIGHT. So for pixels sitting
+  // just below the backdrop — that is, clear glass and its faint
+  // detail — brightness is remapped: backdrop-white becomes page-dark,
+  // and the further a pixel dips below the backdrop the brighter it is
+  // drawn. Anything well below the backdrop (cap, label, liquid) is a
+  // real object and keeps its own colour.
+  const bgLuminance = 0.2126 * bg[0] + 0.7152 * bg[1] + 0.0722 * bg[2];
+  /** How far below the backdrop still counts as clear glass. */
+  const GLASS_WINDOW = 46;
+  /** Ceiling on how bright re-lit glass structure may be drawn. */
+  const GLASS_GAIN = 0.8;
+  /** Floor, so a very clean master's glass still has body. Where the
+   * glass sits at almost exactly backdrop luminance the re-lighting maps
+   * it to zero, and the bottle loses its walls entirely — nocturne
+   * rendered as a floating liquid with no glass around it. */
+  const GLASS_BASE = 0.11;
+  /** Above this chroma a pixel is liquid, not glass, and keeps its hue. */
   const CHROMA_SOLID = 11;
-  /** Glass never goes fully clear — its structure has to stay readable. */
-  const GLASS_FLOOR = 0.14;
-  /**
-   * Transmissive pixels keep the backdrop's colour, which over a near-black
-   * page composites as a grey haze rather than a highlight — most visible
-   * across the label panel. Darkening them in proportion to how
-   * transmissive they are keeps the glass structure while dropping the
-   * glare; solid pixels are untouched.
-   */
-  const GLASS_DARKEN = 0.55;
 
   const isBackground = new Uint8Array(width * height);
   const queue = [];
 
-  const consider = (x, y) => {
+  const luminance = (i) =>
+    0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+
+  /** Sobel-lite gradient magnitude — where an edge runs, this is large. */
+  const gradient = new Uint8Array(width * height);
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
+      const i = (y * width + x) * 4;
+      const dx = Math.abs(luminance(i + 4) - luminance(i - 4));
+      const dy = Math.abs(luminance(i + width * 4) - luminance(i - width * 4));
+      gradient[y * width + x] = Math.min(255, Math.round(dx + dy));
+    }
+  }
+
+  /** Per-channel difference between two pixels. */
+  const step = (a, b) =>
+    Math.max(
+      Math.abs(data[a] - data[b]),
+      Math.abs(data[a + 1] - data[b + 1]),
+      Math.abs(data[a + 2] - data[b + 2]),
+    );
+
+  const seed = (x, y) => {
     const p = y * width + x;
     if (isBackground[p]) return;
-    if (distance(p * 4) > FLOOD_TOLERANCE) return;
+    if (distance(p * 4) > SEED_TOLERANCE) return;
+    isBackground[p] = 1;
+    queue.push(p);
+  };
+
+  const grow = (x, y, from) => {
+    const p = y * width + x;
+    if (isBackground[p]) return;
+    if (gradient[p] > EDGE_WALL) return; // the contour is a wall
+    if (step(p * 4, from * 4) > LOCAL_TOLERANCE) return;
     isBackground[p] = 1;
     queue.push(p);
   };
 
   for (let x = 0; x < width; x++) {
-    consider(x, 0);
-    consider(x, height - 1);
+    seed(x, 0);
+    seed(x, height - 1);
   }
   for (let y = 0; y < height; y++) {
-    consider(0, y);
-    consider(width - 1, y);
+    seed(0, y);
+    seed(width - 1, y);
   }
 
   for (let head = 0; head < queue.length; head++) {
     const p = queue[head];
     const x = p % width;
     const y = (p - x) / width;
-    if (x > 0) consider(x - 1, y);
-    if (x < width - 1) consider(x + 1, y);
-    if (y > 0) consider(x, y - 1);
-    if (y < height - 1) consider(x, y + 1);
+    if (x > 0) grow(x - 1, y, p);
+    if (x < width - 1) grow(x + 1, y, p);
+    if (y > 0) grow(x, y - 1, p);
+    if (y < height - 1) grow(x, y + 1, p);
   }
 
   // JPEG noise in a backdrop leaves specks the flood cannot reach, and
@@ -219,10 +266,18 @@ async function keyBackground(data, width, height) {
   // the enclosed glass, without touching the nuanced interior alpha.
   await sealSilhouette(isBackground, width, height);
 
+  if (borrowedSilhouette) isBackground.set(borrowedSilhouette);
+
+  // And again afterwards. Making the contour a wall also stops the fill
+  // crossing incidental edges in the BACKDROP — a faint reflection line
+  // under the bottle, say — stranding strips of unflooded backdrop beside
+  // the object. Sealing separates them from the body; this clears them.
+  dropSpecks(isBackground, width, height);
+
   // Object pixels touching the background get a soft, colour-derived
   // alpha; everything deeper is solid. Two passes over a 2px band.
   const out = Buffer.alloc(width * height * 4);
-  let transmissive = 0;
+  let relit = 0;
 
   /** Averages a per-pixel measure over the 3×3 neighbourhood, which keeps
    * JPEG ringing around label text from spiking into visible specks. */
@@ -240,7 +295,6 @@ async function keyBackground(data, width, height) {
     }
     return n === 0 ? 0 : sum / n;
   };
-  const meanDistance = smoothed(distance);
   const meanChroma = smoothed(chroma);
 
   const nearBackground = (x, y) => {
@@ -267,43 +321,54 @@ async function keyBackground(data, width, height) {
         continue;
       }
 
-      const d = distance(i);
+      // Solid inside; only the outer contour is feathered, so the
+      // silhouette can never come out ragged.
+      const contour = nearBackground(x, y);
+      out[i + 3] = contour
+        ? Math.round(255 * Math.min(1, distance(i) / SOLID_AT))
+        : 255;
 
-      if (nearBackground(x, y)) {
-        // Outer contour: anti-alias out, and borrow colour from a clean
-        // neighbour so no backdrop bleed survives in the edge.
-        out[i + 3] = Math.round(255 * Math.min(1, d / SOLID_AT));
+      if (contour) {
         const donor = nearestInterior(isBackground, width, height, x, y);
         if (donor !== null) {
           out[i] = data[donor];
           out[i + 1] = data[donor + 1];
           out[i + 2] = data[donor + 2];
         }
-      } else {
-        // JPEG ringing around high-contrast label text spikes the local
-        // colour distance, and at these alphas each spike shows as a
-        // speck of bright glass. Averaging the distance over a 3×3
-        // neighbourhood kills the noise without softening the real edges,
-        // which are an order of magnitude stronger.
-        const solidity = Math.max(
-          meanDistance(x, y) / GLASS_RAMP,
-          meanChroma(x, y) / CHROMA_SOLID,
+        continue;
+      }
+
+      const luminance =
+        0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+      const dip = bgLuminance - luminance;
+
+      if (dip < GLASS_WINDOW && meanChroma(x, y) < CHROMA_SOLID) {
+        // Clear glass: re-light it. Backdrop-level goes to page-dark,
+        // and the faint dark structure becomes the bright edge it would
+        // be against a dark ground.
+        const structure = Math.max(
+          0,
+          Math.min(1, (dip / GLASS_WINDOW) * GLASS_GAIN),
         );
-        const alpha = Math.max(GLASS_FLOOR, Math.min(1, solidity));
-        out[i + 3] = Math.round(255 * alpha);
-        if (alpha < 0.95) {
-          transmissive++;
-          const shade = GLASS_DARKEN + (1 - GLASS_DARKEN) * alpha;
-          out[i] = Math.round(data[i] * shade);
-          out[i + 1] = Math.round(data[i + 1] * shade);
-          out[i + 2] = Math.round(data[i + 2] * shade);
-        }
+        const lit = Math.round(
+          255 * (GLASS_BASE + (1 - GLASS_BASE) * structure),
+        );
+        out[i] = lit;
+        out[i + 1] = lit;
+        out[i + 2] = lit;
+        relit++;
       }
     }
   }
 
   const keyed = isBackground.reduce((n, v) => n + v, 0);
-  return { out, bg, keyedPixels: keyed, transmissivePixels: transmissive };
+  return {
+    out,
+    bg,
+    keyedPixels: keyed,
+    relitPixels: relit,
+    silhouette: isBackground,
+  };
 }
 
 /**
@@ -371,6 +436,24 @@ async function reshape(mask, width, height, sigma, cutoff) {
   return out;
 }
 
+/**
+ * Masters whose silhouette is borrowed from another scent's.
+ *
+ * Every master is the same bottle at the same framing — identical source
+ * dimensions, and they register within a pixel of each other once keyed.
+ * So when one image defeats the keyer, the honest fix is not to keep
+ * bending the algorithm around it: take the silhouette from a sibling
+ * that keyed cleanly and let the difficult master supply only its colour.
+ * Nocturne's clear glass gives the fill a way in that the others do not,
+ * and chasing it was costing the four that already worked.
+ *
+ * A per-master escape hatch, not a default. Remove an entry when a
+ * replacement master keys on its own.
+ */
+const BORROWED_SILHOUETTE = {
+  nocturne: "volt",
+};
+
 /** Radius, in pixels, of the widest leak channel worth sealing. */
 const SEAL_RADIUS = 5;
 
@@ -380,17 +463,23 @@ async function sealSilhouette(isBackground, width, height) {
     object[p] = isBackground[p] ? 0 : 255;
   }
 
-  // Close: grow past the leak, then shrink back to the original outline.
+  // Order matters, and getting it wrong is what kept nocturne broken.
+  // Where the fill has slipped inside a glass panel, what survives is the
+  // panel's OUTLINE — a few pixels wide, but a complete one. Eroding
+  // before filling destroys exactly those thin strips (a 3px line blurred
+  // by this radius never climbs back over the erode threshold), and with
+  // the outline gone the fill leaks everywhere. So: dilate to knit the
+  // outline shut, FILL, and only then erode back — by which point the
+  // interior is solid and has nothing left to lose.
   const grown = await reshape(object, width, height, SEAL_RADIUS, 40);
-  const closed = await reshape(grown, width, height, SEAL_RADIUS, 215);
 
-  // Fill: anything the border cannot reach through the closed mask is
+  // Fill: anything the border cannot reach through the outline is
   // interior — the enclosed clear glass the leak had carved out.
   const outside = new Uint8Array(width * height);
   const queue = [];
   const consider = (x, y) => {
     const p = y * width + x;
-    if (outside[p] || closed[p]) return;
+    if (outside[p] || grown[p]) return;
     outside[p] = 1;
     queue.push(p);
   };
@@ -412,8 +501,13 @@ async function sealSilhouette(isBackground, width, height) {
     if (y < height - 1) consider(x, y + 1);
   }
 
+  const filled = new Uint8Array(width * height);
+  for (let p = 0; p < filled.length; p++) filled[p] = outside[p] ? 0 : 255;
+
+  // Now shrink back to the true outline.
+  const closed = await reshape(filled, width, height, SEAL_RADIUS, 215);
   for (let p = 0; p < isBackground.length; p++) {
-    isBackground[p] = outside[p] ? 1 : 0;
+    isBackground[p] = closed[p] ? 0 : 1;
   }
 }
 
@@ -460,7 +554,12 @@ function isFullyOpaque(data) {
   return true;
 }
 
-async function prepare(rawPath, outPath) {
+/** Scent slug from `bottle-<scent>-raw.<ext>`. */
+function scentOf(rawName) {
+  return rawName.replace(/^bottle-/, "").replace(/-raw\.(png|jpe?g)$/i, "");
+}
+
+async function prepare(rawPath, outPath, borrowFrom) {
   const name = basename(outPath);
   const { data: source, info } = await sharp(rawPath)
     .ensureAlpha()
@@ -473,9 +572,28 @@ async function prepare(rawPath, outPath) {
   let out;
   let report;
   if (isFullyOpaque(source)) {
-    const result = await keyBackground(source, width, height);
+    // A borrowed silhouette is keyed from ITS own master, in the shared
+    // source frame, then applied here — same camera, same framing, so the
+    // mask lands in register.
+    let mask;
+    if (borrowFrom) {
+      const donor = await sharp(borrowFrom)
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      if (donor.info.width !== width || donor.info.height !== height) {
+        throw new Error(
+          `${name}: cannot borrow a silhouette from a differently-sized master`,
+        );
+      }
+      const donorKey = await keyBackground(donor.data, width, height);
+      mask = donorKey.silhouette;
+    }
+    const result = await keyBackground(source, width, height, mask);
     out = result.out;
-    report = `keyed ${result.keyedPixels} px background, ${result.transmissivePixels} px transmissive glass`;
+    report = `keyed ${result.keyedPixels} px background, ${result.relitPixels} px glass re-lit${
+      borrowFrom ? " (silhouette borrowed)" : ""
+    }`;
   } else {
     const result = deMatte(source, width, height);
     out = result.out;
@@ -527,6 +645,14 @@ if (raws.length === 0) {
 } else {
   for (const raw of raws) {
     const out = raw.replace(/-raw\.(png|jpe?g)$/i, ".png");
-    await prepare(join(STILLS, raw), join(STILLS, out));
+    const donor = BORROWED_SILHOUETTE[scentOf(raw)];
+    const donorFile = donor
+      ? raws.find((candidate) => scentOf(candidate) === donor)
+      : undefined;
+    await prepare(
+      join(STILLS, raw),
+      join(STILLS, out),
+      donorFile ? join(STILLS, donorFile) : undefined,
+    );
   }
 }
