@@ -14,13 +14,13 @@
 // Staging only, `noindex` — DevHarness handles both.
 import DevHarness from "../../layouts/DevHarness.astro";
 import LightStudy from "../../components/LightStudy.astro";
-import bottleVolt from "../../assets/img/stills/bottle-volt.png";
+import { stillFor } from "../../lib/stills";
 
 const SCENTS = ["volt", "nocturne", "static", "fever", "halo"] as const;
 
-// Every scent points at the same master until the remaining four land —
-// which is exactly what the registration check needs to be meaningful.
-const stills = SCENTS.map((scent) => ({ scent, image: bottleVolt }));
+// Resolved through the same registry the real pages use, so the harness
+// can never disagree with what actually ships.
+const stills = SCENTS.map((scent) => ({ scent, image: stillFor(scent) }));
 ---
 
 <DevHarness title="light study" spec="M §8 · 06 §2">

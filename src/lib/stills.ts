@@ -5,16 +5,23 @@
 // masters is a one-line change per scent rather than a hunt through
 // components. Prepared masters come out of `pnpm stills` (06 §2).
 //
-// Until the other four land (06 §1 ledger), they fall back to volt. That
-// is deliberately visible rather than hidden: with the fallback in place
-// the five differ only by `--scent-tint`, which is exactly the argument
-// for producing the recolours — the tint drives four of the six light-
-// study layers but it cannot recolour the liquid.
+// All five delivered 2026-08-23. They register within 3px of each other
+// after the pipeline's re-canvas step, which normalises every master to
+// the same proportional margin — so the procession does not jitter as it
+// scrubs between them (06 §2 acceptance).
 import type { ImageMetadata } from "astro";
 import bottleVolt from "../assets/img/stills/bottle-volt.png";
+import bottleNocturne from "../assets/img/stills/bottle-nocturne.png";
+import bottleStatic from "../assets/img/stills/bottle-static.png";
+import bottleFever from "../assets/img/stills/bottle-fever.png";
+import bottleHalo from "../assets/img/stills/bottle-halo.png";
 
 const DELIVERED: Partial<Record<string, ImageMetadata>> = {
   volt: bottleVolt,
+  nocturne: bottleNocturne,
+  static: bottleStatic,
+  fever: bottleFever,
+  halo: bottleHalo,
 };
 
 /** The still for a scent, falling back to volt while masters are pending. */
