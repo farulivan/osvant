@@ -1,88 +1,100 @@
 /*
- * Asset guard (05-cicd §2, budgets from M §10 / 06-asset-pipeline):
- *   - raster images must be AVIF (SVG allowed for vectors)
- *   - bottle stills ≤ 180KB each (M §10)
- *   - no 3D models and no video ship in v1 (ADR-013)
+ * Asset guard (05-cicd §2, budgets from M §10 / 06-asset-pipeline).
+ *
+ * Revised for ADR-013 (no-3D re-scope): there is no 3D and no video asset
+ * class in v1, so `.glb`/`.gltf`/`.hdr` and anything under `assets/video/`
+ * are rejected outright rather than merely size-capped — a stray one means
+ * someone is rebuilding a withdrawn pipeline.
+ *
+ * Rules:
+ *   - no 3D or environment assets at all (ADR-013)
+ *   - no video asset class at all (ADR-013)
+ *   - raster images must be AVIF; OG images may also be PNG (06 §3)
+ *   - bottle stills ≤ 180KB each at 1× (M §10)
  *   - fonts must be woff2
+ *
+ * Walks both trees: `public/assets/` (served verbatim) and
+ * `src/assets/img/` (masters that Astro converts at build).
  * Zero dependencies — runs on bare Node in CI.
  */
 
-import { readdirSync, statSync } from "node:fs";
-import { extname, join, relative } from "node:path";
+import { existsSync, readdirSync, statSync } from "node:fs";
+import { basename, extname, join, relative } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname;
-const ASSETS = join(ROOT, "public", "assets");
-const BOTTLE_LIMIT_BYTES = 180 * 1024;
+const PUBLIC_ASSETS = join(ROOT, "public", "assets");
+const SRC_ASSETS = join(ROOT, "src", "assets");
+
+const BOTTLE_STILL_LIMIT_BYTES = 180 * 1024; // M §10
 const RASTER_BANNED = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif"]);
+const WITHDRAWN_EXTENSIONS = new Set([".glb", ".gltf", ".hdr", ".exr"]);
+const VIDEO_EXTENSIONS = new Set([".webm", ".mp4", ".mov", ".m4v"]);
 
 /** @returns {string[]} all file paths under dir, recursively */
 function walk(dir) {
+  if (!existsSync(dir)) return [];
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const path = join(dir, entry.name);
     return entry.isDirectory() ? walk(path) : [path];
   });
 }
 
-const files = walk(ASSETS).filter((f) => !f.endsWith(".gitkeep"));
+const files = [...walk(PUBLIC_ASSETS), ...walk(SRC_ASSETS)].filter(
+  (f) => !f.endsWith(".gitkeep"),
+);
 const violations = [];
 
 const rel = (f) => relative(ROOT, f);
 
 for (const file of files) {
   const ext = extname(file).toLowerCase();
-  const within = relative(ASSETS, file);
-  const topDir = within.split("/")[0];
+  const path = rel(file).replaceAll("\\", "/");
 
-  // ADR-013 withdrew real-time 3D and the alpha-turntable path. These asset
-  // classes are not "too big" — they must not exist at all.
-  if (ext === ".glb" || ext === ".gltf" || ext === ".hdr") {
+  if (WITHDRAWN_EXTENSIONS.has(ext)) {
     violations.push(
-      `${rel(file)} — 3D assets were withdrawn by ADR-013; the bottle ships as AVIF (M §8)`,
+      `${path} — 3D and HDR assets are withdrawn; the bottle ships as a composited still (ADR-013, M §8)`,
+    );
+    continue;
+  }
+
+  if (VIDEO_EXTENSIONS.has(ext) || path.includes("/assets/video/")) {
+    violations.push(
+      `${path} — no video asset class exists in v1 (ADR-013, 01 §6)`,
+    );
+    continue;
+  }
+
+  // OG images are the one raster exception: social crawlers do not decode
+  // AVIF, and 06 §3 names the delivery as `og-<scent|house>.avif→png`.
+  const isOgImage = path.includes("/og/");
+
+  if (RASTER_BANNED.has(ext) && !isOgImage) {
+    // Masters under src/ are converted to AVIF at build (06 §4), so their
+    // source format is the author's business — only shipped rasters bind.
+    if (!path.startsWith("src/assets/")) {
+      violations.push(`${path} — raster images must be AVIF (06 §2)`);
+    }
+  }
+
+  if (isOgImage && ![".png", ".avif", ".svg"].includes(ext)) {
+    violations.push(
+      `${path} — OG images must be PNG or AVIF (06 §3, RFC-001 C4)`,
     );
   }
 
-  if (topDir === "video") {
-    violations.push(
-      `${rel(file)} — no video asset class ships in v1 (ADR-013, 06 §1)`,
-    );
-  }
-
-  // Bottle stills carry the signature moment and load with the section, not
-  // the preloader — the budget keeps `/` under 900KB across the five (M §10).
-  if (within.startsWith("img/stills/") && ext === ".avif") {
+  // Bottle stills carry the signature moment on five images — the payload
+  // cap is what keeps `/` inside the ≤900KB total (M §10).
+  if (path.includes("/stills/") && ext === ".avif") {
     const { size } = statSync(file);
-    if (size > BOTTLE_LIMIT_BYTES) {
+    if (size > BOTTLE_STILL_LIMIT_BYTES) {
       violations.push(
-        `${rel(file)} — bottle still is ${(size / 1024).toFixed(0)}KB, limit 180KB (M §10)`,
+        `${path} — bottle still is ${(size / 1024).toFixed(0)}KB, limit 180KB at 1× (M §10)`,
       );
     }
   }
 
-  // OG images are the one raster exception: social crawlers do not decode
-  // AVIF, and 06 §3 names the delivery as `img/og/og-<scent|house>.avif→png`
-  // — the PNG is the shipped artifact, the AVIF its master.
-  const isOgImage = topDir === "img" && within.startsWith("img/og/");
-
-  if (
-    topDir === "img" &&
-    RASTER_BANNED.has(ext) &&
-    !(isOgImage && ext === ".png")
-  ) {
-    violations.push(
-      isOgImage
-        ? `${rel(file)} — OG images must be PNG or AVIF (06 §3, RFC-001 C4)`
-        : `${rel(file)} — raster images must be AVIF (06 §2)`,
-    );
-  }
-
-  if (isOgImage && ![".png", ".avif"].includes(ext)) {
-    violations.push(
-      `${rel(file)} — OG images must be PNG or AVIF (06 §3, RFC-001 C4)`,
-    );
-  }
-
-  if (topDir === "fonts" && ext !== ".woff2") {
-    violations.push(`${rel(file)} — fonts must be woff2 (06 §1)`);
+  if (path.includes("/fonts/") && ext !== ".woff2") {
+    violations.push(`${basename(file)} — fonts must be woff2 (06 §1)`);
   }
 }
 

@@ -13,9 +13,13 @@ interface Props {
   notes: string[];
   price: number;
   stagger?: number; // page-specific group stagger (03 §2: 0.05)
+  /** Grid columns to span in an asymmetric editorial row (03 §2).
+   * Lives here, not on the parent: a page-scoped `.grid > :nth-child()`
+   * rule can never match a component root (review OSV-04). */
+  span?: 1 | 2 | 3;
 }
 
-const { scent, name, batch, notes, price, stagger } = Astro.props;
+const { scent, name, batch, notes, price, stagger, span = 1 } = Astro.props;
 const [article, ...rest] = name.split(" ");
 ---
 
@@ -24,10 +28,11 @@ const [article, ...rest] = name.split(" ");
   data-scent={scent}
   data-anim="card"
   data-stagger={stagger}
+  data-span={span}
 >
   <p class="scent-card__eyebrow">batch {batch}</p>
   <h2 class="scent-card__name">
-    <em>{article}</em>
+    <em>{article}</em>{" "}
     {rest.join(" ")}
   </h2>
 
@@ -46,6 +51,21 @@ const [article, ...rest] = name.split(" ");
 </article>
 
 <style>
+  /* Asymmetric editorial rows (03 §2) — the card owns its own span. */
+  .scent-card[data-span="2"] {
+    grid-column: span 2;
+  }
+
+  .scent-card[data-span="3"] {
+    grid-column: 1 / -1;
+  }
+
+  @media (width <= 48rem) {
+    .scent-card[data-span] {
+      grid-column: auto;
+    }
+  }
+
   .scent-card {
     display: flex;
     flex-direction: column;
@@ -76,9 +96,13 @@ const [article, ...rest] = name.split(" ");
     font-weight: 400;
   }
 
-  /* Bottle render placeholder (ADR-008) — scent-tinted duotone wash */
+  /* Bottle render placeholder (ADR-008) — scent-tinted duotone wash.
+     Bounded height, not a bare aspect-ratio: once the asymmetric rows
+     actually apply (review OSV-04) a span-2 card is ~950px wide, and
+     3/4 of that is a 1266px-tall slab. Height still reserves its own
+     space, so the CLS budget is unaffected (M §8.4). */
   .scent-card__bottle {
-    aspect-ratio: 3 / 4;
+    height: clamp(11rem, 18vw, 18rem);
     border-radius: var(--radius--media);
     background: radial-gradient(
       ellipse 70% 55% at 50% 62%,

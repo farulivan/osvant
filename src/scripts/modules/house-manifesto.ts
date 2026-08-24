@@ -51,7 +51,10 @@ export const houseManifesto: PageModule = {
     });
 
     lines.forEach((line) => {
-      const split = new SplitText(line, { type: "chars" });
+      const split = new SplitText(line, {
+        type: "words,chars",
+        wordsClass: "split-word",
+      });
       splits.push(split);
       gsap.set(split.chars, { color: dim });
       timeline!.to(split.chars, { color: lit, stagger: 0.5 });

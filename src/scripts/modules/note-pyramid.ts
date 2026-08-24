@@ -4,6 +4,12 @@
 // masked chars like M §4.2). Each row's ScrollTrigger chains at
 // start "top 75%", once.
 //
+// A row already on screen when the module mounts plays immediately rather
+// than waiting to be scrolled into (review OSV-06) — the eyebrows rendered
+// while the note words stayed invisible mid-viewport. Off-screen rows keep
+// the chained trigger, moved to "top 85%" so a row finishes revealing
+// before it reaches the middle of the screen.
+//
 // aria: notes elements split with aria:"none" when the target can't hold
 // aria-label (same rule as headline-reveal — axe aria-prohibited-attr).
 //
@@ -14,6 +20,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { registry, type PageContext, type PageModule } from "../core/registry";
+import { isOnScreen } from "../core/viewport";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -42,9 +49,13 @@ export function createNotePyramid(): PageModule {
         );
         const notes = row.querySelector<HTMLElement>("[data-pyramid-notes]");
 
-        const timeline = gsap.timeline({
-          scrollTrigger: { trigger: row, start: "top 75%", once: true },
-        });
+        const timeline = gsap.timeline(
+          isOnScreen(row)
+            ? {}
+            : {
+                scrollTrigger: { trigger: row, start: "top 85%", once: true },
+              },
+        );
 
         if (divider) {
           gsap.set(divider, { scaleX: 0, transformOrigin: "left center" });
@@ -53,8 +64,9 @@ export function createNotePyramid(): PageModule {
 
         if (notes) {
           const split = new SplitText(notes, {
-            type: "chars,lines",
+            type: "words,chars,lines",
             linesClass: "line-mask",
+            wordsClass: "split-word",
             ...(notes.matches("h1,h2,h3,h4,h5,h6,[role]")
               ? {}
               : { aria: "none" }),

@@ -6,6 +6,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { pageTitle } from "../../lib/seo";
 import ScentCard from "../../components/ScentCard.astro";
 import { catalog as products } from "../../lib/commerce";
+
+// 03 §2 asymmetric editorial layout — alternating 2/3 split rows, fifth
+// card full width. The card applies it (review OSV-04); this is the rhythm.
+const SPANS: Array<1 | 2 | 3> = [2, 1, 1, 2, 3];
 ---
 
 <BaseLayout
@@ -27,7 +31,7 @@ import { catalog as products } from "../../lib/commerce";
     <!-- Row hover dims non-hovered cards to 60% (0.3s micro) — CSS below. -->
     <div class="plp__grid">
       {
-        products.map((product) => (
+        products.map((product, index) => (
           <ScentCard
             scent={product.scent}
             name={product.name}
@@ -35,6 +39,7 @@ import { catalog as products } from "../../lib/commerce";
             notes={product.notes}
             price={product.variants[0].price}
             stagger={0.05}
+            span={SPANS[index] ?? 1}
           />
         ))
       }
@@ -91,24 +96,18 @@ import { catalog as products } from "../../lib/commerce";
     gap: var(--grid-gap);
   }
 
-  .plp__grid > :nth-child(1),
-  .plp__grid > :nth-child(4) {
-    grid-column: span 2;
-  }
-
-  .plp__grid > :nth-child(5) {
-    grid-column: 1 / -1;
-  }
-
   @media (prefers-reduced-motion: no-preference) {
-    .plp__grid > article {
+    /* :global() is required on every child selector here — the children
+       are ScentCard roots carrying the component's scope attribute, not
+       this page's, so a bare `> article` never matches (review OSV-04). */
+    .plp__grid > :global(article) {
       transition: opacity 0.3s;
     }
 
     /* 03 §2 row hover — non-hovered cards dim to 60% (0.3s micro).
        focus-within mirrors it for keyboard users. */
-    .plp__grid:hover > article:not(:hover, :focus-within),
-    .plp__grid:focus-within > article:not(:hover, :focus-within) {
+    .plp__grid:hover > :global(article:not(:hover, :focus-within)),
+    .plp__grid:focus-within > :global(article:not(:hover, :focus-within)) {
       opacity: 0.6;
     }
   }
@@ -116,10 +115,6 @@ import { catalog as products } from "../../lib/commerce";
   @media (width <= 48rem) {
     .plp__grid {
       grid-template-columns: 1fr;
-    }
-
-    .plp__grid > :nth-child(n) {
-      grid-column: auto;
     }
   }
 </style>

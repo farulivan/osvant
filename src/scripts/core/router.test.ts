@@ -135,22 +135,31 @@ describe("core/router", () => {
     expect(secondCtx.fromUrl).toBeInstanceOf(URL);
   });
 
-  it("onEnterCompleted refreshes ScrollTrigger once (trap #4)", async () => {
+  it("refreshes ScrollTrigger once, and only after mounting resolves (trap #4, OSV-06)", async () => {
     const { initRouter } = await import("./router");
     const taxi = initRouter() as unknown as MockCore;
     const RendererClass = taxi.options.renderers.default;
 
-    new RendererClass({}).onEnterCompleted();
+    new RendererClass({ title: "Home" }).onEnter();
+
+    // Mounting is async — a refresh here would measure a page whose
+    // triggers do not exist yet, which is the OSV-06 root cause.
+    expect(scrollTriggerRefresh).not.toHaveBeenCalled();
+
+    await Promise.resolve();
+    await Promise.resolve();
 
     expect(scrollTriggerRefresh).toHaveBeenCalledTimes(1);
   });
 
-  it("initialLoad calls onEnter + onEnterCompleted for the first visit", async () => {
+  it("initialLoad mounts and refreshes for the first visit", async () => {
     const { initRouter } = await import("./router");
     const taxi = initRouter() as unknown as MockCore;
     const RendererClass = taxi.options.renderers.default;
 
     new RendererClass({ title: "Home" }).initialLoad();
+    await Promise.resolve();
+    await Promise.resolve();
 
     expect(mountModules).toHaveBeenCalledTimes(1);
     expect(scrollTriggerRefresh).toHaveBeenCalledTimes(1);

@@ -34,6 +34,18 @@ canvas {
   max-width: 100%;
 }
 
+/* The UA sheet's `[hidden] { display: none }` loses to any class that sets
+   `display` — which is how all three cart-drawer states rendered stacked
+   (review OSV-01). Global guard so `.hidden = true` always means hidden. */
+[hidden] {
+  display: none !important;
+}
+
+/* Anchor targets must not land underneath the fixed nav (review OSV-07). */
+[id] {
+  scroll-margin-top: var(--nav-height);
+}
+
 ::selection {
   background: var(--color--uv);
   color: var(--color--black);
@@ -112,6 +124,19 @@ canvas {
 /* Mask for SplitText line wrapping — headline reveal (M §4.2) */
 .line-mask {
   overflow: hidden;
+}
+
+/* SplitText word wrapper. Char-level splits make every character its own
+   inline element, so without this a line breaks mid-word (review OSV-17). */
+.split-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Every h1/h2 on this site is a display headline — balance the rag. */
+h1,
+h2 {
+  text-wrap: balance;
 }
 
 /* btn-secondary label y-flip support (01 §5.1, modules/btn-line.ts):

@@ -3,7 +3,8 @@
 // attribute swap, nothing else recolored manually). Sections: 3.1 scent
 // hero, 3.2 note pyramid (M §4.6), 3.4 cross-sell. 3.3 formula story is
 // copy-blocked ([draft], ships w4 per RFC-001 C1) — section omitted until
-// copy lands. Bottle: Three.js is M3 — placeholder wash (ADR-008).
+// copy lands. Bottle: light study (M §8, ADR-013) — placeholder wash
+// until the composited stills land (06 §1).
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { withBase } from "../../lib/url";
 import {
@@ -58,30 +59,19 @@ const rows = [
           batch {product.batch} — eau de parfum
         </p>
         <h1 class="pdp-hero__name">
-          <em>{article}</em>
+          <em>{article}</em>{" "}
           {rest.join(" ")}
         </h1>
         <p class="pdp-hero__character">{product.character}</p>
       </div>
 
       {
-        /* 03 §3.1 — contained Three.js bottle (drag ±180°, tint rim glow).
-          Placeholder mesh per ADR-008 until the GLBs land (06 §1); the
-          wash fallback covers probe fail / low memory (M §8). */
+        /* 03 §3.1 — the bottle. INTERIM (ADR-013): the Three.js scene is
+          deleted; the light study (M §8) rebuilds this with drag-to-light
+          in the next PR. Duotone wash placeholder until then (ADR-008). */
       }
-      <div class="pdp-hero__bottle" data-pdp-bottle>
-        <canvas
-          class="pdp-hero__bottle-canvas"
-          data-bottle-canvas
-          role="img"
-          aria-label={`${product.name} bottle — drag to rotate`}></canvas>
-        <div
-          class="pdp-hero__bottle-fallback"
-          data-bottle-fallback
-          hidden
-          aria-hidden="true"
-        >
-        </div>
+      <div class="pdp-hero__bottle">
+        <div class="pdp-hero__bottle-wash" aria-hidden="true"></div>
       </div>
     </section>
 
@@ -240,28 +230,15 @@ const rows = [
     max-width: 28ch;
   }
 
-  /* Bottle stage (03 §3.1) — contained canvas; the wash behind it is the
-     M §8 fallback surface (shown by modules/pdp-bottle.ts on probe fail). */
+  /* Bottle stage (03 §3.1). The light study mounts here (M §8); the wash
+     is the ADR-008 placeholder until the composited stills land. */
   .pdp-hero__bottle {
     position: relative;
     aspect-ratio: 3 / 4;
     border-radius: var(--radius--media);
   }
 
-  .pdp-hero__bottle-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    cursor: grab;
-    touch-action: pan-y; /* vertical scroll stays native; horizontal drags rotate */
-  }
-
-  .pdp-hero__bottle-canvas:active {
-    cursor: grabbing;
-  }
-
-  .pdp-hero__bottle-fallback {
+  .pdp-hero__bottle-wash {
     position: absolute;
     inset: 0;
     border-radius: var(--radius--media);

@@ -76,27 +76,47 @@ describe("core/nav — nav-theme module", () => {
     expect(nav.classList.contains("nav--theme-scent")).toBe(true);
   });
 
-  it("adds nav--solid past 100vh and removes it above that (§5.2)", async () => {
+  it("is transparent while the hero is under the bar, solid once it passes (§5.2)", async () => {
+    nextIsActive = true;
     const { navThemeModule } = await import("./nav");
     const root = document.createElement("div");
+    root.innerHTML = `<section data-nav-theme="dark" data-nav-transparent>hero</section>`;
     document.body.append(root);
 
     navThemeModule.mount(root, {} as never);
     const nav = document.querySelector("[data-nav]") as HTMLElement;
     const solidTrigger = createdTriggers[0];
 
-    fireToggle(solidTrigger, true);
+    // Hero under the bar → transparent.
+    expect(nav.classList.contains("nav--solid")).toBe(false);
+
+    // Hero scrolled past → solid.
+    fireToggle(solidTrigger, false);
     expect(nav.classList.contains("nav--solid")).toBe(true);
 
-    fireToggle(solidTrigger, false);
+    fireToggle(solidTrigger, true);
     expect(nav.classList.contains("nav--solid")).toBe(false);
+  });
+
+  it("is solid from the start on routes with no hero (review OSV-07)", async () => {
+    const { navThemeModule } = await import("./nav");
+    const root = document.createElement("div");
+    root.innerHTML = `<section data-nav-theme="dark">plp</section>`;
+    document.body.append(root);
+
+    navThemeModule.mount(root, {} as never);
+    const nav = document.querySelector("[data-nav]") as HTMLElement;
+
+    expect(nav.classList.contains("nav--solid")).toBe(true);
+    // No hero → no solid trigger, only the one section theme trigger.
+    expect(createdTriggers).toHaveLength(1);
   });
 
   it("destroy() kills only the triggers it created", async () => {
     const { navThemeModule } = await import("./nav");
     const root = document.createElement("div");
     root.innerHTML = `
-      <section data-nav-theme="dark">a</section>
+      <section data-nav-theme="dark" data-nav-transparent>a</section>
       <section data-nav-theme="light">b</section>
     `;
     document.body.append(root);

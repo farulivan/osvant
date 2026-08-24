@@ -66,7 +66,7 @@ describe("modules/note-pyramid (M §4.6)", () => {
     return createNotePyramid();
   }
 
-  it("each row: divider scaleX 0→1 (0.8s expo.out) then char cascade (0.015 stagger), chained at top 75%", async () => {
+  it("each row: divider scaleX 0→1 (0.8s expo.out) then char cascade (0.015 stagger), chained at top 85%", async () => {
     const module = await load();
     const el = makePyramid();
     module.mount(el, ctx(false));
@@ -75,7 +75,7 @@ describe("modules/note-pyramid (M §4.6)", () => {
     for (const call of timelineMock.mock.calls) {
       expect(call[0]).toEqual({
         scrollTrigger: expect.objectContaining({
-          start: "top 75%",
+          start: "top 85%",
           once: true,
         }),
       });
@@ -124,5 +124,18 @@ describe("modules/note-pyramid (M §4.6)", () => {
     for (const result of splitTextMock.mock.results) {
       expect(result.value.revert).toHaveBeenCalled();
     }
+  });
+
+  it("a row already on screen plays immediately, with no trigger (OSV-06)", async () => {
+    const module = await load();
+    const el = makePyramid(1);
+    const row = el.querySelector<HTMLElement>("[data-pyramid-row]")!;
+    row.getBoundingClientRect = () => ({ top: 10, bottom: 400 }) as DOMRect;
+
+    module.mount(el, ctx(false));
+
+    expect(timelineMock).toHaveBeenCalledWith({});
+
+    module.destroy();
   });
 });

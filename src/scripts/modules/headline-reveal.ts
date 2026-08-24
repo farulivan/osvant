@@ -41,8 +41,11 @@ export function createHeadlineReveal(): PageModule {
     // get aria:"none"; screen readers still read the concatenated text.
     const canHoldLabel = state.el.matches("h1,h2,h3,h4,h5,h6,[role]");
     state.split = new SplitText(state.el, {
-      type: "chars,lines",
+      // words wrap the chars so a line break can never land mid-word
+      // (review OSV-17) — .split-word is nowrap in base.css.
+      type: "words,chars,lines",
       linesClass: "line-mask",
+      wordsClass: "split-word",
       ...(canHoldLabel ? {} : { aria: "none" }),
     });
     const tween = gsap.from(state.split.chars, {
