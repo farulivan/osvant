@@ -55,9 +55,51 @@
      Kept in sync with the nav's own ScrollTrigger offsets in core/nav.ts. */
   --nav-height: 4rem;
 
+  /* ---- Light study (M §8.2) ---- */
+
+  /* The bottle presentation's ENTIRE interface. Scroll drives it in the
+     gallery (M §4.4), drag drives it on the PDP (M §4.4b), an ambient
+     oscillation drives it at rest. Nothing else may write to it. */
+  --light-angle: 0.5;
+
+  /* 0 = inactive/dimmed, 1 = the active bottle in a procession. */
+  --light-bloom: 1;
+
+  /* The gallery track's current travel. The bottle rides it at 1× (the
+     track itself moves), the wash lags it by 0.6× and the vapor leads by
+     0.6× — netting the 0.4× / 1× / 1.6× rates M §4.4 makes binding.
+     Matching rates collapse the illusion, so this is a contract, not a
+     taste call. Zero everywhere outside the procession. */
+  --light-parallax: 0px;
+
+  /* Pointer tilt, -1 → 1. Layers multiply it by their own angle
+     (1° wash / 3° bottle / 5° vapor, M §4.4) — a uniform tilt reads as a
+     flat plane rocking rather than depth. */
+  --light-tilt: 0;
+
   /* ---- Radius (01 §4.3) — circles: 50%; no other radii exist ---- */
   --radius--xs: 3px; /* chips, tags, inputs */
   --radius--media: 1vw; /* imagery & video, fluid */
+}
+
+/* --light-angle has to be a registered <number> so it can be tweened and
+   used inside calc() for angles and percentages (M §8.2). */
+@property --light-angle {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0.5;
+}
+
+@property --light-bloom {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --light-tilt {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
 }
 
 /* ---- Scent-scoped theming (01 §2.3) — each PDP/card swaps ONE variable ---- */
