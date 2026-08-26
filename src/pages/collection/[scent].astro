@@ -249,7 +249,7 @@ const rows = [
   }
 
   .pdp-hero__eyebrow {
-    margin: 0 0 1rem;
+    margin: 0 0 var(--space--eyebrow-headline);
     font-size: var(--text--eyebrow);
     font-weight: 500;
     letter-spacing: 0.12em;
@@ -271,7 +271,7 @@ const rows = [
   }
 
   .pdp-hero__character {
-    margin: 1.5rem 0 0;
+    margin: var(--space--headline-lede) 0 0;
     font-size: var(--text--lead);
     max-width: 28ch;
   }
@@ -311,7 +311,7 @@ const rows = [
   .pdp-buy__chip {
     padding: 0.5rem 1rem;
     background: transparent;
-    border: 1px solid var(--color--ink-3);
+    border: 1px solid var(--color--ink-4);
     border-radius: var(--radius--xs);
     color: var(--color--white);
     font-size: var(--text--btn);
@@ -344,7 +344,7 @@ const rows = [
 
   /* ≤767px the buy row detaches into the fixed bottom bar the spec asks
      for — below the nav (100), above page content. */
-  @media (width <= 48rem) {
+  @media (width <= 47.9375rem) {
     .pdp-hero {
       grid-template-columns: 1fr;
       grid-template-areas:
@@ -380,7 +380,7 @@ const rows = [
   .pdp-buy__notify input {
     background: transparent;
     border: 0;
-    border-bottom: 1px solid var(--color--ink-3);
+    border-bottom: 1px solid var(--color--ink-4);
     border-radius: 0;
     color: var(--color--white);
     padding: 0.5rem 0;
@@ -409,17 +409,17 @@ const rows = [
 
   /* Note pyramid (03 §3.2) */
   .pyramid {
-    padding: 6rem var(--gutter);
+    padding: var(--space--xl) var(--gutter);
     background: var(--color--black);
   }
 
   .pyramid__row {
     position: relative;
-    padding: 2.5rem 0;
+    padding: var(--space--m) 0;
   }
 
   .pyramid__eyebrow {
-    margin: 0 0 0.75rem;
+    margin: 0 0 var(--space--eyebrow-headline);
     font-size: var(--text--eyebrow);
     font-weight: 500;
     letter-spacing: 0.12em;
@@ -435,7 +435,7 @@ const rows = [
   .pyramid__divider {
     display: block;
     height: 1px;
-    margin-top: 2.5rem;
+    margin-top: var(--space--m);
     background: var(--color--ink-3);
     transform-origin: left center;
   }

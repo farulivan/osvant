@@ -19,6 +19,14 @@ export default {
           "No #fff/#000/neutral grays, no box-shadow, no uppercase (01 §1, 03-eng §4.6).",
       },
     ],
+    // Four breakpoints, one spelling each (01 §4.2, §6.3). Custom
+    // properties cannot be read inside a media query, so the literals are
+    // the contract and this is what enforces it — the build previously
+    // carried one breakpoint written as 48rem, 47.9375rem AND 767px, so a
+    // 767.5px viewport got different rules from different components.
+    "media-feature-name-value-allowed-list": {
+      width: ["29.9375rem", "47.9375rem", "61.9375rem", "62rem"],
+    },
     "color-named": "never",
     // Raw color values live ONLY in tokens.css (03-eng §2) — see overrides.
     "color-no-hex": true,
