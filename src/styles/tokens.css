@@ -24,12 +24,29 @@
   --color--lilac-3: #b3abbc; /* muted text on dark */
 
   /* Dark neutrals (violet-tinted) */
-  --color--ink-3: #524d59; /* borders on dark, disabled text */
+  --color--ink-4: #6b6575; /* 3.38:1 — boundaries of anything OPERABLE */
+  --color--ink-3: #524d59; /* 2.32:1 — decorative rules only, never a control */
   --color--ink-2: #3b3740; /* raised surfaces, cards on black */
   --color--ink-1: #201c24; /* alt dark section bg */
 
+  /* Label on a UV fill. Black-on-UV measures 4.47:1 and misses AA by a
+     hair, which is the single accessibility failure Lighthouse reports;
+     this clears it at 4.66:1 without touching --color--uv itself, so the
+     brand accent stays exactly as specified (01 §6.2). */
+  --color--on-uv: #0b0a0c;
+
   /* ---- Scent tint fallback (01 §2.3) ---- */
   --scent-tint: var(--color--uv);
+
+  /* Tint as TEXT — the rare case, contrast-clamped (01 §6.1).
+     --scent-tint is a light source: liquid, rim glow, hover border,
+     marker, ambient wash. It is not a text colour, and measuring it
+     proves why — nocturne lands at 2.11:1, unreadable at any size, while
+     static and halo are so near-neutral that tinting a word does nothing
+     at all. Only volt and nocturne have a usable tinted text identity;
+     the rest resolve to white, per 01 §2.4's rule that near-neutral
+     tints are never text. */
+  --scent-tint-text: var(--color--white);
 
   /* ---- Type scale (01 §3.2) ---- */
   --text--impact: clamp(4.5rem, 12vw, 8rem); /* viewport-filling name moments */
@@ -45,10 +62,48 @@
   --text--btn: 1rem;
   --text--eyebrow: 0.625rem; /* micro-labels: batch no., nav meta */
 
+  /* ---- Spacing scale (01 §4.4) ----
+     Six steps. Before this, only section padding was specified, so every
+     gap between an eyebrow, a headline, a lede and its content was
+     invented per component — which is what produced 780px of height for
+     three words on the PDP pyramid and 488px of nothing above its h1.
+     Section padding stays 10rem / 6rem (01 §4.1); this covers everything
+     inside a section. */
+  --space--2xs: 0.5rem;
+  --space--xs: 1rem;
+  --space--s: 1.5rem;
+  --space--m: 2.5rem;
+  --space--l: 4rem;
+  --space--xl: 6rem;
+
+  /* The section-opening cluster, so every section starts on the same
+     rhythm (01 §4.4): eyebrow →(xs) headline →(s) lede →(m) content. */
+  --space--eyebrow-headline: var(--space--xs);
+  --space--headline-lede: var(--space--s);
+  --space--lede-content: var(--space--m);
+
   /* ---- Layout (01 §4.1) ---- */
   --container-max: 90rem; /* 1440px design canvas */
   --gutter: clamp(1.25rem, 4vw, 5rem); /* page side padding */
   --grid-gap: 1.25rem;
+
+  /* ---- Breakpoints (01 §4.2) ----
+     Custom properties cannot be used inside a media query, so these are
+     documentation and the single source of the numbers rather than
+     something a @media can read. The literal values below are the ONLY
+     ones permitted in a media query; stylelint enforces that, because the
+     build previously carried one breakpoint written three different ways
+     (48rem, 47.9375rem and 767px), so a 767.5px viewport got different
+     rules from different components.
+
+       tiny    (width <= 29.9375rem)   ≤ 479px
+       mobile  (width <= 47.9375rem)   ≤ 767px
+       tablet  (width <= 61.9375rem)   ≤ 991px
+       desktop (width >= 62rem)        ≥ 992px  */
+  --bp--tiny: 29.9375rem;
+  --bp--mobile: 47.9375rem;
+  --bp--tablet: 61.9375rem;
+  --bp--desktop: 62rem;
 
   /* Fixed-nav clearance — the height the bar actually occupies, so
      in-page anchors and section tops can reserve it (review OSV-07).
@@ -106,12 +161,18 @@
 
 [data-scent="volt"] {
   --scent-tint: var(--color--uv);
+  --scent-tint-text: #c33afe; /* 4.84:1 */
 }
 
 [data-scent="nocturne"] {
   --scent-tint: #3a2fbf;
+  --scent-tint-text: #7d75d3; /* 4.84:1 — the raw tint is 2.11:1 */
 }
 
+/* static, fever and halo inherit --scent-tint-text: white.
+   static and halo are near-neutral, so a tinted word is indistinguishable
+   from an untinted one (01 §2.4); fever's amber is reserved for scarcity
+   and error states (01 §1 rule 4) and must not leak into body copy. */
 [data-scent="static"] {
   --scent-tint: #cdc7de;
 }

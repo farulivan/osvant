@@ -160,18 +160,24 @@ const bottle = await getImage({ src: image, format: "avif", width });
   }
 
   /* --- 3. sheen — overlay, tracks the light in position AND angle --- */
+
+  /* Restrained deliberately. At the resting angle (0.5) the band sits
+     dead centre on the glass, so anything stronger flattens the bottle
+     into a bright smear — which is exactly what it did until this was
+     measured against a bottle rather than against a thumbnail at an
+     off-centre angle. */
   .light-study__sheen {
     mix-blend-mode: overlay;
-    opacity: calc(0.4 + var(--light-bloom) * 0.6);
+    opacity: calc(0.22 + var(--light-bloom) * 0.3);
   }
 
   .light-study__sheen .light-study__beam {
     background: linear-gradient(
       calc(74deg + (var(--light-angle) - 0.5) * 46deg),
-      transparent 30%,
-      color-mix(in oklab, var(--color--white) 58%, transparent) 46%,
-      color-mix(in oklab, var(--color--white) 16%, transparent) 55%,
-      transparent 70%
+      transparent 36%,
+      color-mix(in oklab, var(--color--white) 34%, transparent) 47%,
+      color-mix(in oklab, var(--color--white) 10%, transparent) 54%,
+      transparent 64%
     );
     transform: translate3d(calc((var(--light-angle) - 0.5) * 46%), 0, 0);
   }

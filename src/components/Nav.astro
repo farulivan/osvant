@@ -86,6 +86,7 @@ const links = [
   }
 
   .nav__logo {
+    position: relative;
     display: inline-flex;
   }
 
@@ -164,14 +165,43 @@ const links = [
     color: var(--color--white);
   }
 
-  .nav--theme-scent .nav__logo-mark text,
+  /* Under a scent-themed section the LINKS STAY WHITE. UV on black is
+     4.47:1 and misses AA at 16px (01 §6.2), and a tinted nav link also
+     reads as an unvisited default link rather than as brand theming.
+     The scent shows in the mark and in an underline marker instead —
+     tint as a light source, not a text colour (01 §6.1). */
   .nav--theme-scent .nav__links a,
   .nav--theme-scent .nav__cart {
-    fill: var(--scent-tint);
-    color: var(--scent-tint);
+    color: var(--color--white);
   }
 
-  @media (width <= 767px) {
+  .nav--theme-scent .nav__logo-mark text {
+    fill: var(--scent-tint);
+  }
+
+  /* The marker: a rule under the wordmark that only exists while a
+     scent section is in view. */
+  .nav__logo::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 -0.35rem;
+    height: 2px;
+    background: var(--scent-tint);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  .nav--theme-scent .nav__logo::after {
+    transform: scaleX(1);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nav__logo::after {
+      transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+  }
+
+  @media (width <= 47.9375rem) {
     .nav__toggle {
       display: inline-flex;
     }

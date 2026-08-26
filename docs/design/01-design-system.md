@@ -35,11 +35,28 @@
   --color--lilac-3:   #b3abbc;   /* muted text on dark */
 
   /* Dark neutrals (violet-tinted) */
-  --color--ink-3:     #524d59;   /* borders on dark, disabled text */
+  --color--ink-4:     #6b6575;   /* 3.38:1 — boundary of anything OPERABLE */
+  --color--ink-3:     #524d59;   /* 2.32:1 — decorative rules only */
   --color--ink-2:     #3b3740;   /* raised surfaces, cards on black */
   --color--ink-1:     #201c24;   /* alt dark section bg */
+
+  /* Label on a UV fill */
+  --color--on-uv:     #0b0a0c;   /* 4.66:1 on --color--uv */
 }
 ```
+
+> **Amended 2026-08-26** (design review §6.2, signed off). `--color--ink-4`
+> and `--color--on-uv` are new.
+>
+> `ink-3` measures **2.32:1** on `--color--black`, below the 3:1 that
+> WCAG 1.4.11 requires of a control boundary, and it was bounding input
+> underlines, size chips and the `next drop` chip. `ink-4` takes every
+> boundary that is **operable**; `ink-3` keeps the decorative rules.
+>
+> `--color--on-uv` exists because black on UV measures **4.47:1** and
+> misses AA — the one accessibility failure Lighthouse reported. Darkening
+> the label clears it at 4.66:1 and leaves `--color--uv` untouched, so the
+> brand accent is unchanged.
 
 ### 2.2 Usage matrix
 
@@ -56,8 +73,8 @@
 Each scent detail page (and its card hover state) swaps ONE variable, nothing else:
 
 ```css
-[data-scent="volt"]     { --scent-tint: var(--color--uv); }
-[data-scent="nocturne"] { --scent-tint: #3a2fbf; }
+[data-scent="volt"]     { --scent-tint: var(--color--uv); --scent-tint-text: #c33afe; }
+[data-scent="nocturne"] { --scent-tint: #3a2fbf;          --scent-tint-text: #7d75d3; }
 [data-scent="static"]   { --scent-tint: #cdc7de; }
 [data-scent="fever"]    { --scent-tint: #ffb000; }
 [data-scent="halo"]     { --scent-tint: #ebd9ff; }
@@ -65,11 +82,30 @@ Each scent detail page (and its card hover state) swaps ONE variable, nothing el
 
 Components reference `--scent-tint` (falls back to `--color--uv`). This mirrors the reference build's per-item theme classes (research: `hero-nav-theme.is-1/is-2` pattern, §3/S2).
 
+> **Amended 2026-08-26** (design review §6.1, signed off).
+>
+> **`--scent-tint` is a light source, not a text colour.** Measured against
+> `--color--black`: volt 4.47:1, nocturne **2.11:1**, static 11.58:1,
+> fever 10.35:1, halo 14.36:1. Nocturne is unreadable at any size; static
+> and halo are so near-neutral that tinting a word changes nothing; fever's
+> amber collides with its reserved scarcity role (§1 rule 4). Four of five
+> fail as text — so the token stops being asked to do that job.
+>
+> **Permitted surfaces:** bottle liquid and rim glow · hover border ·
+> underline or marker beside a name · the section's ambient wash. That is
+> still ONE attribute swap and still satisfies `03 §3.1`.
+>
+> **`--scent-tint-text`** covers the rare genuinely-tinted word, clamped to
+> ≥4.5:1. Only volt and nocturne have a usable tinted text identity; static,
+> fever and halo resolve to `--color--white`, per §2.4.
+
 ### 2.4 Accessibility guardrails
 
 - Body text is always `--color--white` or `--color--black` — never UV, never a tint.
 - UV and amber on black: **display sizes (≥24px) only.** For small text, verify AA (4.5:1) with tooling before shipping; if it fails, use `--color--white` and reserve the accent for an underline/marker element.
 - `static` and `halo` tints are near-neutral: never use them for text — surfaces and liquid renders only.
+- Any boundary the user can operate — input underline, chip, stepper, secondary button — uses `--color--ink-4` (3:1, WCAG 1.4.11). `--color--ink-3` is for decorative rules only.
+- Nav links never take the scent tint. Under a `scent`-themed section the links stay `--color--white`; the scent shows in the wordmark and an underline marker.
 
 ## 3. Typography
 
@@ -124,7 +160,7 @@ Note: the reference build sizes its `h2` token above `h1` (research §3.2). We n
 ```
 
 - 12-column fluid grid inside the container. Full-bleed allowed for: hero, collection gallery, marquee bands, footer.
-- Section vertical padding: `10rem` desktop / `6rem` ≤767px.
+- Section vertical padding: `10rem` desktop / `6rem` ≤767px. Everything *inside* a section uses the §4.4 scale.
 
 ### 4.2 Breakpoints
 
@@ -134,6 +170,25 @@ Note: the reference build sizes its `h2` token above `h1` (research §3.2). We n
 | `tablet` | 768–991px | light study kept, pins simplified |
 | `mobile` | 480–767px | designed experience, not collapsed desktop (research §5) |
 | `tiny` | ≤ 479px | single column, impact type at clamp floor |
+
+> **Amended 2026-08-26** (design review §6.3, signed off). Four breakpoints,
+> **one spelling each**. Custom properties cannot be read inside a media
+> query, so the literal values below are the contract and stylelint
+> (`media-feature-name-value-allowed-list`) is what enforces it — the build
+> previously carried a single breakpoint written as `48rem`, `47.9375rem`
+> AND `767px`, so a 767.5px viewport got different rules from different
+> components.
+>
+> ```css
+> @media (width <= 29.9375rem) { /* tiny    ≤ 479px */ }
+> @media (width <= 47.9375rem) { /* mobile  ≤ 767px */ }
+> @media (width <= 61.9375rem) { /* tablet  ≤ 991px */ }
+> @media (width >= 62rem)      { /* desktop ≥ 992px */ }
+> ```
+>
+> `tokens.css` also carries them as `--bp--*` custom properties. Those are
+> the single source of the numbers and are usable in `calc()` and container
+> queries; they are **not** readable by `@media`.
 
 ### 4.3 Radius & elevation
 
@@ -146,6 +201,36 @@ Note: the reference build sizes its `h2` token above `h1` (research §3.2). We n
 ```
 
 Predominantly square-cornered (research §3.3). **No drop shadows** — depth comes from surface color steps (`ink-2` on `ink-1` on `black`) and motion parallax, never from `box-shadow`.
+
+### 4.4 Spacing scale
+
+> **Added 2026-08-26** (design review §6.4, signed off).
+
+Six steps. Section padding stays §4.1; this governs everything inside a section.
+
+```css
+--space--2xs: 0.5rem;
+--space--xs:  1rem;
+--space--s:   1.5rem;
+--space--m:   2.5rem;
+--space--l:   4rem;
+--space--xl:  6rem;
+```
+
+**The section-opening cluster is a rule, not a preference.** Every section
+opens on the same rhythm:
+
+| Gap | Token |
+|---|---|
+| eyebrow → headline | `--space--eyebrow-headline` (`xs`) |
+| headline → lede | `--space--headline-lede` (`s`) |
+| lede → content | `--space--lede-content` (`m`) |
+
+Before this, only section padding was specified and every gap inside a
+section was invented per component. That is what produced 780px of height
+for three words on the PDP note pyramid, 488px of nothing above its `h1`,
+and 210px of dead space above the footer — the same inconsistency read as
+low quality across the whole site.
 
 ## 5. Components
 
