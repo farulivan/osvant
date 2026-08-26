@@ -1,9 +1,37 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LegalPage from "../../components/LegalPage.astro";
 import { pageTitle } from "../../lib/seo";
-import StubSection from "../../components/StubSection.astro";
 ---
 
 <BaseLayout title={pageTitle("terms")} description="terms of service — osvant.">
-  <StubSection eyebrow="legal" title="terms" theme="dark" />
+  <LegalPage title="terms">
+    <h2>the brand is fictional</h2>
+    <p>
+      osvant does not exist as a company. the collection, the batch numbers, the
+      formulas and the journal are invented for a front-end engineering
+      portfolio. nothing here is for sale.
+    </p>
+
+    <h2>the shop is a simulation</h2>
+    <p>
+      prices, stock levels and the sold-out state are read from a local data
+      file. adding to cart and checking out exercise the same interface a real
+      store would, then stop at a confirmation screen. no payment method is ever
+      requested and no order is created.
+    </p>
+
+    <h2>use of the site</h2>
+    <p>
+      browse it, inspect it, take it apart. the code is a demonstration of how
+      the interface is built, and it is meant to be looked at.
+    </p>
+
+    <h2>content</h2>
+    <p>
+      copy and design are original. photography is licensed stock, graded at
+      runtime. no real fragrance house, product or person is represented, and
+      any resemblance to an existing brand is unintentional.
+    </p>
+  </LegalPage>
 </BaseLayout>

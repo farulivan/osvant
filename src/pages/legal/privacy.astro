@@ -1,9 +1,38 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LegalPage from "../../components/LegalPage.astro";
 import { pageTitle } from "../../lib/seo";
-import StubSection from "../../components/StubSection.astro";
 ---
 
 <BaseLayout title={pageTitle("privacy")} description="privacy policy — osvant.">
-  <StubSection eyebrow="legal" title="privacy" theme="dark" />
+  <LegalPage title="privacy">
+    <h2>what we collect</h2>
+    <p>
+      nothing. this site loads no analytics, no tag manager, no consent banner
+      and no third-party scripts of any kind. there is no account system and no
+      server to send anything to.
+    </p>
+
+    <h2>what stays on your device</h2>
+    <p>
+      the cart is written to your browser's local storage so it survives a
+      refresh, and a single session flag records that you have already seen the
+      loader. both live only in your browser, are never transmitted, and clear
+      when you clear site data.
+    </p>
+
+    <h2>forms</h2>
+    <p>
+      the newsletter, notify and contact forms validate and show their success
+      and error states locally. nothing is sent and no address is stored
+      anywhere.
+    </p>
+
+    <h2>hosting</h2>
+    <p>
+      pages are static files behind a cdn. standard request logs may exist at
+      the infrastructure layer, as they do for any website, and are not used to
+      build a profile of you.
+    </p>
+  </LegalPage>
 </BaseLayout>
