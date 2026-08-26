@@ -21,8 +21,13 @@ function fixtureCatalog(overrides?: Partial<Product["variants"][number]>) {
       scent: "test",
       name: "the test",
       batch: "000",
-      notes: ["test top", "test heart", "test base"],
+      notes: {
+        top: ["test top"],
+        heart: ["test heart"],
+        base: ["test base"],
+      },
       character: "the test. a fixture, not a fragrance.",
+      formula: { paragraphs: ["a"], pullQuote: "b" },
       variants: [
         {
           sku: "OSV-TEST-50",

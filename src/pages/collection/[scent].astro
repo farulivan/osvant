@@ -43,10 +43,11 @@ const jsonLd = jsonLdScript(
     absoluteUrl(withBase(OG_DEFAULT_PATH), Astro.site),
   ),
 );
+// 03 §3.2 eyebrows are LAW; the notes come from the pyramid's own tiers.
 const rows = [
-  { label: "top — the spark", note: product.notes[0] },
-  { label: "heart — the current", note: product.notes[1] },
-  { label: "base — the ground", note: product.notes[2] },
+  { label: "top — the spark", notes: product.notes.top },
+  { label: "heart — the current", notes: product.notes.heart },
+  { label: "base — the ground", notes: product.notes.base },
 ];
 ---
 
@@ -175,7 +176,7 @@ const rows = [
           <div class="pyramid__row" data-pyramid-row>
             <p class="pyramid__eyebrow">{row.label}</p>
             <p class="pyramid__notes" data-pyramid-notes>
-              {row.note}
+              {row.notes.join(" · ")}
             </p>
             <span
               class="pyramid__divider"
