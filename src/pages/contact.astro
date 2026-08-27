@@ -98,7 +98,12 @@ const socials = [
 
   .contact {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+
+    /* `1fr` is `minmax(auto, 1fr)`, so a track refuses to shrink below its
+       content's min-content width — the column measured 350px inside a
+       320px viewport and pushed the page into shrink-to-fit. `minmax(0,
+       1fr)` lets it actually be fluid. */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: var(--grid-gap);
     min-height: 100vh;
     min-height: 100svh;
@@ -117,6 +122,11 @@ const socials = [
   /* btn-text at h3 scale (03 §6) */
   .contact__business {
     display: inline-block;
+
+    /* `business@osvant.com` is a single unbreakable 19-character token at
+       --text--h3, which measures ~350px and refuses to fit a 280px column
+       on a 320px screen — enough on its own to trigger shrink-to-fit. */
+    overflow-wrap: anywhere;
     font-size: var(--text--h3);
     font-weight: 700;
     color: var(--color--white);
@@ -200,7 +210,7 @@ const socials = [
 
   @media (width <= 47.9375rem) {
     .contact {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>
