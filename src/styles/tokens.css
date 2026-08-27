@@ -49,8 +49,8 @@
   --scent-tint-text: var(--color--white);
 
   /* ---- Type scale (01 §3.2) ---- */
-  --text--impact: clamp(4.5rem, 12vw, 8rem); /* viewport-filling name moments */
-  --text--h1: clamp(3rem, 6vw, 4.5rem);
+  --text--impact: clamp(2rem, 10vw, 8rem); /* viewport-filling name moments */
+  --text--h1: clamp(2rem, 6vw, 4.5rem);
   --text--h2: clamp(2.5rem, 5vw, 4rem);
   --text--med: 2.75rem; /* stat numbers, prices on PDP */
   --text--h3: 2rem;
