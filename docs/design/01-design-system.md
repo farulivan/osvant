@@ -135,8 +135,8 @@ Components reference `--scent-tint` (falls back to `--color--uv`). This mirrors 
 
 ```css
 :root {
-  --text--impact: clamp(4.5rem, 12vw, 8rem);  /* viewport-filling name moments */
-  --text--h1:     clamp(3rem, 6vw, 4.5rem);
+  --text--impact: clamp(2rem, 10vw, 8rem);    /* viewport-filling name moments */
+  --text--h1:     clamp(2rem, 6vw, 4.5rem);
   --text--h2:     clamp(2.5rem, 5vw, 4rem);
   --text--med:    2.75rem;   /* stat numbers, prices on PDP */
   --text--h3:     2rem;
@@ -151,6 +151,29 @@ Components reference `--scent-tint` (falls back to `--color--uv`). This mirrors 
 ```
 
 Note: the reference build sizes its `h2` token above `h1` (research §3.2). We normalize (h1 > h2) to avoid engineering confusion — the *extreme jump* to `--text--impact` is what must be preserved.
+
+> **Amended 2026-08-27 (owner sign-off) — the clamp floors.** `--text--impact`
+> was `clamp(4.5rem, 12vw, 8rem)` and `--text--h1` was `clamp(3rem, 6vw, 4.5rem)`.
+> A 4.5rem *floor* means "never smaller than 72px", and a single long word at
+> 72px — `transmissions` on `/journal/`, `provocation,` in the manifesto —
+> cannot fit a 320px screen. The word overflowed the document, and a mobile
+> browser's response to that is **shrink-to-fit**: it widens the layout
+> viewport to contain the overflow and scales the whole page down. `/journal/`
+> laid out at 625px on a 390px iPhone, so *every element on the page*,
+> body copy included, rendered at ~62% of its designed size.
+>
+> The floors now sit low enough that the fluid term governs on small screens.
+> Measured across `/`, `/collection/`, a PDP, `/the-house/`, `/journal/`, an
+> article, `/contact/`, `/legal/` and `/404` at 320 / 390 / iPhone 13 / 834 /
+> 1440: **zero horizontal overflow at every width.**
+>
+> Desktop is untouched — at ≥1280px both the old and new middle terms hit the
+> 8rem cap, so `--text--impact` computes to the same 128px it always did. The
+> change is visible only between roughly 768px and 1280px, where impact type
+> now sets about 17% smaller (1024px: 123px → 102px). The *extreme jump* the
+> note above protects is preserved: impact is still 2.8× `--text--h1` at the cap.
+>
+> `scripts/check-responsive.mjs` fails the build if any route overflows again.
 
 ### 3.3 Setting rules
 

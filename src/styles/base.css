@@ -157,3 +157,57 @@ h2 {
   inset-inline-start: 0;
   top: 100%;
 }
+
+/* ---------------------------------------------------------------------
+   Touch targets (WCAG 2.5.8 / iOS HIG, review OSV-13)
+
+   Gated on `pointer: coarse`, not on width. The constraint is the finger,
+   not the viewport — a narrow desktop window should keep its typographic
+   rhythm, and a large tablet still needs thumb-sized targets.
+
+   Every rule here grows the HIT AREA and never the type. Nav and footer
+   links were 17px tall boxes: legible, but under half the 24×24 minimum
+   2.5.8 asks for and a quarter of the 44px iOS expects. The text stays
+   exactly as designed; the box around it grows.
+
+   Inline links inside prose are deliberately excluded — 2.5.8 exempts
+   them, and padding them out would break the line rhythm of body copy. */
+@media (pointer: coarse) {
+  .nav__logo,
+  .nav__links a,
+  .nav__cart,
+  .footer__list a,
+  .footer__legal a,
+  .contact__socials a,
+  .contact__press a,
+  .scent-card__discover,
+  .hero__cue-btn,
+  .btn-text {
+    /* Pad to the target instead of switching `display`. An earlier pass
+       used `inline-flex` here and silently ate a space: SplitText wraps
+       each word in an inline-block div, and turning the anchor into a
+       flex container makes those divs flex items — which REMOVES the
+       whitespace between them rather than collapsing it. `the house`
+       rendered as `thehouse` in the mobile menu. Leaving `display` alone
+       also spares every element in this list from inheriting a layout
+       model it never asked for. `1lh` keeps the maths correct whatever
+       the type size; if it is unsupported the declaration drops and the
+       target simply stays as it was. */
+    padding-block: max(0px, calc((44px - 1lh) / 2));
+
+    /* Short labels — `terms`, `tiktok` — set narrower than they are tall. */
+    min-width: 44px;
+  }
+
+  /* Controls already carry their own padding; they just sit a couple of
+     pixels under the line. */
+  .btn-primary,
+  .btn-secondary,
+  .pdp-buy__chip,
+  button,
+  select,
+  textarea,
+  input:not([type="checkbox"], [type="radio"]) {
+    min-height: 44px;
+  }
+}

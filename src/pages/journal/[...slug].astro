@@ -186,7 +186,12 @@ const linked = article.data.scent
   }
 
   .article__xsell {
-    margin: 8rem calc(var(--gutter) * -1) 0;
+    /* This is a top-level section, a SIBLING of `.article` — not a child.
+       The negative gutter margins were a full-bleed breakout with nothing
+       to break out of, so the band overhung the viewport by a gutter on
+       each side at every width (1440 + 2x57.6 = 1555px measured). It is
+       already full-bleed; it only needs its own padding. */
+    margin: 8rem 0 0;
     padding: 4rem var(--gutter);
     background: var(--color--ink-1);
   }

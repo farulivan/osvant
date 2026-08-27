@@ -13,6 +13,14 @@ export default defineConfig(
     files: ["scripts/**/*.mjs", "*.config.{js,ts,mjs}"],
     languageOptions: { globals: globals.node },
   },
+  {
+    // `check-responsive.mjs` drives a real browser: the bodies of its
+    // `page.evaluate()` callbacks are serialised and executed in the page,
+    // not in Node, so they legitimately reference document/window. Node
+    // globals stay available for the rest of the file.
+    files: ["scripts/check-responsive.mjs"],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
   eslint.configs.recommended,
   tseslint.configs.recommended,
   eslintPluginAstro.configs["flat/recommended"],

@@ -110,6 +110,13 @@ const socials = [
      keeps the ghosted look at ~4:1 (≥3:1 large-text floor). */
   .footer__marquee {
     display: flex;
+
+    /* The track is `width: max-content` and animates on x, so without
+       this it pushes the document's scrollWidth past the viewport and
+       every page gains a horizontal scrollbar on mobile — measured at
+       +235px on /journal/ at 390px. The campaign marquee always clipped;
+       this one never did. */
+    overflow: hidden;
     white-space: nowrap;
     font-size: var(--text--impact);
     font-weight: 900;

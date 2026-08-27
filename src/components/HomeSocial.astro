@@ -113,9 +113,26 @@
     }
   }
 
+  /* Tablet (768–991px) had no layout of its own: the site defined four
+     breakpoints in tokens and shipped one, so a 3-up grid stayed 3-up at
+     834px and gave each cell ~240px (review OSV-13). */
+  @media (61.9375rem >= width > 47.9375rem) {
+    .social__cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   @media (width <= 47.9375rem) {
     .social__cards {
       grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Tiny (≤479px): two-up leaves a 140px tile, which is smaller than the
+     card's own padding budget. */
+  @media (width <= 29.9375rem) {
+    .social__cards {
+      grid-template-columns: 1fr;
     }
   }
 </style>

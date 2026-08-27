@@ -68,6 +68,10 @@ jobs:
       # Subset fonts trade a perf miss for tofu if copy ever uses a
       # character the woff2 no longer carries (06 §1).
       - run: pnpm check:glyphs
+      # Horizontal overflow does not scroll on a phone — the browser
+      # shrinks the whole page to fit it (review OSV-13).
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm check:responsive
       # Retained for staging verification + manual prod promote (05 §4).
       - uses: actions/upload-artifact@v4
         with:
