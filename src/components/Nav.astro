@@ -99,12 +99,73 @@ const links = [
     fill: var(--color--white);
   }
 
+  /* The menu button. `01 §5.2` specifies the overlay menu it opens but
+     says nothing about the control itself — flagged as a spec gap and
+     built to the existing register (1px rules, no chrome, currentColor
+     so it re-themes with the links).
+
+     It had no visual at all before this: the markup carries a single
+     empty `.nav__toggle-bar` span and nothing ever styled it, so the
+     button rendered 12x2px and invisible. At every mobile width the site
+     had no reachable navigation — collection, the house, journal,
+     contact and the cart were all unreachable on a phone. */
   .nav__toggle {
     display: none;
+    position: relative;
+
+    /* 44px is the tap-target floor (WCAG 2.5.5 / iOS HIG). The bars are
+       22px; the rest is deliberate padding, not chrome. */
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    margin-right: calc(var(--space--2xs) * -1);
     background: none;
     border: 0;
     color: var(--color--white);
     cursor: pointer;
+  }
+
+  /* Three rules out of one span, so the markup stays as authored. */
+  .nav__toggle-bar,
+  .nav__toggle-bar::before,
+  .nav__toggle-bar::after {
+    display: block;
+    width: 22px;
+    height: 1px;
+    background: currentcolor;
+  }
+
+  .nav__toggle-bar {
+    position: relative;
+  }
+
+  .nav__toggle-bar::before,
+  .nav__toggle-bar::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+  }
+
+  .nav__toggle-bar::before {
+    transform: translateY(-7px);
+  }
+
+  .nav__toggle-bar::after {
+    transform: translateY(7px);
+  }
+
+  /* Open: the middle rule goes, the outer two cross. */
+  .nav__toggle[aria-expanded="true"] .nav__toggle-bar {
+    background: transparent;
+  }
+
+  .nav__toggle[aria-expanded="true"] .nav__toggle-bar::before {
+    transform: rotate(45deg);
+  }
+
+  .nav__toggle[aria-expanded="true"] .nav__toggle-bar::after {
+    transform: rotate(-45deg);
   }
 
   .nav__menu {
@@ -153,6 +214,7 @@ const links = [
 
   .nav--theme-light .nav__logo-mark text,
   .nav--theme-light .nav__links a,
+  .nav--theme-light .nav__toggle,
   .nav--theme-light .nav__cart {
     fill: var(--color--black);
     color: var(--color--black);
@@ -160,6 +222,7 @@ const links = [
 
   .nav--theme-dark .nav__logo-mark text,
   .nav--theme-dark .nav__links a,
+  .nav--theme-dark .nav__toggle,
   .nav--theme-dark .nav__cart {
     fill: var(--color--white);
     color: var(--color--white);
@@ -171,6 +234,7 @@ const links = [
      The scent shows in the mark and in an underline marker instead —
      tint as a light source, not a text colour (01 §6.1). */
   .nav--theme-scent .nav__links a,
+  .nav--theme-scent .nav__toggle,
   .nav--theme-scent .nav__cart {
     color: var(--color--white);
   }
@@ -199,11 +263,23 @@ const links = [
     .nav__logo::after {
       transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
+
+    .nav__toggle-bar,
+    .nav__toggle-bar::before,
+    .nav__toggle-bar::after {
+      transition:
+        transform 0.3s,
+        background-color 0.3s;
+    }
   }
 
   @media (width <= 47.9375rem) {
     .nav__toggle {
       display: inline-flex;
+
+      /* The open menu is `position: fixed; inset: 0`, so without this the
+         overlay paints over its own close button. */
+      z-index: 1;
     }
 
     .nav__menu {
