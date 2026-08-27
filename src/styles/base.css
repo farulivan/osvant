@@ -183,13 +183,19 @@ h2 {
   .scent-card__discover,
   .hero__cue-btn,
   .btn-text {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
+    /* Pad to the target instead of switching `display`. An earlier pass
+       used `inline-flex` here and silently ate a space: SplitText wraps
+       each word in an inline-block div, and turning the anchor into a
+       flex container makes those divs flex items — which REMOVES the
+       whitespace between them rather than collapsing it. `the house`
+       rendered as `thehouse` in the mobile menu. Leaving `display` alone
+       also spares every element in this list from inheriting a layout
+       model it never asked for. `1lh` keeps the maths correct whatever
+       the type size; if it is unsupported the declaration drops and the
+       target simply stays as it was. */
+    padding-block: max(0px, calc((44px - 1lh) / 2));
 
-    /* Short labels — `terms`, `tiktok` — set narrower than they are tall.
-       Left-aligned by default, so the extra hit area grows to the right
-       and the text stays on the list's optical edge. */
+    /* Short labels — `terms`, `tiktok` — set narrower than they are tall. */
     min-width: 44px;
   }
 
