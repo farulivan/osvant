@@ -16,6 +16,12 @@ import bottleStatic from "../assets/img/stills/bottle-static.png";
 import bottleFever from "../assets/img/stills/bottle-fever.png";
 import bottleHalo from "../assets/img/stills/bottle-halo.png";
 
+import detailVolt from "../assets/img/stills/bottle-volt-detail.png";
+import detailNocturne from "../assets/img/stills/bottle-nocturne-detail.png";
+import detailStatic from "../assets/img/stills/bottle-static-detail.png";
+import detailFever from "../assets/img/stills/bottle-fever-detail.png";
+import detailHalo from "../assets/img/stills/bottle-halo-detail.png";
+
 const DELIVERED: Partial<Record<string, ImageMetadata>> = {
   volt: bottleVolt,
   nocturne: bottleNocturne,
@@ -27,6 +33,24 @@ const DELIVERED: Partial<Record<string, ImageMetadata>> = {
 /** The still for a scent, falling back to volt while masters are pending. */
 export function stillFor(scent: string): ImageMetadata {
   return DELIVERED[scent] ?? bottleVolt;
+}
+
+/**
+ * AST-03b — the bottle detail macro, row 1 of the formula story
+ * (03 §3.3, not optional). Derived from each master by `pnpm stills`
+ * rather than shot separately: a close crop gives cap, collar and liquid
+ * meniscus at roughly 1:1 for the size the row renders at.
+ */
+const DETAILS: Partial<Record<string, ImageMetadata>> = {
+  volt: detailVolt,
+  nocturne: detailNocturne,
+  static: detailStatic,
+  fever: detailFever,
+  halo: detailHalo,
+};
+
+export function detailFor(scent: string): ImageMetadata {
+  return DETAILS[scent] ?? detailVolt;
 }
 
 /** True once this scent has its own master — for flagging placeholders. */
