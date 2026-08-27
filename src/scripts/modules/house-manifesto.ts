@@ -54,6 +54,12 @@ export const houseManifesto: PageModule = {
       const split = new SplitText(line, {
         type: "words,chars",
         wordsClass: "split-word",
+        // SplitText's default aria:"auto" writes aria-label onto the
+        // target, which is prohibited on a <p> (axe aria-prohibited-attr).
+        // headline-reveal and note-pyramid already guard this; the
+        // manifesto did not, and nothing caught it because /the-house was
+        // never in the Lighthouse set.
+        aria: "none",
       });
       splits.push(split);
       gsap.set(split.chars, { color: dim });
