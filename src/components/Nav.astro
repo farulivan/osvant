@@ -85,6 +85,21 @@ const links = [
     backdrop-filter: blur(12px);
   }
 
+  /* `backdrop-filter` creates a containing block for `position: fixed`
+     DESCENDANTS. With `nav--solid` applied, the overlay menu's
+     `position: fixed; inset: 0` therefore resolved against the nav's own
+     84px-tall box instead of the viewport: the menu painted as a strip
+     across the top and its links spilled over the page behind it.
+
+     This has been broken since the overlay was written; it was never
+     visible because the button that opens it had no styling and could
+     not be pressed (see `.nav__toggle`). Dropping the blur while the
+     menu is open costs nothing — the overlay covers the whole viewport,
+     so there is no backdrop left to blur. */
+  .nav:has([data-nav-menu][data-open="true"]) {
+    backdrop-filter: none;
+  }
+
   .nav__logo {
     position: relative;
     display: inline-flex;
@@ -308,6 +323,14 @@ const links = [
       flex-direction: column;
       align-items: center;
       gap: 1.5rem;
+    }
+
+    /* `01 §5.2`: "links at `--text--h2`". Setting it on the list did
+       nothing — `.nav__links a` sets `--text--btn` and a rule on the
+       anchor outranks an inherited value, so the overlay shipped at 16px.
+       Invisible until the toggle became pressable. */
+    .nav__links a,
+    .nav__cart {
       font-size: var(--text--h2);
     }
   }
