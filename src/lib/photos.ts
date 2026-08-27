@@ -10,19 +10,19 @@
 // to the layout.
 import type { ImageMetadata } from "astro";
 
-import theLab from "../assets/img/photo/doors/the-lab.jpg";
-import theCult from "../assets/img/photo/doors/the-cult.jpg";
-import embers from "../assets/img/photo/campaign/embers.jpg";
+import theLab from "../assets/img/photo/doors/the-lab.webp";
+import theCult from "../assets/img/photo/doors/the-cult.webp";
+import embers from "../assets/img/photo/campaign/embers.webp";
 
-import saffron from "../assets/img/photo/macro/saffron.jpg";
-import oud from "../assets/img/photo/macro/oud.jpg";
-import iris from "../assets/img/photo/macro/iris.jpg";
-import benzoin from "../assets/img/photo/macro/benzoin.jpg";
-import yuzu from "../assets/img/photo/macro/yuzu.jpg";
-import neroli from "../assets/img/photo/macro/neroli.jpg";
-import blackPlum from "../assets/img/photo/macro/black-plum.jpg";
-import chiliRose from "../assets/img/photo/macro/chili-rose.jpg";
-import abstract from "../assets/img/photo/macro/abstract.jpg";
+import saffron from "../assets/img/photo/macro/saffron.webp";
+import oud from "../assets/img/photo/macro/oud.webp";
+import iris from "../assets/img/photo/macro/iris.webp";
+import benzoin from "../assets/img/photo/macro/benzoin.webp";
+import yuzu from "../assets/img/photo/macro/yuzu.webp";
+import neroli from "../assets/img/photo/macro/neroli.webp";
+import blackPlum from "../assets/img/photo/macro/black-plum.webp";
+import chiliRose from "../assets/img/photo/macro/chili-rose.webp";
+import abstract from "../assets/img/photo/macro/abstract.webp";
 
 export interface Photo {
   image: ImageMetadata;
