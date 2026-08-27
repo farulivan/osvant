@@ -120,6 +120,15 @@ const dateFmt = new Intl.DateTimeFormat("en-GB", {
     color: var(--scent-tint-text, var(--color--white));
   }
 
+  /* Tablet (768–991px) had no layout of its own: the site defined four
+     breakpoints in tokens and shipped one, so a 3-up grid stayed 3-up at
+     834px and gave each cell ~240px (review OSV-13). */
+  @media (61.9375rem >= width > 47.9375rem) {
+    .journal__list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   @media (width <= 47.9375rem) {
     .journal__list {
       grid-template-columns: 1fr;
