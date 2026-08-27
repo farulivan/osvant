@@ -2,13 +2,23 @@
 // Campaign band — featured drop (03 §1.5). Full-bleed ink-1; marquee per
 // M §4.7 (data-anim="marquee", velocity-reactive, pauses off-viewport);
 // amber appears ONLY in its canonical role here — the limited chip
-// (01 §1 rule 4, RFC-001 A3). The campaign photography is delivered
-// (photo/campaign/embers.jpg); this still shows the duotone wash until
-// the media is wired in, which is the next PR.
+// (01 §1 rule 4, RFC-001 A3). The still grades to --scent-tint rather
+// than the house violet: the band is scoped to fever, and an ember plate
+// pushed violet throws away the only reason it works.
 import { withBase } from "../lib/url";
+import Duotone from "./Duotone.astro";
+import { campaign } from "../lib/photos";
+import { catalog } from "../lib/commerce";
+
+const fever = catalog.find((product) => product.scent === "fever");
 ---
 
-<section class="campaign" data-nav-theme="dark" aria-labelledby="campaign-lead">
+<section
+  class="campaign"
+  data-nav-theme="dark"
+  data-scent="fever"
+  aria-labelledby="campaign-title"
+>
   <div class="campaign__marquee" aria-hidden="true">
     <div class="campaign__marquee-track" data-anim="marquee">
       <span>fever — limited batch 001 &nbsp;·&nbsp; </span>
@@ -16,13 +26,32 @@ import { withBase } from "../lib/url";
   </div>
 
   <div class="campaign__body">
-    <div class="campaign__media" aria-hidden="true"></div>
+    <Duotone
+      class="campaign__media"
+      image={campaign.hero.image}
+      alt=""
+      widths={[560, 900, 1400]}
+      sizes="(width <= 47.9375rem) 100vw, 50vw"
+      tint={campaign.hero.tint}
+      exposure={campaign.hero.exposure}
+    />
 
     <div class="campaign__content">
-      <span class="campaign__chip">limited</span>
-      <p class="campaign__lead" id="campaign-lead">
+      <p class="campaign__eyebrow" data-eyebrow>
+        batch 001 — the featured drop
+      </p>
+      <h2 class="campaign__title" id="campaign-title" data-anim="split">
+        the fever
+      </h2>
+      <p class="campaign__lead">
         saffron, chili-rose, benzoin. the heat, bottled.
       </p>
+
+      <div class="campaign__buy">
+        <p class="campaign__price">€{fever?.variants[0].price}</p>
+        <span class="campaign__chip">limited</span>
+      </div>
+
       <a class="btn-primary" href={withBase("collection/fever/")}>
         <span data-btn-label>shop fever</span>
       </a>
@@ -60,15 +89,39 @@ import { withBase } from "../lib/url";
     padding: 4rem var(--gutter);
   }
 
-  /* Duotone wash — the delivered still is wired in the next PR. */
-  .campaign__media {
+  .campaign__body :global(.campaign__media) {
     aspect-ratio: 4 / 3;
     border-radius: var(--radius--media);
-    background: linear-gradient(
-      150deg,
-      color-mix(in oklab, var(--color--amber) 16%, var(--color--ink-1)) 0%,
-      var(--color--ink-2) 100%
-    );
+  }
+
+  .campaign__eyebrow {
+    margin: 0 0 var(--space--eyebrow-headline);
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .campaign__title {
+    margin: 0 0 var(--space--headline-lede);
+    font-size: var(--text--h2);
+    font-weight: 900;
+    font-stretch: 125%;
+  }
+
+  /* Price and scarcity chip together — the home page previously showed no
+     price anywhere at all (review OSV-20). */
+  .campaign__buy {
+    display: flex;
+    align-items: center;
+    gap: var(--space--s);
+    margin: var(--space--lede-content) 0 var(--space--s);
+  }
+
+  .campaign__price {
+    margin: 0;
+    font-size: var(--text--med);
+    font-weight: 800;
   }
 
   .campaign__content {
