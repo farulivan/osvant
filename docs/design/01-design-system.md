@@ -113,8 +113,21 @@ Components reference `--scent-tint` (falls back to `--color--uv`). This mirrors 
 
 | Role | Face | Loading |
 |---|---|---|
-| Workhorse — all UI, headings, body | **Archivo Variable** (`wdth` 62–125, `wght` 100–900) | self-hosted `woff2`, `font-display: swap`, preload |
+| Workhorse — all UI, headings, body | **Archivo Variable** (`wdth` 100–125, `wght` 400–900) | self-hosted `woff2` subset, `font-display: swap`, preload |
 | Display — emotional peaks only | **Instrument Serif** (regular + italic) | self-hosted `woff2`, load on idle |
+
+> **Amended 2026-08-27 (owner sign-off).** The workhorse axis ranges were
+> `wdth` 62–125 / `wght` 100–900. Nothing in the built site ever rendered
+> outside `wdth` 100–125 / `wght` 400–900, and shipping the unused ranges
+> cost 16.6KB — the `wdth` axis is expensive, and dropping its lower half
+> saved more than removing ~150 glyphs did. Archivo now ships at 35.8KB
+> instead of 88KB, which is what brings `/` and the PDPs back under the
+> 2.5s LCP budget (`M §10`): measured 2630ms → 2136ms.
+>
+> The narrowed ranges are the contract now. A thin weight or the 62%
+> condensed width needs `scripts/subset-fonts.mjs` widened and `pnpm fonts`
+> re-run first — otherwise the browser synthesises the missing range and
+> renders a faked weight rather than the real one, silently.
 
 **Pairing logic (the tension, brief §3):** Archivo Expanded Black = precision/loud. Instrument Serif Italic = provocation/liquid whisper. The italic serif appears ONLY in: scent names inline, pull-quote lines, one word inside impact headlines (e.g. `the *cult*`). Never for UI, never for paragraphs.
 
