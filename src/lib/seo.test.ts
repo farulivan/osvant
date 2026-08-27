@@ -14,8 +14,13 @@ const volt: Product = {
   scent: "volt",
   name: "the volt",
   batch: "001",
-  notes: ["neroli", "yuzu", "mint spark"],
+  notes: {
+    top: ["yuzu"],
+    heart: ["neroli"],
+    base: ["vetiver"],
+  },
   character: "the jolt. citrus wired to a live current.",
+  formula: { paragraphs: ["a", "b"], pullQuote: "c" },
   variants: [
     {
       sku: "OSV-VOLT-50",

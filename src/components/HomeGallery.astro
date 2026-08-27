@@ -16,7 +16,7 @@
 // position — by layout, not by a scrim (M §4.4, review OSV-10).
 import LightStudy from "./LightStudy.astro";
 import { withBase } from "../lib/url";
-import { getProducts } from "../lib/commerce";
+import { getProducts, summaryNotes } from "../lib/commerce";
 import { stillFor } from "../lib/stills";
 
 const scents = await getProducts();
@@ -38,7 +38,7 @@ const scents = await getProducts();
             data-gallery-item
             data-scent={scent.scent}
             data-name={scent.name}
-            data-notes={scent.notes.join("|")}
+            data-notes={summaryNotes(scent).join("|")}
             data-price={`€${scent.variants[0].price}`}
             data-href={withBase(`collection/${scent.scent}/`)}
           >
@@ -66,7 +66,7 @@ const scents = await getProducts();
       <div class="home-gallery__readout" aria-live="polite">
         <p class="home-gallery__name" data-gallery-name>{scents[0]?.name}</p>
         <ul class="home-gallery__notes" data-gallery-notes>
-          {scents[0]?.notes.map((note) => <li>{note}</li>)}
+          {scents[0] && summaryNotes(scents[0]).map((note) => <li>{note}</li>)}
         </ul>
         <p class="home-gallery__price" data-gallery-price>
           €{scents[0]?.variants[0].price}
@@ -98,7 +98,9 @@ const scents = await getProducts();
             width={420}
           />
           <p class="home-gallery__static-name">{scent.name}</p>
-          <p class="home-gallery__static-notes">{scent.notes.join(" · ")}</p>
+          <p class="home-gallery__static-notes">
+            {summaryNotes(scent).join(" · ")}
+          </p>
           <a class="btn-text" href={withBase(`collection/${scent.scent}/`)}>
             <span data-btn-label>€{scent.variants[0].price} — discover</span>
           </a>

@@ -2,8 +2,8 @@
 // PDP × 5 (03-page-specs.md §3) — data-scent theming (01 §2.3: ONE
 // attribute swap, nothing else recolored manually). Sections: 3.1 scent
 // hero, 3.2 note pyramid (M §4.6), 3.4 cross-sell. 3.3 formula story is
-// copy-blocked ([draft], ships w4 per RFC-001 C1) — section omitted until
-// copy lands. Bottle: the light study (M §8, ADR-013) with drag-to-light
+// next — its copy lives in products.json.formula.
+// Bottle: the light study (M §8, ADR-013) with drag-to-light
 // per M §4.4b — the hero is laid out to fit one viewport at ≥725px so
 // product, price and add-to-cart are all reachable without scrolling
 // (03 §3.1 acceptance, review OSV-05).
@@ -43,10 +43,11 @@ const jsonLd = jsonLdScript(
     absoluteUrl(withBase(OG_DEFAULT_PATH), Astro.site),
   ),
 );
+// 03 §3.2 eyebrows are LAW; the notes come from the pyramid's own tiers.
 const rows = [
-  { label: "top — the spark", note: product.notes[0] },
-  { label: "heart — the current", note: product.notes[1] },
-  { label: "base — the ground", note: product.notes[2] },
+  { label: "top — the spark", notes: product.notes.top },
+  { label: "heart — the current", notes: product.notes.heart },
+  { label: "base — the ground", notes: product.notes.base },
 ];
 ---
 
@@ -175,7 +176,7 @@ const rows = [
           <div class="pyramid__row" data-pyramid-row>
             <p class="pyramid__eyebrow">{row.label}</p>
             <p class="pyramid__notes" data-pyramid-notes>
-              {row.note}
+              {row.notes.join(" · ")}
             </p>
             <span
               class="pyramid__divider"

@@ -2,8 +2,9 @@
 // Scent card (01 §5.3) — collection grid + home showcase. Surface ink-2,
 // radius xs; hover swaps border → --scent-tint (per scent via data-scent)
 // and drifts the bottle render −8px (0.5s power2.out approx). Bottle
-// renders are pending assets (06 §1) — the duotone tint wash is the
-// placeholder (ADR-008). Motion hook: data-anim="card" (stagger group).
+// stills are delivered and already carry the gallery and the PDP; the
+// card still shows the tint wash until its interior is rebuilt around
+// the render. Motion hook: data-anim="card" (stagger group).
 import { withBase } from "../lib/url";
 
 interface Props {
@@ -96,7 +97,7 @@ const [article, ...rest] = name.split(" ");
     font-weight: 400;
   }
 
-  /* Bottle render placeholder (ADR-008) — scent-tinted duotone wash.
+  /* Scent-tinted duotone wash, standing in for the bottle render.
      Bounded height, not a bare aspect-ratio: once the asymmetric rows
      actually apply (review OSV-04) a span-2 card is ~950px wide, and
      3/4 of that is a 1266px-tall slab. Height still reserves its own

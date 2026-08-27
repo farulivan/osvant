@@ -19,15 +19,44 @@ export interface ProductVariant {
   limited: boolean;
 }
 
+/** The note pyramid, three per tier (03 §3.2, review OSV-12 option a). */
+export interface NotePyramid {
+  top: string[];
+  heart: string[];
+  base: string[];
+}
+
+/** PDP formula story copy (03 §3.3). */
+export interface FormulaStory {
+  paragraphs: string[];
+  pullQuote: string;
+}
+
 export interface Product {
   scent: string;
   name: string;
   batch: string;
-  /** Note pyramid rows, top → heart → base (03 §3.2). */
-  notes: string[];
+  /** Keyed by tier rather than positional: the pyramid renders each tier
+   * as its own row, so which tier a note belongs to is data, not an
+   * index the template has to remember. */
+  notes: NotePyramid;
   /** One-line character copy (03 §3.1); also the JSON-LD description. */
   character: string;
+  formula: FormulaStory;
   variants: ProductVariant[];
+}
+
+/**
+ * The three notes a card or the gallery overlay shows — one per tier, so
+ * a summary still describes the whole shape of the scent rather than just
+ * its opening (01 §5.3, 03 §1.4 both call for three).
+ */
+export function summaryNotes(product: Product): string[] {
+  return [
+    product.notes.top[0],
+    product.notes.heart[0],
+    product.notes.base[0],
+  ].filter((note): note is string => Boolean(note));
 }
 
 export interface CartLine {

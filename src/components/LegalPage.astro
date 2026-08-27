@@ -1,0 +1,74 @@
+---
+// Shared shell for the two legal routes (03 §7, review OSV-29). Short is
+// fine for a demo store; empty is not — these were 12-word stubs linked
+// from every page footer.
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+
+<section class="legal" data-nav-theme="dark" aria-labelledby="legal-title">
+  <p class="legal__eyebrow" data-eyebrow>legal</p>
+  <h1 class="legal__title" id="legal-title" data-anim="split">{title}</h1>
+
+  <p class="legal__notice">
+    osvant is a portfolio demonstration. it is not a real shop, no real orders
+    are processed, and no payment is ever taken.
+  </p>
+
+  <div class="legal__body">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .legal {
+    min-height: 100vh;
+    padding: calc(var(--nav-height) + var(--space--xl)) var(--gutter)
+      var(--space--xl);
+    background: var(--color--black);
+  }
+
+  .legal__eyebrow {
+    margin: 0 0 var(--space--eyebrow-headline);
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .legal__title {
+    margin: 0;
+    font-size: var(--text--h1);
+    font-weight: 900;
+    font-stretch: 125%;
+  }
+
+  /* The demo statement is the most load-bearing sentence on the page, so
+     it is set above body size rather than buried at eyebrow scale. */
+  .legal__notice {
+    margin: var(--space--headline-lede) 0 0;
+    max-width: 46ch;
+    font-size: var(--text--lead);
+    color: var(--color--white);
+  }
+
+  .legal__body {
+    margin-top: var(--space--lede-content);
+    max-width: 62ch;
+    color: var(--color--lilac-2);
+  }
+
+  .legal__body :global(h2) {
+    margin: var(--space--m) 0 var(--space--2xs);
+    font-size: var(--text--h5);
+    color: var(--color--white);
+  }
+
+  .legal__body :global(p) {
+    margin: 0 0 var(--space--xs);
+    font-size: var(--text--body);
+    line-height: 1.6;
+  }
+</style>

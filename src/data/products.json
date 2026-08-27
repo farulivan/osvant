@@ -3,7 +3,11 @@
     "scent": "volt",
     "name": "the volt",
     "batch": "001",
-    "notes": ["neroli", "yuzu", "mint spark"],
+    "notes": {
+      "top": ["yuzu", "pink pepper", "mint spark"],
+      "heart": ["neroli", "petitgrain", "green almond"],
+      "base": ["vetiver", "white cedar", "ambrette"]
+    },
     "variants": [
       {
         "sku": "OSV-VOLT-50",
@@ -24,13 +28,24 @@
         "limited": false
       }
     ],
-    "character": "the jolt. citrus wired to a live current."
+    "character": "the jolt. citrus wired to a live current.",
+    "formula": {
+      "paragraphs": [
+        "volt starts at the top of its range and stays there. yuzu and pink pepper hit first, cold and carbonated, before the neroli underneath has finished opening \u2014 a deliberate overlap that reads less like a sequence than a short circuit.",
+        "what keeps it from burning off is the vetiver. it holds the citrus in place for hours after a conventional cologne would have gone quiet, so the brightness stops being an opening and becomes the whole shape of the thing."
+      ],
+      "pullQuote": "citrus is usually a doorway. here it is the room."
+    }
   },
   {
     "scent": "nocturne",
     "name": "the nocturne",
     "batch": "002",
-    "notes": ["oud", "black plum", "amber"],
+    "notes": {
+      "top": ["black plum", "bergamot rind", "pink peppercorn"],
+      "heart": ["rose absolute", "oud", "immortelle"],
+      "base": ["amber", "labdanum", "tonka"]
+    },
     "variants": [
       {
         "sku": "OSV-NOCTURNE-50",
@@ -51,13 +66,24 @@
         "limited": false
       }
     ],
-    "character": "the night. oud with the lights off."
+    "character": "the night. oud with the lights off.",
+    "formula": {
+      "paragraphs": [
+        "oud is easy to overdose and almost impossible to make quiet. nocturne runs it at a fraction of the usual concentration and lets rose absolute carry the weight instead, so the resin reads as depth rather than as smoke.",
+        "the plum at the top is doing structural work, not decorative. it keeps the first ten minutes from being solemn, which is the failure mode of every oud composition that takes itself too seriously."
+      ],
+      "pullQuote": "dark is a temperature, not a volume."
+    }
   },
   {
     "scent": "static",
     "name": "the static",
     "batch": "003",
-    "notes": ["aldehydes", "white musk", "iris"],
+    "notes": {
+      "top": ["aldehydes", "frozen pear", "silver birch"],
+      "heart": ["iris", "orris butter", "lily"],
+      "base": ["white musk", "blond woods", "clean suede"]
+    },
     "variants": [
       {
         "sku": "OSV-STATIC-50",
@@ -78,13 +104,24 @@
         "limited": false
       }
     ],
-    "character": "the white noise. clean until it hums."
+    "character": "the white noise. clean until it hums.",
+    "formula": {
+      "paragraphs": [
+        "static is the hardest of the five to describe and the easiest to wear. aldehydes give it that scrubbed, just-ironed lift; orris butter underneath makes it powdery without making it sweet.",
+        "there is no fruit, no vanilla and nothing warm in the base. what is left is a kind of clean interference \u2014 present at close range, gone by arm's length, which is exactly the distance it was built for."
+      ],
+      "pullQuote": "not a silence. a signal with nothing in it."
+    }
   },
   {
     "scent": "fever",
     "name": "the fever",
     "batch": "004",
-    "notes": ["saffron", "chili-rose", "benzoin"],
+    "notes": {
+      "top": ["saffron", "pink chili", "blood orange"],
+      "heart": ["chili-rose", "carnation", "cistus"],
+      "base": ["benzoin", "styrax", "dark honey"]
+    },
     "variants": [
       {
         "sku": "OSV-FEVER-50",
@@ -96,13 +133,24 @@
         "limited": true
       }
     ],
-    "character": "the heat. saffron running a temperature."
+    "character": "the heat. saffron running a temperature.",
+    "formula": {
+      "paragraphs": [
+        "saffron at this concentration is a risk. it goes metallic and medicinal if the base cannot hold it, so fever sits it on benzoin and styrax \u2014 resins heavy enough to read as skin rather than as spice cabinet.",
+        "the chili is not there for heat in the culinary sense. it sharpens the rose, which would otherwise be too comfortable, and gives the whole composition the faint flush of a temperature you cannot quite place."
+      ],
+      "pullQuote": "the heat is not the spice. it is what the spice does to the rose."
+    }
   },
   {
     "scent": "halo",
     "name": "the halo",
     "batch": "005",
-    "notes": ["iris", "cashmeran", "pale musk"],
+    "notes": {
+      "top": ["bergamot", "white freesia", "aldehyde veil"],
+      "heart": ["iris", "orris", "heliotrope"],
+      "base": ["cashmeran", "pale musk", "sandalwood"]
+    },
     "variants": [
       {
         "sku": "OSV-HALO-50",
@@ -123,6 +171,13 @@
         "limited": false
       }
     ],
-    "character": "the glow. iris in soft focus."
+    "character": "the glow. iris in soft focus.",
+    "formula": {
+      "paragraphs": [
+        "halo is built outward rather than downward. cashmeran and pale musk sit low and wide, and the iris above them is pitched to diffuse rather than project \u2014 the composition occupies space instead of announcing itself in it.",
+        "worn close it is almost nothing. at conversational distance it is unmistakable. that gap is the entire formula, and it took more revisions than the other four combined."
+      ],
+      "pullQuote": "you will not smell it on yourself. that is the point."
+    }
   }
 ]

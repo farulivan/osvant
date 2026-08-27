@@ -5,7 +5,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { pageTitle } from "../../lib/seo";
 import ScentCard from "../../components/ScentCard.astro";
-import { catalog as products } from "../../lib/commerce";
+import { catalog as products, summaryNotes } from "../../lib/commerce";
 
 // 03 §2 asymmetric editorial layout — alternating 2/3 split rows, fifth
 // card full width. The card applies it (review OSV-04); this is the rhythm.
@@ -36,7 +36,7 @@ const SPANS: Array<1 | 2 | 3> = [2, 1, 1, 2, 3];
             scent={product.scent}
             name={product.name}
             batch={product.batch}
-            notes={product.notes}
+            notes={summaryNotes(product)}
             price={product.variants[0].price}
             stagger={0.05}
             span={SPANS[index] ?? 1}
