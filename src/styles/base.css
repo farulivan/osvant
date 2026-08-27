@@ -157,3 +157,51 @@ h2 {
   inset-inline-start: 0;
   top: 100%;
 }
+
+/* ---------------------------------------------------------------------
+   Touch targets (WCAG 2.5.8 / iOS HIG, review OSV-13)
+
+   Gated on `pointer: coarse`, not on width. The constraint is the finger,
+   not the viewport — a narrow desktop window should keep its typographic
+   rhythm, and a large tablet still needs thumb-sized targets.
+
+   Every rule here grows the HIT AREA and never the type. Nav and footer
+   links were 17px tall boxes: legible, but under half the 24×24 minimum
+   2.5.8 asks for and a quarter of the 44px iOS expects. The text stays
+   exactly as designed; the box around it grows.
+
+   Inline links inside prose are deliberately excluded — 2.5.8 exempts
+   them, and padding them out would break the line rhythm of body copy. */
+@media (pointer: coarse) {
+  .nav__logo,
+  .nav__links a,
+  .nav__cart,
+  .footer__list a,
+  .footer__legal a,
+  .contact__socials a,
+  .contact__press a,
+  .scent-card__discover,
+  .hero__cue-btn,
+  .btn-text {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+
+    /* Short labels — `terms`, `tiktok` — set narrower than they are tall.
+       Left-aligned by default, so the extra hit area grows to the right
+       and the text stays on the list's optical edge. */
+    min-width: 44px;
+  }
+
+  /* Controls already carry their own padding; they just sit a couple of
+     pixels under the line. */
+  .btn-primary,
+  .btn-secondary,
+  .pdp-buy__chip,
+  button,
+  select,
+  textarea,
+  input:not([type="checkbox"], [type="radio"]) {
+    min-height: 44px;
+  }
+}
