@@ -1,0 +1,152 @@
+---
+// Duotone-graded photography (01 §6).
+//
+// The grade is applied at RUNTIME rather than baked into the masters.
+// `06 §2` asks design for pre-graded files, but the photography here is
+// sourced rather than commissioned, and grading in CSS buys three things
+// a baked grade cannot:
+//
+//   - any photo that lands in the repo arrives in brand grade, so a set
+//     assembled from different photographers still reads as one family;
+//   - the grade stays a token, so changing the house colour is one edit
+//     rather than a re-export of every image;
+//   - a section can grade toward its own `--scent-tint` instead of the
+//     house violet, which is what the fever campaign band needs — an
+//     ember plate graded violet throws away the only reason it works.
+//
+// Mechanically: the image is desaturated and its tonality shaped with
+// contrast/brightness, then a tint layer in `mix-blend-mode: color` takes
+// hue and saturation from the tint while luminosity stays with the photo.
+// That is a real monochrome map, not a colour wash over the top.
+//
+// `exposure` exists because sourced photos are not exposure-matched. A
+// bright frame that grades to a pale block reads as a hole on a near-black
+// page; pulling it down is ordinary art direction, not a workaround.
+//
+// AVIF is forced rather than left to Astro's default. `01 §6` requires it,
+// and the difference is not marginal: the door plates came out at 496KB
+// and 472KB as WebP 2× derivatives, which is most of a megabyte of the
+// home page for two background images.
+//
+// Quality is set low on purpose. These images are desaturated and
+// duotone-mapped before anyone sees them, so colour fidelity is thrown
+// away by the treatment itself — and dense textures (a mass of chilies,
+// crystal facets) encode terribly at a default quality: chili-rose alone
+// came out at 1.4MB for an 800px tile.
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  image: ImageMetadata;
+  /** Empty string marks the image decorative; the wrapper is aria-hidden. */
+  alt: string;
+  /** Widths to emit. The browser picks via `sizes`, so a full-bleed plate
+   * does not ship a 3600px file to a laptop. */
+  widths?: number[];
+  /** Layout hint for the srcset. Defaults to full-bleed. */
+  sizes?: string;
+  /** Any colour; defaults to the house violet. Pass `var(--scent-tint)`
+   * to grade a section toward its own scent. */
+  tint?: string;
+  /** <1 darkens. Use it to bring a bright frame down to the set. */
+  exposure?: number;
+  contrast?: number;
+  /** Encoder quality. Low by default — the grade discards colour anyway. */
+  quality?: number;
+  /** `contain` for a cut-out subject that must not be cropped. */
+  fit?: "cover" | "contain";
+  /** How much of the hue the tint layer contributes. Zero leaves the
+   * photograph untouched — product shots are not duotoned (01 §6 reserves
+   * the grade for skin and vapor imagery), but they still want the AVIF
+   * sizing this component does. */
+  strength?: number;
+  /** Above-the-fold images only. */
+  eager?: boolean;
+  class?: string;
+}
+
+const {
+  image,
+  alt,
+  widths = [640, 1080, 1600],
+  sizes = "100vw",
+  // Softened off pure UV. `mix-blend-mode: color` takes hue AND
+  // saturation from this layer, so grading against the raw accent turns
+  // every photograph electric — the macro plates came out as vivid
+  // poster purple rather than as specimen photography.
+  tint = "color-mix(in oklab, var(--color--uv) 42%, var(--color--lilac-3))",
+  exposure = 1,
+  contrast = 1.22,
+  quality = 48,
+  fit = "cover",
+  strength = 0.55,
+  eager = false,
+  class: className,
+} = Astro.props;
+
+// Without an explicit `width`, Astro points `src` at the FULL-RESOLUTION
+// original — a 4000×6000, 1.3MB fallback sitting behind a perfectly good
+// srcset. Modern browsers ignore it, but it ships in the deploy and any
+// client without srcset support downloads it.
+const widest = Math.max(...widths);
+---
+
+<div
+  class:list={["duotone", strength > 0 && "duotone--graded", className]}
+  style={`--duotone-tint: ${tint}; --duotone-exposure: ${exposure}; --duotone-contrast: ${contrast}; --duotone-strength: ${strength}; --duotone-fit: ${fit};`}
+  aria-hidden={alt === "" ? "true" : undefined}
+>
+  <Image
+    class="duotone__media"
+    src={image}
+    alt={alt}
+    width={widest}
+    widths={widths}
+    sizes={sizes}
+    format="avif"
+    quality={quality}
+    loading={eager ? "eager" : "lazy"}
+    decoding="async"
+    fetchpriority={eager ? "high" : "auto"}
+  />
+</div>
+
+<style>
+  .duotone {
+    position: relative;
+    overflow: hidden;
+
+    /* Contains the blend so it cannot reach the page behind the image. */
+    isolation: isolate;
+
+    /* Load-bearing with `isolation`: the isolated group has no backdrop
+       of its own, so where the image is transparent — the keyed bottle
+       detail — the tint layer blends against nothing and paints a flat
+       field of colour. Giving the group the page's own ground makes
+       transparency read as transparency. */
+    background: var(--color--black);
+  }
+
+  .duotone__media {
+    width: 100%;
+    height: 100%;
+    object-fit: var(--duotone-fit);
+  }
+
+  .duotone--graded .duotone__media {
+    filter: grayscale(1) contrast(var(--duotone-contrast))
+      brightness(var(--duotone-exposure));
+  }
+
+  /* Hue and saturation from the tint, luminosity from the photograph —
+     which is what makes this a duotone rather than a colour wash. */
+  .duotone--graded::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--duotone-tint);
+    mix-blend-mode: color;
+    opacity: var(--duotone-strength);
+    pointer-events: none;
+  }
+</style>

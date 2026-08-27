@@ -1,0 +1,186 @@
+---
+// The formula story (03 §3.3) — absent from all five PDPs until now
+// (review OSV-11), and the section that does the actual selling: the
+// reason to spend €110 rather than €40.
+//
+// Three alternating image/text rows with media parallax (M §4.5), and
+// exactly one pull-quote in Instrument Serif italic at --text--h3.
+//
+// Row 1 is the BOTTLE macro, not an ingredient macro — 03 §3.3 is
+// explicit and marks it not optional. Without it the page never shows the
+// object closer than the hero framing and loses all material intimacy,
+// which is what drag-to-rotate used to provide before ADR-013.
+//
+// Rows 2 and 3 take ingredient macros resolved from the scent's OWN
+// pyramid, so a PDP illustrates the notes it actually contains rather
+// than a list kept by hand per scent.
+import Duotone from "./Duotone.astro";
+import type { Product } from "../lib/commerce";
+import { detailFor } from "../lib/stills";
+import { macroPair } from "../lib/photos";
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+
+// Two distinct ingredient plates, walked from this scent's own notes —
+// heart and base first, so the images are not both from the opening.
+const [heart, base] = macroPair([
+  ...product.notes.heart,
+  ...product.notes.base,
+  ...product.notes.top,
+]);
+---
+
+<section
+  class="formula"
+  data-nav-theme="scent"
+  aria-labelledby={`formula-${product.scent}`}
+>
+  <p class="formula__eyebrow" data-eyebrow>the formula</p>
+  <h2 class="formula__title" id={`formula-${product.scent}`} data-anim="split">
+    how it is built
+  </h2>
+
+  {
+    /* Row 1 — the bottle itself, close (03 §3.3). Ungraded: this is a
+      product shot, and 01 §6 reserves the duotone for skin and vapor.
+      Tinting it turned the brushed-steel cap gold on the fever page. */
+  }
+  <div class="formula__row formula__row--detail">
+    <Duotone
+      class="formula__media"
+      image={detailFor(product.scent)}
+      alt={`${product.name} — cap and shoulder`}
+      widths={[440, 700, 1000]}
+      sizes="(width <= 47.9375rem) 100vw, 50vw"
+      strength={0}
+      fit="contain"
+    />
+    <p class="formula__text">{product.formula.paragraphs[0]}</p>
+  </div>
+
+  {/* Rows 2 and 3 — the materials, from this scent's own pyramid */}
+  <div class="formula__row formula__row--reverse">
+    <Duotone
+      class="formula__media"
+      image={heart.image}
+      alt={heart.alt}
+      widths={[440, 700, 1000]}
+      sizes="(width <= 47.9375rem) 100vw, 50vw"
+      exposure={heart.exposure}
+    />
+    <p class="formula__text">{product.formula.paragraphs[1]}</p>
+  </div>
+
+  {
+    /* Row 3 closes on the pull-quote — the one the section is allowed
+      (03 §3.3). It sat standalone between rows 1 and 2 first, with a flat
+      list of all nine notes filling this row, which the note pyramid
+      higher up the page already renders grouped. Nine note names twice on
+      one page is padding, not information. Ending on the italic line also
+      lands better into the cross-sell than ending on a paragraph. */
+  }
+  <div class="formula__row">
+    <Duotone
+      class="formula__media"
+      image={base.image}
+      alt={base.alt}
+      widths={[440, 700, 1000]}
+      sizes="(width <= 47.9375rem) 100vw, 50vw"
+      exposure={base.exposure}
+    />
+    <blockquote class="formula__quote">
+      <p>{product.formula.pullQuote}</p>
+    </blockquote>
+  </div>
+</section>
+
+<style>
+  .formula {
+    padding: var(--space--xl) var(--gutter);
+    background: var(--color--black);
+  }
+
+  .formula__eyebrow {
+    margin: 0 0 var(--space--eyebrow-headline);
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .formula__title {
+    margin: 0 0 var(--space--lede-content);
+    font-size: var(--text--h2);
+    font-weight: 900;
+    font-stretch: 125%;
+  }
+
+  .formula__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space--l);
+    align-items: center;
+    margin-bottom: var(--space--l);
+  }
+
+  .formula__row--reverse :global(.formula__media) {
+    order: 2;
+  }
+
+  .formula__row :global(.formula__media) {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius--media);
+  }
+
+  /* The bottle detail is a letterbox band (the cap-and-shoulder crop runs
+     about 2.4:1), so a 4/3 box `contain`s it with 210px of dead space
+     above and below. Letting the plate drive its own height turns that
+     into a macro strip, which is what 03 §3.3 is describing anyway. */
+  .formula__row--detail :global(.formula__media) {
+    aspect-ratio: auto;
+  }
+
+  .formula__text {
+    margin: 0;
+    max-width: 46ch;
+    font-size: var(--text--body);
+    line-height: 1.6;
+    color: var(--color--lilac-2);
+  }
+
+  /* The second register (01 §3.1) — exactly one per page (03 §3.3). */
+  .formula__quote {
+    margin: 0;
+    padding: 0;
+    max-width: 20ch;
+  }
+
+  .formula__quote p {
+    margin: 0;
+    font-family: "Instrument Serif", serif;
+    font-size: var(--text--h3);
+    font-style: italic;
+    line-height: 1.2;
+    color: var(--color--white);
+  }
+
+  @media (width <= 47.9375rem) {
+    .formula__row,
+    .formula__row--reverse {
+      grid-template-columns: 1fr;
+      gap: var(--space--s);
+    }
+
+    .formula__row--reverse :global(.formula__media) {
+      order: 0;
+    }
+
+    .formula__quote {
+      max-width: 24ch;
+    }
+  }
+</style>

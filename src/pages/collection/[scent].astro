@@ -1,14 +1,14 @@
 ---
 // PDP × 5 (03-page-specs.md §3) — data-scent theming (01 §2.3: ONE
 // attribute swap, nothing else recolored manually). Sections: 3.1 scent
-// hero, 3.2 note pyramid (M §4.6), 3.4 cross-sell. 3.3 formula story is
-// next — its copy lives in products.json.formula.
+// hero, 3.2 note pyramid (M §4.6), 3.3 formula story, 3.4 cross-sell.
 // Bottle: the light study (M §8, ADR-013) with drag-to-light
 // per M §4.4b — the hero is laid out to fit one viewport at ≥725px so
 // product, price and add-to-cart are all reachable without scrolling
 // (03 §3.1 acceptance, review OSV-05).
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import LightStudy from "../../components/LightStudy.astro";
+import FormulaStory from "../../components/FormulaStory.astro";
 import { stillFor } from "../../lib/stills";
 import { withBase } from "../../lib/url";
 import {
@@ -187,6 +187,9 @@ const rows = [
         ))
       }
     </section>
+
+    {/* 3.3 formula story — alternating parallax rows + one pull-quote */}
+    <FormulaStory product={product} />
 
     {/* 3.4 cross-sell — native overflow-x + scroll-snap (no hijacking) */}
     <section class="xsell" data-nav-theme="dark" aria-labelledby="xsell-title">

@@ -14,6 +14,10 @@
 // Type safe zone: the overlay owns the left 38% of the stage and the
 // track is inset to match, so no bottle can enter it at any scrub
 // position — by layout, not by a scrim (M §4.4, review OSV-10).
+//
+// Nothing here is eager. The gallery sits below the hero, and giving its
+// first bottle fetchpriority="high" took bandwidth from the hero h1 —
+// which M §10 requires to be the LCP element.
 import LightStudy from "./LightStudy.astro";
 import { withBase } from "../lib/url";
 import { getProducts, summaryNotes } from "../lib/commerce";
@@ -32,7 +36,7 @@ const scents = await getProducts();
   <div class="home-gallery__stage" data-gallery-stage>
     <div class="home-gallery__track" data-gallery-track aria-hidden="true">
       {
-        scents.map((scent, index) => (
+        scents.map((scent) => (
           <div
             class="home-gallery__item"
             data-gallery-item
@@ -47,7 +51,6 @@ const scents = await getProducts();
               alt=""
               image={stillFor(scent.scent)}
               width={720}
-              eager={index === 0}
             />
           </div>
         ))

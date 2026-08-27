@@ -4,10 +4,12 @@
 // split module (M §4.2). Hover (media scale 1.05 0.6s, title x-shift 0.5em,
 // arrow appears) is pure CSS, disabled under reduced motion.
 //
-// Door plates are delivered (photo/doors/the-lab.jpg, the-cult.jpg);
-// [data-door-media] still shows a duotone wash until they are wired in,
-// and gains data-anim="parallax" (M §4.5) at the same time.
+// Door media is duotone-graded at runtime (01 §6) with a bottom-up scrim
+// so the type always has a ground — the plates are busy edge to edge, so
+// the scrim is load-bearing here rather than a nicety.
 import { withBase } from "../lib/url";
+import Duotone from "./Duotone.astro";
+import { doors as doorPhotos } from "../lib/photos";
 
 // 03 §1.3 — each door carries an eyebrow and a one-line description.
 // Four words over a gradient gave a visitor no reason to click and no
@@ -18,14 +20,14 @@ const doors = [
     eyebrow: "craft",
     fragments: ["the", "lab"],
     line: "six weeks of maceration, thirty-one materials, one bench.",
-    media: "lab",
+    photo: doorPhotos.lab,
   },
   {
     href: "journal/",
     eyebrow: "culture",
     fragments: ["the", "cult"],
     line: "transmissions from the people already wearing it.",
-    media: "cult",
+    photo: doorPhotos.cult,
   },
 ];
 ---
@@ -39,10 +41,15 @@ const doors = [
   {
     doors.map((door) => (
       <a class="door" href={withBase(door.href)}>
-        <div
-          class={`door__media door__media--${door.media}`}
-          aria-hidden="true"
+        <Duotone
+          class="door__media"
+          image={door.photo.image}
+          alt=""
+          widths={[720, 1280, 1920]}
+          sizes="100vw"
+          exposure={door.photo.exposure}
         />
+        <span class="door__scrim" aria-hidden="true" />
         <div class="door__body">
           <p class="door__eyebrow" data-eyebrow>
             {door.eyebrow}
@@ -75,7 +82,7 @@ const doors = [
     position: relative;
     display: flex;
     align-items: flex-end;
-    min-height: 70vh;
+    min-height: 60vh;
     padding: var(--gutter);
     overflow: hidden;
     text-decoration: none;
@@ -83,26 +90,30 @@ const doors = [
     border-bottom: 1px solid var(--color--ink-3);
   }
 
-  .door__media {
+  /* The class lands on the Duotone component ROOT, which carries
+     Duotone's scope id — not this file's. A bare `.door__media` rule
+     compiles to `.door__media[data-astro-cid-HomeDoors]` and matches
+     nothing, so the media stayed in flow and each door grew to the
+     photo's natural height (850px, 941px) instead of 60vh. Reaching
+     through a scoped ancestor keeps the rule local without leaking a
+     global class. Same pattern in HomeCampaign, FormulaStory, the-house. */
+  .door :global(.door__media) {
     position: absolute;
     inset: 0;
     pointer-events: none;
   }
 
-  /* Duotone washes — the delivered plates are wired in the next PR. */
-  .door__media--lab {
+  /* Bottom-up scrim — the plates are busy across the whole frame, so
+     white impact type needs a ground to sit on (review §7). */
+  .door__scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
     background: linear-gradient(
-      160deg,
-      var(--color--ink-1) 0%,
-      color-mix(in oklab, var(--color--uv) 22%, var(--color--ink-1)) 100%
-    );
-  }
-
-  .door__media--cult {
-    background: linear-gradient(
-      200deg,
-      var(--color--ink-1) 0%,
-      color-mix(in oklab, var(--color--lilac-2) 18%, var(--color--ink-1)) 100%
+      to top,
+      var(--color--black) 0%,
+      color-mix(in oklab, var(--color--black) 70%, transparent) 34%,
+      transparent 68%
     );
   }
 
@@ -149,7 +160,7 @@ const doors = [
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .door__media,
+    .door :global(.door__media),
     .door__title,
     .door__arrow {
       transition:
@@ -158,8 +169,8 @@ const doors = [
       transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    .door:hover .door__media,
-    .door:focus-visible .door__media {
+    .door:hover :global(.door__media),
+    .door:focus-visible :global(.door__media) {
       transform: scale(1.05);
     }
 

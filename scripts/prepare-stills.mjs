@@ -636,6 +636,39 @@ async function prepare(rawPath, outPath, borrowFrom) {
   );
 }
 
+/**
+ * AST-03b — the bottle detail macro, derived from the master rather than
+ * shot separately.
+ *
+ * 03 §3.3 makes row 1 of the formula story a bottle macro and marks it
+ * not optional: without it the PDP never shows the object closer than the
+ * hero framing, and the page loses all material intimacy. A close crop of
+ * the master gives cap, collar and liquid meniscus at roughly 1:1 for the
+ * size the row renders at, which is enough — a true macro would show more
+ * texture, and remains the upgrade if one is ever shot.
+ *
+ * Cropped from the KEYED output, not the raw master. The raw sits on a
+ * white studio backdrop, and cropping that straight onto a near-black
+ * page puts a white block in the middle of the formula story — the
+ * backdrop has to go the same way it goes everywhere else.
+ */
+const DETAIL_CROP = { x: 0.23, y: 0.11, w: 0.54, h: 0.23 };
+
+async function prepareDetail(keyedPath, outPath) {
+  const image = sharp(keyedPath);
+  const { width, height } = await image.metadata();
+  await image
+    .extract({
+      left: Math.round(width * DETAIL_CROP.x),
+      top: Math.round(height * DETAIL_CROP.y),
+      width: Math.round(width * DETAIL_CROP.w),
+      height: Math.round(height * DETAIL_CROP.h),
+    })
+    .png({ compressionLevel: 9 })
+    .toFile(outPath);
+  console.log(`${basename(outPath)} — detail macro, keyed (03 §3.3)`);
+}
+
 const raws = readdirSync(STILLS).filter((f) => /-raw\.(png|jpe?g)$/i.test(f));
 
 if (raws.length === 0) {
@@ -653,6 +686,10 @@ if (raws.length === 0) {
       join(STILLS, raw),
       join(STILLS, out),
       donorFile ? join(STILLS, donorFile) : undefined,
+    );
+    await prepareDetail(
+      join(STILLS, out),
+      join(STILLS, out.replace(/\.png$/, "-detail.png")),
     );
   }
 }

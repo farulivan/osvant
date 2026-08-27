@@ -6,6 +6,8 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { pageTitle } from "../lib/seo";
 import { withBase } from "../lib/url";
+import Duotone from "../components/Duotone.astro";
+import { macro } from "../lib/photos";
 
 // The manifesto is three statements, scrubbed one at a time (03 §4).
 // Short enough that each holds a full screen at impact scale.
@@ -17,18 +19,30 @@ const statements = [
 
 // Craft grid (03 §4). Each tile is a stage of the process, captioned —
 // three unlabelled images say nothing about craft.
+//
+// These are ingredient macros standing in for process photography, which
+// the asset set does not yet contain: the grid really wants a bench, an
+// organ and a batch sheet. Chosen for field rather than for subject, so
+// the three read as one set — all dark-field specimen plates. The
+// full-frame bark texture that sat here first was matched on mean
+// luminance (62 against saffron's 150) and still read as the brightest
+// thing on the page, because mean luminance says nothing about how much
+// of the frame is lit.
 const craft = [
   {
     eyebrow: "maceration",
     caption: "six weeks in the dark. the formula stops being a list.",
+    photo: macro.benzoin,
   },
   {
     eyebrow: "the organ",
     caption: "four hundred materials. we use thirty-one.",
+    photo: macro.iris,
   },
   {
     eyebrow: "batch record",
     caption: "every bottle traceable to the day it was mixed.",
+    photo: macro.saffron,
   },
 ];
 ---
@@ -84,7 +98,14 @@ const craft = [
       {
         craft.map((tile) => (
           <figure class="craft__figure">
-            <div class="craft__tile" data-anim="parallax" aria-hidden="true" />
+            <Duotone
+              class="craft__tile"
+              image={tile.photo.image}
+              alt=""
+              widths={[360, 560, 800]}
+              sizes="(width <= 47.9375rem) 100vw, 33vw"
+              exposure={tile.photo.exposure}
+            />
             <figcaption class="craft__caption">
               <span class="craft__eyebrow" data-eyebrow>
                 {tile.eyebrow}
@@ -205,15 +226,10 @@ const craft = [
     color: var(--color--lilac-3);
   }
 
-  .craft__tile {
+  .craft__figure :global(.craft__tile) {
     aspect-ratio: 3 / 4;
     border-radius: var(--radius--media);
     overflow: hidden;
-    background: radial-gradient(
-      ellipse 70% 60% at 50% 55%,
-      color-mix(in oklab, var(--color--uv) 22%, var(--color--ink-1)) 0%,
-      var(--color--ink-1) 80%
-    );
   }
 
   .house-cta {
