@@ -4,9 +4,9 @@
 // split module (M §4.2). Hover (media scale 1.05 0.6s, title x-shift 0.5em,
 // arrow appears) is pure CSS, disabled under reduced motion.
 //
-// Imagery (macro ingredients / campaign photography) is pending assets
-// (06 §1) — [data-door-media] is a duotone placeholder wash (ADR-008) and
-// gets data-anim="parallax" (M §4.5) when real media lands.
+// Door plates are delivered (photo/doors/the-lab.jpg, the-cult.jpg);
+// [data-door-media] still shows a duotone wash until they are wired in,
+// and gains data-anim="parallax" (M §4.5) at the same time.
 import { withBase } from "../lib/url";
 
 // 03 §1.3 — each door carries an eyebrow and a one-line description.
@@ -89,7 +89,7 @@ const doors = [
     pointer-events: none;
   }
 
-  /* Duotone placeholders pending photography (ADR-008) */
+  /* Duotone washes — the delivered plates are wired in the next PR. */
   .door__media--lab {
     background: linear-gradient(
       160deg,

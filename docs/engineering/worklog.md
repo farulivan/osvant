@@ -19,7 +19,7 @@
 - **House manifesto lead + 3 statements; door eyebrows and one-liners (OSV-24); three craft-grid captions.** The doors previously offered four words over a gradient and no reason to click.
 - **Three journal articles (OSV-27)** replacing the pipeline fixture, and the hero's `next drop` chip now deep-links to the batch-002 article rather than the index — which is what RFC B6 asked for and the fixture could not satisfy.
 - **Legal pages (OSV-29)** via a shared `LegalPage.astro`. The "portfolio demonstration, no real orders" statement is set at `--text--lead` rather than buried at eyebrow size, because it is the most load-bearing sentence on either page.
-- **Judgment calls flagged:** all copy is mine and awaits owner approval (RFC C1 assigns it to design). The 45 note names extend the brief's five olfactive sketches — the sketched notes are kept as anchors in each tier. `iris` appears in both static and halo, which is in the brief and correct.
+- **Copy approved by the owner 2026-08-27.** RFC C1 assigns copy to design; it was drafted here at the owner's request and signed off in review. The 45 note names extend the brief's five olfactive sketches — the sketched notes are kept as anchors in each tier. `iris` appears in both static and halo, which is in the brief and correct.
 - 146 tests green. Build 69.89KB / 350KB; copy guard, asset guard and LHCI green.
 
 ## 2026-08-26 — feat: design-system corrections — tint as light, ink-4, four breakpoints, spacing scale (01 §6, design review §6)

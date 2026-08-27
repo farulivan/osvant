@@ -2,8 +2,9 @@
 // Campaign band — featured drop (03 §1.5). Full-bleed ink-1; marquee per
 // M §4.7 (data-anim="marquee", velocity-reactive, pauses off-viewport);
 // amber appears ONLY in its canonical role here — the limited chip
-// (01 §1 rule 4, RFC-001 A3). Campaign still is a duotone placeholder
-// pending photography (ADR-008) — data-anim="parallax" wires with real media.
+// (01 §1 rule 4, RFC-001 A3). The campaign photography is delivered
+// (photo/campaign/embers.jpg); this still shows the duotone wash until
+// the media is wired in, which is the next PR.
 import { withBase } from "../lib/url";
 ---
 
@@ -59,7 +60,7 @@ import { withBase } from "../lib/url";
     padding: 4rem var(--gutter);
   }
 
-  /* Campaign-still placeholder (ADR-008, pending photography) */
+  /* Duotone wash — the delivered still is wired in the next PR. */
   .campaign__media {
     aspect-ratio: 4 / 3;
     border-radius: var(--radius--media);
