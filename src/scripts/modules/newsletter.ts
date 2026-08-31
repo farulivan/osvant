@@ -116,7 +116,7 @@ export function createNewsletter(): PageModule {
 
             // Success (01 §5.5): line pulses UV once, input collapses,
             // serif-italic message + muted demo sub-line.
-            pulse(state, input, "var(--color--uv)", ctx.reducedMotion);
+            pulse(state, input, "var(--color--phosphor)", ctx.reducedMotion);
             if (ctx.reducedMotion) {
               form.hidden = true;
               if (success) success.hidden = false;

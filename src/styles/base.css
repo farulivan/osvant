@@ -47,25 +47,25 @@ canvas {
 }
 
 ::selection {
-  background: var(--color--uv);
+  background: var(--color--phosphor);
   color: var(--color--black);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color--uv);
+  outline: 2px solid var(--color--phosphor);
   outline-offset: 3px;
 }
 
 /* btn-primary (01 §5.1) — UV fill, radius xs. Shared across footer
-   newsletter, campaign CTAs, PDP. The label is --color--on-uv rather than
+   newsletter, campaign CTAs, PDP. The label is --color--on-phosphor rather than
    --color--black: black on UV measures 4.47:1 and misses AA, which was
    the only accessibility failure Lighthouse reported (01 §6.2). */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--color--uv);
-  color: var(--color--on-uv);
+  background: var(--color--phosphor);
+  color: var(--color--on-phosphor);
   border: 0;
   border-radius: var(--radius--xs);
   padding: 0.75rem 1.5rem;
@@ -95,7 +95,7 @@ canvas {
 }
 
 .btn-secondary:hover {
-  border-color: var(--color--uv);
+  border-color: var(--color--phosphor);
 }
 
 /* btn-text (01 §5.1) — label + arrow, no box; arrow shifts 0.4em right

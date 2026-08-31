@@ -2,6 +2,14 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-31 — refactor: rename the accent and light-neutral tokens (01 §2.1)
+
+- Pure rename, zero value changes, zero visual diff — the preparatory half of the house-colour change (ultraviolet → signal green), split out so the ~100-site mechanical edit is reviewable apart from the ~20 value edits that follow.
+- `--color--uv*` → `--color--phosphor*` (incl. `-off`, `-zero`, `on-`), `--color--lilac-1/2/3` → `--color--haze-1/2/3`, across 30 files plus `01 §2.1`, which `tokens.css` mirrors verbatim. `--color--black`, `--color--ink-*`, `--color--amber` and `--scent-tint*` are already hue-neutral names and were left alone.
+- **Judgment call: `haze`, not `vapor`.** The owner picked lab-register names and proposed `--color--vapor-*`. `vapor` is already three other things here — light-study layer 5 (`LightStudy.astro`), `.hero__vapor`, and `vapor.riv` (`06 §1`) — so `--color--vapor-3` (muted text) would have collided with the drifting-smoke layer. `haze` keeps the register without the collision.
+- `newsletter.ts`/`newsletter.test.ts` carry the token name as a literal string (the GSAP tween target), so both moved together.
+- Zero-diff proven mechanically, not by eye: after the rename the build still emits `be29ff`, `8f4fb3`, `e9e4ee`, `cdc7de`, `b3abbc` and `0b0a0c` at identical counts across all 20 pages.
+
 ## 2026-08-28 — feat: composition polish (review OSV-18/22/23/25/26/28/30)
 
 - Closes the last six composition findings from the 2026-08-21 review, plus **OSV-30**, which a previous pass had wrongly recorded as already fixed.

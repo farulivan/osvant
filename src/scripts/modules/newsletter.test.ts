@@ -127,7 +127,7 @@ describe("modules/newsletter (01 §5.5, 07 §3)", () => {
 
     expect(fromToMock).toHaveBeenCalledWith(
       input,
-      { borderBottomColor: "var(--color--uv)" },
+      { borderBottomColor: "var(--color--phosphor)" },
       expect.objectContaining({ duration: 0.6 }),
     );
     expect(toMock).toHaveBeenCalledWith(

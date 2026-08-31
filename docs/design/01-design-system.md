@@ -7,9 +7,9 @@
 
 ## 1. Token Architecture Rules (inherited from research §3)
 
-1. The identity must read as a **2-color system**: `--color--uv` on `--color--black`, even though the full ramp has ~16 tokens.
+1. The identity must read as a **2-color system**: `--color--phosphor` on `--color--black`, even though the full ramp has ~16 tokens.
 2. **No pure white (`#fff`), no pure black (`#000`), no neutral gray** anywhere. Every neutral is violet-tinted.
-3. The accent has a **transparent twin** (`--color--uv-zero`) for gradient/fade animation endpoints and an **off state** (`--color--uv-off`).
+3. The accent has a **transparent twin** (`--color--phosphor-zero`) for gradient/fade animation endpoints and an **off state** (`--color--phosphor-off`).
 4. One counter-accent (`--color--amber`) = scarcity/commerce-urgency and error signals ONLY: `limited` chips, cart badge, sold-out states, form error/validation states. Never decorative. (RFC-001 A3/C3)
 
 ## 2. Color
@@ -19,20 +19,20 @@
 ```css
 :root {
   /* Core brand pair */
-  --color--uv:        #be29ff;   /* ultraviolet — CTAs, highlights, live states */
+  --color--phosphor:        #be29ff;   /* ultraviolet — CTAs, highlights, live states */
   --color--black:     #111013;   /* near-black, violet-shifted — default page bg */
 
   /* Accent variants */
-  --color--uv-off:    #8f4fb3;   /* desaturated UV — hover-off, visited, disabled-accent */
-  --color--uv-zero:   #be29ff00; /* transparent UV — gradient/fade endpoints */
+  --color--phosphor-off:    #8f4fb3;   /* desaturated UV — hover-off, visited, disabled-accent */
+  --color--phosphor-zero:   #be29ff00; /* transparent UV — gradient/fade endpoints */
   --color--amber:     #ffb000;   /* counter-accent — heat, scarcity, cart badge */
 
   /* Light neutrals (violet-tinted, warm-to-cool) */
   --color--white:     #f5f3f7;   /* off-white — primary text on dark */
   --color--cream:     #efeaf2;
-  --color--lilac-1:   #e9e4ee;   /* light section backgrounds */
-  --color--lilac-2:   #cdc7de;
-  --color--lilac-3:   #b3abbc;   /* muted text on dark */
+  --color--haze-1:   #e9e4ee;   /* light section backgrounds */
+  --color--haze-2:   #cdc7de;
+  --color--haze-3:   #b3abbc;   /* muted text on dark */
 
   /* Dark neutrals (violet-tinted) */
   --color--ink-4:     #6b6575;   /* 3.38:1 — boundary of anything OPERABLE */
@@ -41,46 +41,46 @@
   --color--ink-1:     #201c24;   /* alt dark section bg */
 
   /* Label on a UV fill */
-  --color--on-uv:     #0b0a0c;   /* 4.66:1 on --color--uv */
+  --color--on-phosphor:     #0b0a0c;   /* 4.66:1 on --color--phosphor */
 }
 ```
 
 > **Amended 2026-08-26** (design review §6.2, signed off). `--color--ink-4`
-> and `--color--on-uv` are new.
+> and `--color--on-phosphor` are new.
 >
 > `ink-3` measures **2.32:1** on `--color--black`, below the 3:1 that
 > WCAG 1.4.11 requires of a control boundary, and it was bounding input
 > underlines, size chips and the `next drop` chip. `ink-4` takes every
 > boundary that is **operable**; `ink-3` keeps the decorative rules.
 >
-> `--color--on-uv` exists because black on UV measures **4.47:1** and
+> `--color--on-phosphor` exists because black on UV measures **4.47:1** and
 > misses AA — the one accessibility failure Lighthouse reported. Darkening
-> the label clears it at 4.66:1 and leaves `--color--uv` untouched, so the
+> the label clears it at 4.66:1 and leaves `--color--phosphor` untouched, so the
 > brand accent is unchanged.
 
 ### 2.2 Usage matrix
 
 | Context | Background | Text | Accent |
 |---|---|---|---|
-| Default page | `--color--black` | `--color--white` | `--color--uv` |
-| Alt dark section | `--color--ink-1` | `--color--white` | `--color--uv` |
-| Light interlude section (max 1–2 per page) | `--color--lilac-1` | `--color--black` | `--color--uv` |
+| Default page | `--color--black` | `--color--white` | `--color--phosphor` |
+| Alt dark section | `--color--ink-1` | `--color--white` | `--color--phosphor` |
+| Light interlude section (max 1–2 per page) | `--color--haze-1` | `--color--black` | `--color--phosphor` |
 | Card on dark | `--color--ink-2` | `--color--white` | scent tint |
-| Muted/meta text | — | `--color--lilac-3` | — |
+| Muted/meta text | — | `--color--haze-3` | — |
 
 ### 2.3 Scent-scoped theming
 
 Each scent detail page (and its card hover state) swaps ONE variable, nothing else:
 
 ```css
-[data-scent="volt"]     { --scent-tint: var(--color--uv); --scent-tint-text: #c33afe; }
+[data-scent="volt"]     { --scent-tint: var(--color--phosphor); --scent-tint-text: #c33afe; }
 [data-scent="nocturne"] { --scent-tint: #3a2fbf;          --scent-tint-text: #7d75d3; }
 [data-scent="static"]   { --scent-tint: #cdc7de; }
 [data-scent="fever"]    { --scent-tint: #ffb000; }
 [data-scent="halo"]     { --scent-tint: #ebd9ff; }
 ```
 
-Components reference `--scent-tint` (falls back to `--color--uv`). This mirrors the reference build's per-item theme classes (research: `hero-nav-theme.is-1/is-2` pattern, §3/S2).
+Components reference `--scent-tint` (falls back to `--color--phosphor`). This mirrors the reference build's per-item theme classes (research: `hero-nav-theme.is-1/is-2` pattern, §3/S2).
 
 > **Amended 2026-08-26** (design review §6.1, signed off).
 >
@@ -179,7 +179,7 @@ Note: the reference build sizes its `h2` token above `h1` (research §3.2). We n
 
 - Headlines: Archivo, `wght` 800–900, `wdth` 115–125 (expanded), `line-height: 1.05–1.2`, **lowercase**.
 - `--text--impact` moments: single word or name only, broken into stacked fragments for line-level animation (e.g. `the` / `collection`). Each fragment is its own element — this is an animation contract (see `02-motion-guidelines.md §4.2`).
-- Eyebrows: Archivo, `wght` 500, `wdth` 100, `letter-spacing: 0.12em`, color `--color--lilac-3`, paired with every h1/h2. Extreme size contrast (eyebrow ↔ impact) is THE typographic move.
+- Eyebrows: Archivo, `wght` 500, `wdth` 100, `letter-spacing: 0.12em`, color `--color--haze-3`, paired with every h1/h2. Extreme size contrast (eyebrow ↔ impact) is THE typographic move.
 - Body/lead: Archivo `wght` 400, `wdth` 100, `line-height: 1.5`.
 - No `text-transform: uppercase` anywhere (brief §4).
 
@@ -290,7 +290,7 @@ All buttons: label wrapped in `<span data-btn-label>` (needed for the y-flip lab
 
 ### 5.3 Scent card (collection grid + home showcase)
 
-- Surface `--color--ink-2`, `--radius--xs`. Contents: eyebrow (`batch 0N`), scent name (Archivo 800 + Instrument Serif italic for the article, e.g. `the *jolt*`), bottle render (AVIF), note list (3 items, `--color--lilac-3`), price, `btn-text` ("discover").
+- Surface `--color--ink-2`, `--radius--xs`. Contents: eyebrow (`batch 0N`), scent name (Archivo 800 + Instrument Serif italic for the article, e.g. `the *jolt*`), bottle render (AVIF), note list (3 items, `--color--haze-3`), price, `btn-text` ("discover").
 - Hover: card border → `--scent-tint`, bottle render y-drifts −8px, 0.5s `power2.out`.
 - Motion hook: `data-anim="card"` for scroll-entrance stagger group.
 

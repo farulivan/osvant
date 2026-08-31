@@ -220,7 +220,7 @@ Because there is exactly one parameter, the mechanic is **source-agnostic**: it 
 - **Light study:** ambient oscillation stopped and `--light-angle` frozen at `0.5`; parallax rates all collapse to `1×`. **Drag still works** — it is a user-initiated control, not decoration (unchanged intent from the drag-to-rotate ruling). The gallery becomes a static 5-up row of composed bottles with the overlay resolved to the first scent.
 - Page transitions → 0.3s opacity crossfade; preloader → counter only, no wipe
 
-Focus states: 2px `--color--uv` outline, `outline-offset: 3px` — never removed. Every Rive and light-study control needs a keyboard-reachable DOM equivalent (§4.4b defines the bottle's).
+Focus states: 2px `--color--phosphor` outline, `outline-offset: 3px` — never removed. Every Rive and light-study control needs a keyboard-reachable DOM equivalent (§4.4b defines the bottle's).
 
 ## 10. Performance Budget (research §6)
 
