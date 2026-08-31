@@ -2,6 +2,13 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-31 — fix: 404's drifted btn-primary copy (01 §2.1, §6.2)
+
+- Lighthouse's colour-contrast audit came back clean on every route except `/404`, which failed at 4.47:1. Cause: `404.astro` re-declared the whole `.btn-primary` component locally, and because Astro's scoped styles outrank `base.css` the copy won — including its `color: var(--color--black)`, which never received the 2026-08-26 `--color--on-phosphor` amendment. Every other `btn-primary` on the site had been fixed; this one was invisible because it was a duplicate rather than a reference.
+- Every declaration in the copy was either byte-identical to `base.css` or that one stale value, so the copy is deleted and `base.css` owns the component again. The 404 button gains `font-weight: 600` and the flex centering it should always have had, and now matches every other primary button.
+- Pre-existing, not introduced here — but it surfaced only because the house-colour work took the rest of the build to a clean audit, so it is fixed with it. **All five audited routes now report accessibility 100 with colour-contrast passing**, against 95 and 2–3 contrast failures each before this batch.
+- Full run: perf 98–100, LCP 1538–2245ms, CLS 0.000, TBT 0–131ms, all inside the merge gates. One earlier `lhci` invocation failed on a single flaky run; the medians pass and a clean re-run exits 0.
+
 ## 2026-08-31 — feat: re-hue the static and halo liquid, and the copy the green grade made wrong
 
 - Closes the half of the house-colour change the token swap could not reach. After volt went green, three of five bottles were still violet-family: nocturne 239°, static 254°, halo 263°. In a green house they read as leftovers from the old palette rather than as members of the collection.
