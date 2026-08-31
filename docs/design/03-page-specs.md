@@ -46,7 +46,7 @@ Per `M §6`. Copy: `decanting…`
 - [ ] `next drop` chip present and animated in sequence
 
 ### 1.3 Two-door split — `the lab` / `the cult`
-Two stacked full-width doors (each ~70vh). Door A `the lab` → `/the-house` (craft: macro ingredient imagery, duotone violet). Door B `the cult` → `/journal` (culture: campaign photography). Titles at `--text--h1` as stacked fragments (`the` / `lab`), line-reveal on entry per `M §4.2`. Media parallax per `M §4.5`. Hover: media scale 1.05 (0.6s), title x-shifts 0.5em, arrow appears.
+Two stacked full-width doors (each ~70vh). Door A `the lab` → `/the-house` (craft: macro ingredient imagery, duotone green). Door B `the cult` → `/journal` (culture: campaign photography). Titles at `--text--h1` as stacked fragments (`the` / `lab`), line-reveal on entry per `M §4.2`. Media parallax per `M §4.5`. Hover: media scale 1.05 (0.6s), title x-shifts 0.5em, arrow appears.
 
 - [ ] each door's title fragments animate line-by-line independently
 - [ ] both doors resolve to routes; entire door is the hit area
@@ -164,8 +164,8 @@ Rive `mob-landscape` full-screen when `orientation: landscape` and viewport heig
 | AST-03a | **Bottle still × 5** | 2000px long edge, transparent AVIF, **flat-lit** (`M §8.3`), identical camera/framing/scale across all five, ≥12% transparent margin on every side for the sheen and rim layers, no baked shadow | gallery, PDP hero, cards, cart, OG |
 | AST-03b | **Bottle detail macro × 5** | 1600px AVIF, close crop of cap / label edge / liquid meniscus, same lighting family as AST-03a | PDP formula story row 1 (`§3.3`) |
 | AST-04 | Rive files × 5 | `logo`, `page-transition`, `btn-ui`, `vapor`, `mob-landscape` (`M §7`) | global |
-| AST-05 | Campaign photography | fever campaign, duotone-violet grade, ≥2400px master | home §1.5, PDP |
-| AST-06 | Macro ingredient set | ≥8 images, duotone violet, covering the collection's notes | the house, doors, PDP formula rows 2–3 |
+| AST-05 | Campaign photography | fever campaign, duotone-green grade, ≥2400px master | home §1.5, PDP |
+| AST-06 | Macro ingredient set | ≥8 images, duotone green, covering the collection's notes | the house, doors, PDP formula rows 2–3 |
 | AST-07 | Door media × 2 | 2400×1000, `the lab` / `the cult`, bottom-scrim safe | home §1.3 |
 | AST-08 | Journal lead images × 3 | 2000×1250 lead + 1200×750 card | journal |
 | AST-09 | Social band plates × 4 | 800×500, no platform logos | home §1.6 |

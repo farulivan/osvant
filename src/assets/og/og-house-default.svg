@@ -14,8 +14,8 @@
 
     Design's w6 delivery replaces the PNG directly and this source retires.
   -->
-  <rect width="1200" height="630" fill="#111013" />
-  <circle cx="1000" cy="140" r="260" fill="#be29ff" opacity="0.18" />
+  <rect width="1200" height="630" fill="#0e1110" />
+  <circle cx="1000" cy="140" r="260" fill="#008d57" opacity="0.18" />
   <text
     x="80"
     y="520"
@@ -23,7 +23,7 @@
     font-weight="800"
     font-size="120"
     letter-spacing="-2"
-    fill="#f5f3f7"
+    fill="#f1f5f2"
   >osvant</text>
   <text
     x="80"
@@ -32,6 +32,6 @@
     font-weight="500"
     font-size="28"
     letter-spacing="2"
-    fill="#be29ff"
+    fill="#008d57"
   >scent beyond the visible</text>
 </svg>

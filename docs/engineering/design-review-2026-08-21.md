@@ -678,6 +678,18 @@ Journal needs three articles and a feature card. Contact is the best-composed pa
 <a id="ast-03a"></a>
 ### AST-03a — Bottle still ×5 · **the whole ball game**
 
+> **Colour superseded 2026-08-31.** This review is a dated record and its
+> prompts are left as they were written, but the house colour has since moved
+> from ultraviolet to signal green (`01 §2.1`, amended 2026-08-31). **Before
+> reusing any prompt below, substitute the hue**: "violet" → "green" and the
+> per-scent liquid list → volt `#008d57` · nocturne `#3a2fbf` · static
+> `#bad2c3` · fever `#ffb000` · halo `#be29ff` (the retired house UV, kept as
+> that scent's signature). The measured contrast table in
+> §6 is likewise superseded by `01 §2.1`. Volt's master was re-shot green and
+> delivered; nocturne and fever are unaffected; static and halo are re-hued
+> programmatically by `pnpm stills` (`LIQUID_REHUE` in `scripts/prepare-stills.mjs`).
+
+
 | | |
 |---|---|
 | **Format** | AVIF with alpha |

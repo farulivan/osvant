@@ -7,9 +7,9 @@
 
 ## 1. Token Architecture Rules (inherited from research §3)
 
-1. The identity must read as a **2-color system**: `--color--uv` on `--color--black`, even though the full ramp has ~16 tokens.
-2. **No pure white (`#fff`), no pure black (`#000`), no neutral gray** anywhere. Every neutral is violet-tinted.
-3. The accent has a **transparent twin** (`--color--uv-zero`) for gradient/fade animation endpoints and an **off state** (`--color--uv-off`).
+1. The identity must read as a **2-color system**: `--color--phosphor` on `--color--black`, even though the full ramp has ~16 tokens.
+2. **No pure white (`#fff`), no pure black (`#000`), no neutral gray** anywhere. Every neutral is green-tinted.
+3. The accent has a **transparent twin** (`--color--phosphor-zero`) for gradient/fade animation endpoints and an **off state** (`--color--phosphor-off`).
 4. One counter-accent (`--color--amber`) = scarcity/commerce-urgency and error signals ONLY: `limited` chips, cart badge, sold-out states, form error/validation states. Never decorative. (RFC-001 A3/C3)
 
 ## 2. Color
@@ -19,91 +19,135 @@
 ```css
 :root {
   /* Core brand pair */
-  --color--uv:        #be29ff;   /* ultraviolet — CTAs, highlights, live states */
-  --color--black:     #111013;   /* near-black, violet-shifted — default page bg */
+  --color--phosphor:        #008d57;   /* signal green — CTAs, highlights, live states */
+  --color--black:     #0e1110;   /* near-black, green-shifted — default page bg */
 
   /* Accent variants */
-  --color--uv-off:    #8f4fb3;   /* desaturated UV — hover-off, visited, disabled-accent */
-  --color--uv-zero:   #be29ff00; /* transparent UV — gradient/fade endpoints */
+  --color--phosphor-off:    #427558;   /* desaturated phosphor — hover-off, visited, disabled-accent */
+  --color--phosphor-zero:   #008d5700; /* transparent phosphor — gradient/fade endpoints */
   --color--amber:     #ffb000;   /* counter-accent — heat, scarcity, cart badge */
 
-  /* Light neutrals (violet-tinted, warm-to-cool) */
-  --color--white:     #f5f3f7;   /* off-white — primary text on dark */
-  --color--cream:     #efeaf2;
-  --color--lilac-1:   #e9e4ee;   /* light section backgrounds */
-  --color--lilac-2:   #cdc7de;
-  --color--lilac-3:   #b3abbc;   /* muted text on dark */
+  /* Light neutrals (green-tinted, warm-to-cool) */
+  --color--white:     #f1f5f2;   /* off-white — primary text on dark */
+  --color--cream:     #e6efe9;
+  --color--haze-1:   #dfe9e3;   /* light section backgrounds */
+  --color--haze-2:   #bad2c3;
+  --color--haze-3:   #a2b4a9;   /* muted text on dark */
 
-  /* Dark neutrals (violet-tinted) */
-  --color--ink-4:     #6b6575;   /* 3.38:1 — boundary of anything OPERABLE */
-  --color--ink-3:     #524d59;   /* 2.32:1 — decorative rules only */
-  --color--ink-2:     #3b3740;   /* raised surfaces, cards on black */
-  --color--ink-1:     #201c24;   /* alt dark section bg */
+  /* Dark neutrals (green-tinted) */
+  --color--ink-4:     #5c6d63;   /* 3.46:1 — boundary of anything OPERABLE */
+  --color--ink-3:     #47534b;   /* 2.36:1 — decorative rules only */
+  --color--ink-2:     #323c36;   /* raised surfaces, cards on black */
+  --color--ink-1:     #18201b;   /* alt dark section bg */
 
-  /* Label on a UV fill */
-  --color--on-uv:     #0b0a0c;   /* 4.66:1 on --color--uv */
+  /* Label on a phosphor fill */
+  --color--on-phosphor:     #090b0a;   /* 4.65:1 on --color--phosphor */
 }
 ```
 
 > **Amended 2026-08-26** (design review §6.2, signed off). `--color--ink-4`
-> and `--color--on-uv` are new.
+> and `--color--on-phosphor` are new.
 >
-> `ink-3` measures **2.32:1** on `--color--black`, below the 3:1 that
+> `ink-3` measures **2.36:1** on `--color--black`, below the 3:1 that
 > WCAG 1.4.11 requires of a control boundary, and it was bounding input
 > underlines, size chips and the `next drop` chip. `ink-4` takes every
 > boundary that is **operable**; `ink-3` keeps the decorative rules.
 >
-> `--color--on-uv` exists because black on UV measures **4.47:1** and
-> misses AA — the one accessibility failure Lighthouse reported. Darkening
-> the label clears it at 4.66:1 and leaves `--color--uv` untouched, so the
-> brand accent is unchanged.
+> `--color--on-phosphor` exists because black on the accent measures
+> **4.47:1** and misses AA — the one accessibility failure Lighthouse
+> reported. Darkening the label clears it at 4.65:1 and leaves
+> `--color--phosphor` untouched, so the brand accent is unchanged.
+
+> **Amended 2026-08-31** (house colour, owner-approved). The accent moves
+> from **ultraviolet `#be29ff` to signal green `#008d57`**, following the
+> replacement `volt` master — volt is item 01 and its scent tint *is* the
+> house accent, so a green bottle made the violet identity wrong.
+>
+> `#008d57` is the bottle's own liquid hue (sampled `#008351`, 157°) at the
+> accent's existing luminance. It is a **luminance twin** of `#be29ff`:
+> 4.47:1 on `--color--black`, 3.42:1 on a light interlude, 4.65:1 for the
+> label — the same numbers the violet carried, so nothing in this document
+> needed re-deriving and the Lighthouse posture is unchanged.
+>
+> The owner proposed `#015833`. It measures **2.21:1** and cannot carry the
+> focus ring (WCAG 1.4.11 wants 3:1) or the primary button, so the hue was
+> kept and the luminance raised.
+>
+> **Every neutral moved with it** (§1 rule 2), by pure OKLCH hue rotation —
+> each token keeps its L and C exactly and only its hue changes, to 157.9°.
+> That is why every ratio above shifted by ≤0.05 and all upward. `ink-3`
+> 2.32 → 2.36, `ink-4` 3.38 → 3.46, `haze-3` 8.55 → 8.71.
+>
+> `--color--amber` is untouched: it is the counter-accent (§1 rule 4) and
+> sits 116° from the new accent, wider separation than it had from violet.
 
 ### 2.2 Usage matrix
 
 | Context | Background | Text | Accent |
 |---|---|---|---|
-| Default page | `--color--black` | `--color--white` | `--color--uv` |
-| Alt dark section | `--color--ink-1` | `--color--white` | `--color--uv` |
-| Light interlude section (max 1–2 per page) | `--color--lilac-1` | `--color--black` | `--color--uv` |
+| Default page | `--color--black` | `--color--white` | `--color--phosphor` |
+| Alt dark section | `--color--ink-1` | `--color--white` | `--color--phosphor` |
+| Light interlude section (max 1–2 per page) | `--color--haze-1` | `--color--black` | `--color--phosphor` |
 | Card on dark | `--color--ink-2` | `--color--white` | scent tint |
-| Muted/meta text | — | `--color--lilac-3` | — |
+| Muted/meta text | — | `--color--haze-3` | — |
 
 ### 2.3 Scent-scoped theming
 
 Each scent detail page (and its card hover state) swaps ONE variable, nothing else:
 
 ```css
-[data-scent="volt"]     { --scent-tint: var(--color--uv); --scent-tint-text: #c33afe; }
+[data-scent="volt"]     { --scent-tint: var(--color--phosphor); --scent-tint-text: #19935d; }
 [data-scent="nocturne"] { --scent-tint: #3a2fbf;          --scent-tint-text: #7d75d3; }
-[data-scent="static"]   { --scent-tint: #cdc7de; }
+[data-scent="static"]   { --scent-tint: #bad2c3; }
 [data-scent="fever"]    { --scent-tint: #ffb000; }
-[data-scent="halo"]     { --scent-tint: #ebd9ff; }
+[data-scent="halo"]     { --scent-tint: #be29ff;          --scent-tint-text: #c33afe; }
 ```
 
-Components reference `--scent-tint` (falls back to `--color--uv`). This mirrors the reference build's per-item theme classes (research: `hero-nav-theme.is-1/is-2` pattern, §3/S2).
+Components reference `--scent-tint` (falls back to `--color--phosphor`). This mirrors the reference build's per-item theme classes (research: `hero-nav-theme.is-1/is-2` pattern, §3/S2).
 
 > **Amended 2026-08-26** (design review §6.1, signed off).
 >
 > **`--scent-tint` is a light source, not a text colour.** Measured against
-> `--color--black`: volt 4.47:1, nocturne **2.11:1**, static 11.58:1,
-> fever 10.35:1, halo 14.36:1. Nocturne is unreadable at any size; static
-> and halo are so near-neutral that tinting a word changes nothing; fever's
-> amber collides with its reserved scarcity role (§1 rule 4). Four of five
-> fail as text — so the token stops being asked to do that job.
+> `--color--black`: volt 4.47:1, nocturne **2.11:1**, static 11.84:1,
+> fever 10.36:1, halo 4.47:1. Nocturne is unreadable at any size; static
+> is so near-neutral that tinting a word changes nothing; fever's
+> amber collides with its reserved scarcity role (§1 rule 4). Most fail as
+> text — so the token stops being asked to do that job.
 >
 > **Permitted surfaces:** bottle liquid and rim glow · hover border ·
 > underline or marker beside a name · the section's ambient wash. That is
 > still ONE attribute swap and still satisfies `03 §3.1`.
 >
 > **`--scent-tint-text`** covers the rare genuinely-tinted word, clamped to
-> ≥4.5:1. Only volt and nocturne have a usable tinted text identity; static,
-> fever and halo resolve to `--color--white`, per §2.4.
+> ≥4.5:1. Volt, nocturne and halo have a usable tinted text identity; static
+> and fever resolve to `--color--white`, per §2.4.
+
+> **Amended 2026-08-31** (house colour, owner-approved). **Halo keeps the
+> retired house ultraviolet `#be29ff`** — the accent the whole system carried
+> until this release. It is the one deliberate exception to the rule that a
+> scent tint tracks its bottle's liquid, and the name is the argument: a halo
+> is the light *around* an object, and halo's notes are iris, orris and
+> heliotrope, all violet materials. The retired accent surviving as one
+> scent's signature is also the more honest record of where the house came
+> from than deleting it everywhere would be.
+>
+> Its master was re-hued to match at 282° and **deepened 0.35**. That second
+> step is not cosmetic. Halo's liquid measured S 0.90 but L 0.92, and at that
+> lightness no hue can carry chroma — shipped against the vivid tint it read
+> as a *white* body inside a violet rim, a mismatched gel rather than the
+> bottle's own glow. Deepening to L 0.77 (chroma 36 → 103) makes bottle and
+> glow agree while keeping halo the lightest coloured bottle of the five,
+> which is what `the glow. iris in soft focus.` asks for.
+>
+> Halo therefore **gains** a tinted text identity it did not have: at 4.47:1
+> the raw tint is display-only, so `--scent-tint-text: #c33afe` (4.84:1)
+> carries the word — the same clamp volt used under the old house colour.
 
 ### 2.4 Accessibility guardrails
 
-- Body text is always `--color--white` or `--color--black` — never UV, never a tint.
-- UV and amber on black: **display sizes (≥24px) only.** For small text, verify AA (4.5:1) with tooling before shipping; if it fails, use `--color--white` and reserve the accent for an underline/marker element.
-- `static` and `halo` tints are near-neutral: never use them for text — surfaces and liquid renders only.
+- Body text is always `--color--white` or `--color--black` — never the accent, never a tint.
+- Phosphor, amber and halo's ultraviolet on black: **display sizes (≥24px) only.** For small text, verify AA (4.5:1) with tooling before shipping; if it fails, use `--color--white` and reserve the accent for an underline/marker element.
+- The `static` tint is near-neutral: never use it for text — surfaces and liquid renders only.
 - Any boundary the user can operate — input underline, chip, stepper, secondary button — uses `--color--ink-4` (3:1, WCAG 1.4.11). `--color--ink-3` is for decorative rules only.
 - Nav links never take the scent tint. Under a `scent`-themed section the links stay `--color--white`; the scent shows in the wordmark and an underline marker.
 
@@ -179,7 +223,7 @@ Note: the reference build sizes its `h2` token above `h1` (research §3.2). We n
 
 - Headlines: Archivo, `wght` 800–900, `wdth` 115–125 (expanded), `line-height: 1.05–1.2`, **lowercase**.
 - `--text--impact` moments: single word or name only, broken into stacked fragments for line-level animation (e.g. `the` / `collection`). Each fragment is its own element — this is an animation contract (see `02-motion-guidelines.md §4.2`).
-- Eyebrows: Archivo, `wght` 500, `wdth` 100, `letter-spacing: 0.12em`, color `--color--lilac-3`, paired with every h1/h2. Extreme size contrast (eyebrow ↔ impact) is THE typographic move.
+- Eyebrows: Archivo, `wght` 500, `wdth` 100, `letter-spacing: 0.12em`, color `--color--haze-3`, paired with every h1/h2. Extreme size contrast (eyebrow ↔ impact) is THE typographic move.
 - Body/lead: Archivo `wght` 400, `wdth` 100, `line-height: 1.5`.
 - No `text-transform: uppercase` anywhere (brief §4).
 
@@ -276,8 +320,8 @@ Every component below lists its motion hook — the class/attribute the animatio
 
 | Variant | Style | Motion hook |
 |---|---|---|
-| `btn-primary` | UV fill, black text, `--radius--xs`, `--text--btn` Archivo 600 | `data-rive="btn-ui"` — Rive micro-animation on hover/press (research §4.4) |
-| `btn-secondary` | 1px `--color--ink-3` border, white text; border → UV on hover | `data-anim="btn-line"` — GSAP border/label swap, 0.3s `power2.out` |
+| `btn-primary` | phosphor fill, black text, `--radius--xs`, `--text--btn` Archivo 600 | `data-rive="btn-ui"` — Rive micro-animation on hover/press (research §4.4) |
+| `btn-secondary` | 1px `--color--ink-3` border, white text; border → phosphor on hover | `data-anim="btn-line"` — GSAP border/label swap, 0.3s `power2.out` |
 | `btn-text` | label + arrow `->`, no box | arrow shifts 0.4em right on hover, 0.3s |
 
 All buttons: label wrapped in `<span data-btn-label>` (needed for the y-flip label swap animation).
@@ -290,7 +334,7 @@ All buttons: label wrapped in `<span data-btn-label>` (needed for the y-flip lab
 
 ### 5.3 Scent card (collection grid + home showcase)
 
-- Surface `--color--ink-2`, `--radius--xs`. Contents: eyebrow (`batch 0N`), scent name (Archivo 800 + Instrument Serif italic for the article, e.g. `the *jolt*`), bottle render (AVIF), note list (3 items, `--color--lilac-3`), price, `btn-text` ("discover").
+- Surface `--color--ink-2`, `--radius--xs`. Contents: eyebrow (`batch 0N`), scent name (Archivo 800 + Instrument Serif italic for the article, e.g. `the *jolt*`), bottle render (AVIF), note list (3 items, `--color--haze-3`), price, `btn-text` ("discover").
 - Hover: card border → `--scent-tint`, bottle render y-drifts −8px, 0.5s `power2.out`.
 - Motion hook: `data-anim="card"` for scroll-entrance stagger group.
 
@@ -300,8 +344,8 @@ Three rows — `top / heart / base` — each: eyebrow label + note names at `--t
 
 ### 5.5 Newsletter block ("join the current")
 
-- Input: transparent bg, 1px bottom border `--color--ink-3` → UV on focus, `--radius--xs` 0.
-- Submit: `btn-primary`. Success state: input collapses, line pulses UV once (0.6s), message `you're in the current.` in Instrument Serif italic.
+- Input: transparent bg, 1px bottom border `--color--ink-3` → phosphor on focus, `--radius--xs` 0.
+- Submit: `btn-primary`. Success state: input collapses, line pulses phosphor once (0.6s), message `you're in the current.` in Instrument Serif italic.
 - Error/validation state (RFC-001 C3/C7): message at `--text--eyebrow` below the field in `--color--amber`, line pulses amber once. Copy: `required` · `check your email` · `didn't send — try again.`
 - Wire to Klaviyo-equivalent provider (research §2 — Klaviyo verified in reference).
 
@@ -319,7 +363,7 @@ Full-bleed `--color--black`. Rows: (1) marquee tagline `provocation, bottled.` a
 ## 6. Iconography & Imagery
 
 - Icons: 1.5px stroke, square terminals, monochrome `--color--white` — Lucide with adjusted stroke works. No filled icons.
-- Photography: high-contrast on-black studio product shots; skin/vapor imagery duotoned toward violet. No lifestyle-stock aesthetics.
+- Photography: high-contrast on-black studio product shots; skin/vapor imagery duotoned toward green. No lifestyle-stock aesthetics.
 - All media in AVIF with lazy-loading (research §6). No video ships in v1 — the alpha-turntable path was withdrawn with ADR-013.
 - **Bottle renders: transparent AVIF, flat-lit.** The bottle is never shipped pre-lit: every highlight, rim and caustic is a composited layer driven by `--light-angle` (`02-motion-guidelines.md §8`). A dramatically-lit master double-lights and is rejected at handoff (`06 §2`). All five share one camera, one framing, one scale.
 - Bottle silhouette per `00-design-brief.md §5` — squat rectangular flacon, square shoulders, cap flush to body width.

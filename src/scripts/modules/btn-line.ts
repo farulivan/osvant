@@ -2,7 +2,7 @@
 // (01 §5.1 motion hook `data-anim="btn-line"`).
 //
 // Recipe: GSAP label swap, 0.3s power2.out (micro register, M §2). The
-// border → UV color change is pure CSS :hover; this module owns only the
+// border → phosphor color change is pure CSS :hover; this module owns only the
 // label flip. Markup contract (01 §5.1): label wrapped in
 // <span data-btn-label>. The module clones that span (aria-hidden) and
 // stacks the two copies so hover y-flips original out / clone in.

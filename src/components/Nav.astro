@@ -81,7 +81,10 @@ const links = [
   }
 
   .nav--solid {
-    background: rgb(17 16 19 / 80%);
+    /* --color--black at 80%. Written as channels because rgb() cannot take
+       a hex custom property, so this literal has to track --color--black by
+       hand — it was the only value missed when the house went green. */
+    background: rgb(14 17 16 / 80%);
     backdrop-filter: blur(12px);
   }
 
@@ -243,7 +246,7 @@ const links = [
     color: var(--color--white);
   }
 
-  /* Under a scent-themed section the LINKS STAY WHITE. UV on black is
+  /* Under a scent-themed section the LINKS STAY WHITE. Phosphor on black is
      4.47:1 and misses AA at 16px (01 §6.2), and a tinted nav link also
      reads as an unvisited default link rather than as brand theming.
      The scent shows in the mark and in an underline marker instead —

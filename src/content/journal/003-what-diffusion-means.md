@@ -3,7 +3,7 @@ title: "what diffusion actually means"
 date: 2026-07-22
 leadImage:
   src: "" # AST-08 pending
-  alt: "violet smoke against near-black"
+  alt: "green smoke against near-black"
 scent: halo
 ---
 

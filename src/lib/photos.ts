@@ -29,7 +29,7 @@ export interface Photo {
   alt: string;
   /** <1 darkens. Brings a bright frame down to the rest of the set. */
   exposure?: number;
-  /** Overrides the house violet — the fever band grades to its own tint. */
+  /** Overrides the house green — the fever band grades to its own tint. */
   tint?: string;
 }
 
@@ -54,8 +54,8 @@ export const doors: Record<"lab" | "cult", Photo> = {
 // campaign/skin-textures.jpg and macro/mint-leaf.jpg. Both are in the
 // repo and both get an import the moment something renders them.
 export const campaign: Record<"hero", Photo> = {
-  /** The fever band grades to amber, not violet — an ember plate pushed
-   * violet throws away the only reason it works. */
+  /** The fever band grades to amber, not green — an ember plate pushed
+   * green throws away the only reason it works. */
   hero: {
     image: embers,
     alt: "",
@@ -93,7 +93,7 @@ export const macro: Record<string, Photo> = {
     alt: "dried chili and rose",
     exposure: 0.86,
   },
-  aldehydes: { image: abstract, alt: "violet smoke" },
+  aldehydes: { image: abstract, alt: "green smoke" },
 };
 
 /**

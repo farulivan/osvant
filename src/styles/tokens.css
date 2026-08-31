@@ -8,44 +8,43 @@
   /* ---- Color (01 §2.1) ---- */
 
   /* Core brand pair */
-  --color--uv: #be29ff; /* ultraviolet — CTAs, highlights, live states */
-  --color--black: #111013; /* near-black, violet-shifted — default page bg */
+  --color--phosphor: #008d57; /* signal green — CTAs, highlights, live states */
+  --color--black: #0e1110; /* near-black, green-shifted — default page bg */
 
   /* Accent variants */
-  --color--uv-off: #8f4fb3; /* desaturated UV — hover-off, visited, disabled-accent */
-  --color--uv-zero: #be29ff00; /* transparent UV — gradient/fade endpoints */
+  --color--phosphor-off: #427558; /* desaturated phosphor — hover-off, visited, disabled-accent */
+  --color--phosphor-zero: #008d5700; /* transparent phosphor — gradient/fade endpoints */
   --color--amber: #ffb000; /* counter-accent — heat, scarcity, cart badge */
 
-  /* Light neutrals (violet-tinted, warm-to-cool) */
-  --color--white: #f5f3f7; /* off-white — primary text on dark */
-  --color--cream: #efeaf2;
-  --color--lilac-1: #e9e4ee; /* light section backgrounds */
-  --color--lilac-2: #cdc7de;
-  --color--lilac-3: #b3abbc; /* muted text on dark */
+  /* Light neutrals (green-tinted, warm-to-cool) */
+  --color--white: #f1f5f2; /* off-white — primary text on dark */
+  --color--cream: #e6efe9;
+  --color--haze-1: #dfe9e3; /* light section backgrounds */
+  --color--haze-2: #bad2c3;
+  --color--haze-3: #a2b4a9; /* muted text on dark */
 
-  /* Dark neutrals (violet-tinted) */
-  --color--ink-4: #6b6575; /* 3.38:1 — boundaries of anything OPERABLE */
-  --color--ink-3: #524d59; /* 2.32:1 — decorative rules only, never a control */
-  --color--ink-2: #3b3740; /* raised surfaces, cards on black */
-  --color--ink-1: #201c24; /* alt dark section bg */
+  /* Dark neutrals (green-tinted) */
+  --color--ink-4: #5c6d63; /* 3.46:1 — boundaries of anything OPERABLE */
+  --color--ink-3: #47534b; /* 2.36:1 — decorative rules only, never a control */
+  --color--ink-2: #323c36; /* raised surfaces, cards on black */
+  --color--ink-1: #18201b; /* alt dark section bg */
 
-  /* Label on a UV fill. Black-on-UV measures 4.47:1 and misses AA by a
-     hair, which is the single accessibility failure Lighthouse reports;
-     this clears it at 4.66:1 without touching --color--uv itself, so the
-     brand accent stays exactly as specified (01 §6.2). */
-  --color--on-uv: #0b0a0c;
+  /* Label on a phosphor fill. Black-on-phosphor measures 4.47:1 and misses
+     AA by a hair, which is the single accessibility failure Lighthouse
+     reports; this clears it at 4.65:1 without touching --color--phosphor
+     itself, so the brand accent stays exactly as specified (01 §6.2). */
+  --color--on-phosphor: #090b0a;
 
   /* ---- Scent tint fallback (01 §2.3) ---- */
-  --scent-tint: var(--color--uv);
+  --scent-tint: var(--color--phosphor);
 
   /* Tint as TEXT — the rare case, contrast-clamped (01 §6.1).
      --scent-tint is a light source: liquid, rim glow, hover border,
      marker, ambient wash. It is not a text colour, and measuring it
      proves why — nocturne lands at 2.11:1, unreadable at any size, while
-     static and halo are so near-neutral that tinting a word does nothing
-     at all. Only volt and nocturne have a usable tinted text identity;
-     the rest resolve to white, per 01 §2.4's rule that near-neutral
-     tints are never text. */
+     static is so near-neutral that tinting a word does nothing at all.
+     Volt, nocturne and halo have a usable tinted text identity; static
+     and fever resolve to white, per 01 §2.4. */
   --scent-tint-text: var(--color--white);
 
   /* ---- Type scale (01 §3.2) ---- */
@@ -160,8 +159,8 @@
 /* ---- Scent-scoped theming (01 §2.3) — each PDP/card swaps ONE variable ---- */
 
 [data-scent="volt"] {
-  --scent-tint: var(--color--uv);
-  --scent-tint-text: #c33afe; /* 4.84:1 */
+  --scent-tint: var(--color--phosphor);
+  --scent-tint-text: #19935d; /* 4.86:1 */
 }
 
 [data-scent="nocturne"] {
@@ -169,18 +168,25 @@
   --scent-tint-text: #7d75d3; /* 4.84:1 — the raw tint is 2.11:1 */
 }
 
-/* static, fever and halo inherit --scent-tint-text: white.
-   static and halo are near-neutral, so a tinted word is indistinguishable
-   from an untinted one (01 §2.4); fever's amber is reserved for scarcity
-   and error states (01 §1 rule 4) and must not leak into body copy. */
+/* static and fever inherit --scent-tint-text: white. static is
+   near-neutral, so a tinted word is indistinguishable from an untinted
+   one (01 §2.4); fever's amber is reserved for scarcity and error states
+   (01 §1 rule 4) and must not leak into body copy. */
 [data-scent="static"] {
-  --scent-tint: #cdc7de;
+  --scent-tint: #bad2c3;
 }
 
 [data-scent="fever"] {
   --scent-tint: #ffb000;
 }
 
+/* halo keeps the retired house ultraviolet (01 §2.3, amended 2026-08-31).
+   It is the only tint that is not its bottle's liquid colour, and that is
+   the point: a halo is the light AROUND an object, so the pale violet
+   liquid sits inside a vivid UV glow rather than matching it. Same value
+   the house carried until the collection went green, and the same 4.47:1
+   — so display sizes only, exactly as volt was. */
 [data-scent="halo"] {
-  --scent-tint: #ebd9ff;
+  --scent-tint: #be29ff;
+  --scent-tint-text: #c33afe; /* 4.84:1 — the raw tint is 4.47:1 */
 }
