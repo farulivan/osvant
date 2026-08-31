@@ -20,8 +20,52 @@ function applyTheme(nav: HTMLElement, theme: string): void {
   }
 }
 
+/**
+ * The nav renders OUTSIDE the themed section — it is a sibling of the
+ * `[data-scent]` scope, not a descendant — so `var(--scent-tint)` inside
+ * it has always resolved to the `:root` fallback, i.e. the house accent
+ * rather than the scent. `01 §2.4` asks for the opposite: the links stay
+ * white and "the scent shows in the wordmark and an underline marker".
+ *
+ * Mirroring the scope's `data-scent` onto the nav makes the existing
+ * `[data-scent="…"]` rules in tokens.css apply to the nav subtree too, so
+ * the tint arrives through the token system rather than by copying a
+ * computed colour around.
+ *
+ * `closest()` covers both shapes in the build: the PDP wraps its themed
+ * section in `[data-scent]`, while the gallery puts both attributes on the
+ * same element. The gallery also REWRITES that attribute as it scrubs
+ * (`gallery.ts` → `showScent`), so an attribute observer keeps the nav in
+ * step with the active bottle instead of freezing on the first one.
+ */
+function scentScope(section: HTMLElement): HTMLElement | null {
+  return section.closest<HTMLElement>("[data-scent]");
+}
+
 function createNavThemeModule(): PageModule {
   let triggers: ScrollTrigger[] = [];
+  let scentWatch: MutationObserver | null = null;
+
+  function bindScent(nav: HTMLElement, section: HTMLElement | null): void {
+    scentWatch?.disconnect();
+    scentWatch = null;
+
+    const scope = section && scentScope(section);
+    if (!scope) {
+      delete nav.dataset.scent;
+      return;
+    }
+
+    const sync = (): void => {
+      nav.dataset.scent = scope.dataset.scent ?? "";
+    };
+    sync();
+    scentWatch = new MutationObserver(sync);
+    scentWatch.observe(scope, {
+      attributes: true,
+      attributeFilter: ["data-scent"],
+    });
+  }
 
   function mount(el: HTMLElement): void {
     const nav = document.querySelector<HTMLElement>("[data-nav]");
@@ -62,10 +106,16 @@ function createNavThemeModule(): PageModule {
         start: `top ${NAV_OFFSET}`,
         end: `bottom ${NAV_OFFSET}`,
         onToggle: (self) => {
-          if (self.isActive) applyTheme(nav, theme);
+          if (self.isActive) {
+            applyTheme(nav, theme);
+            bindScent(nav, theme === "scent" ? section : null);
+          }
         },
       });
-      if (trigger.isActive) applyTheme(nav, theme);
+      if (trigger.isActive) {
+        applyTheme(nav, theme);
+        bindScent(nav, theme === "scent" ? section : null);
+      }
       triggers.push(trigger);
     });
   }
@@ -73,9 +123,11 @@ function createNavThemeModule(): PageModule {
   function destroy(): void {
     triggers.forEach((trigger) => trigger.kill());
     triggers = [];
-    document
-      .querySelector<HTMLElement>("[data-nav]")
-      ?.classList.remove("nav--solid");
+    scentWatch?.disconnect();
+    scentWatch = null;
+    const nav = document.querySelector<HTMLElement>("[data-nav]");
+    nav?.classList.remove("nav--solid");
+    if (nav) delete nav.dataset.scent;
   }
 
   return { selector: '[data-module="nav-theme"]', mount, destroy };

@@ -2,6 +2,14 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-31 — fix: the nav wordmark never showed the scent tint (01 §2.4)
+
+- `01 §2.4` says the nav links stay white under a scent-themed section and "the scent shows in the wordmark and an underline marker". The wordmark rule existed and was correct — `fill: var(--scent-tint)` — but **it has never once rendered a scent.** `<Nav />` sits in `BaseLayout` as a *sibling* of the `[data-scent]` scope, not a descendant, so `var(--scent-tint)` inside the nav always resolved to the `:root` fallback: the house accent.
+- Invisible until today for the same reason the 404 bug was: volt's tint has always equalled the house accent (UV before, green after), so the one page anyone would eye-check looked right. Halo's violet is the first tint that makes it obvious — a green wordmark over a violet page.
+- Fixed by mirroring the scope's `data-scent` onto the nav, so the existing `[data-scent="…"]` rules in `tokens.css` apply to the nav subtree and the tint arrives **through the token system** rather than by copying a computed colour around. `closest()` covers both shapes: the PDP wraps its themed section in `[data-scent]`, the gallery puts both attributes on one element.
+- The gallery rewrites that attribute as it scrubs (`gallery.ts` → `showScent`), so a `MutationObserver` on the attribute keeps the nav in step with the active bottle rather than freezing on the first — verified live: the wordmark tracks green → blue → pale through the procession. Observer is disconnected in `destroy()` alongside the triggers (guide §6.2), and the `data-scent` it writes is removed there too.
+- Safe to put `data-scent` on the nav: nothing does a global `[data-scent]` query — `gallery.ts` and `pdp.ts` both read `dataset.scent` on an element they already own.
+
 ## 2026-08-31 — feat: halo keeps the retired house ultraviolet (01 §2.3 amended)
 
 - Owner call: `halo` carries `#be29ff`, the accent the whole system used until this release. It is the one deliberate exception to the rule that a scent tint tracks its bottle's liquid, and the name is the argument — a halo is the light *around* an object. It also fits the notes better than the green did: iris, orris and heliotrope are all violet materials, and `docs/engineering/worklog.md`'s own copy sign-off flagged iris as load-bearing for this scent.
