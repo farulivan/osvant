@@ -437,6 +437,96 @@ async function reshape(mask, width, height, sigma, cutoff) {
 }
 
 /**
+ * Masters whose LIQUID predates the 2026-08-31 house-colour change.
+ *
+ * When the house moved from ultraviolet to signal green, volt was re-shot
+ * (its tint *is* the house accent, so it had to be). Nocturne stays blue —
+ * a blue night reads correctly against a green house — and fever is the
+ * amber counter-accent. That leaves static and halo, whose liquid is a
+ * pale lilac and a pale violet: in a green house they read as leftovers
+ * from the old palette rather than as members of the collection.
+ *
+ * Rather than ask for two new renders of a bottle that has not otherwise
+ * changed, their liquid is rotated here. The value is the target HSL hue.
+ *
+ * This is safe because of how the keyer already works, not by luck:
+ *
+ *   - The re-lit glass is written as literal grey (`out[i] = out[i+1] =
+ *     out[i+2] = lit`), so a hue rotation cannot touch it — it is a no-op
+ *     on any pixel with zero chroma, by construction.
+ *   - Caps and glass measure chroma 0–6 in the keyed masters; the liquid
+ *     measures 17–20 (static) and 36–37 (halo), at hue 251–255° and
+ *     263–267°. Gating on `chroma >= 10 && 210° <= hue <= 300°` catches
+ *     99% / 97% of each master's chromatic pixels and no cap or glass
+ *     pixel at all.
+ *
+ * Saturation and lightness are preserved, so the liquid keeps its own
+ * density and its meniscus. The raws are untouched, so removing an entry
+ * restores the original master on the next run.
+ */
+const LIQUID_REHUE = {
+  static: 158,
+  halo: 158,
+};
+
+/** Below this a pixel is neutral, and rotating its hue would do nothing. */
+const REHUE_MIN_CHROMA = 10;
+/** The violet band the old liquids occupy. Caps and glass sit outside it. */
+const REHUE_BAND = [210, 300];
+
+/**
+ * Rotates the liquid to `targetHue`, preserving saturation and lightness.
+ * Operates in place on RGBA, and only on pixels inside REHUE_BAND.
+ */
+function rehueLiquid(data, targetHue) {
+  let rotated = 0;
+
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3] === 0) continue;
+
+    const r = data[i] / 255;
+    const g = data[i + 1] / 255;
+    const b = data[i + 2] / 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const delta = max - min;
+
+    if (delta * 255 < REHUE_MIN_CHROMA) continue;
+
+    let hue;
+    if (max === r) hue = 60 * (((g - b) / delta) % 6);
+    else if (max === g) hue = 60 * ((b - r) / delta + 2);
+    else hue = 60 * ((r - g) / delta + 4);
+    hue = (hue + 360) % 360;
+
+    if (hue < REHUE_BAND[0] || hue > REHUE_BAND[1]) continue;
+
+    // Back to RGB at the new hue, with S and L carried over untouched.
+    const lightness = (max + min) / 2;
+    const saturation = delta / (1 - Math.abs(2 * lightness - 1));
+    const c = (1 - Math.abs(2 * lightness - 1)) * saturation;
+    const x = c * (1 - Math.abs(((targetHue / 60) % 2) - 1));
+    const m = lightness - c / 2;
+    const sector = Math.floor(targetHue / 60) % 6;
+    const [r2, g2, b2] = [
+      [c, x, 0],
+      [x, c, 0],
+      [0, c, x],
+      [0, x, c],
+      [x, 0, c],
+      [c, 0, x],
+    ][sector];
+
+    data[i] = Math.round((r2 + m) * 255);
+    data[i + 1] = Math.round((g2 + m) * 255);
+    data[i + 2] = Math.round((b2 + m) * 255);
+    rotated++;
+  }
+
+  return rotated;
+}
+
+/**
  * Masters whose silhouette is borrowed from another scent's.
  *
  * Every master is the same bottle at the same framing — identical source
@@ -572,7 +662,7 @@ function scentOf(rawName) {
   return rawName.replace(/^bottle-/, "").replace(/-raw\.(png|jpe?g)$/i, "");
 }
 
-async function prepare(rawPath, outPath, borrowFrom) {
+async function prepare(rawPath, outPath, borrowFrom, rehueTo) {
   const name = basename(outPath);
   const { data: source, info } = await sharp(rawPath)
     .ensureAlpha()
@@ -612,6 +702,11 @@ async function prepare(rawPath, outPath, borrowFrom) {
     out = result.out;
     report = `de-matted ${result.corrected} px`;
   }
+  if (rehueTo !== undefined) {
+    const rotated = rehueLiquid(out, rehueTo);
+    report += `, ${rotated} px liquid re-hued to ${rehueTo}°`;
+  }
+
   const { minX, minY, maxX, maxY } = alphaBounds(out, width, height);
   const objectW = maxX - minX + 1;
   const objectH = maxY - minY + 1;
@@ -699,6 +794,7 @@ if (raws.length === 0) {
       join(STILLS, raw),
       join(STILLS, out),
       donorFile ? join(STILLS, donorFile) : undefined,
+      LIQUID_REHUE[scentOf(raw)],
     );
     await prepareDetail(
       join(STILLS, out),

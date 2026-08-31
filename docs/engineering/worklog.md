@@ -2,6 +2,15 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-31 — feat: re-hue the static and halo liquid, and the copy the green grade made wrong
+
+- Closes the half of the house-colour change the token swap could not reach. After volt went green, three of five bottles were still violet-family: nocturne 239°, static 254°, halo 263°. In a green house they read as leftovers from the old palette rather than as members of the collection.
+- **Nocturne kept blue, deliberately.** A blue night against a green house is a legible contrast, not a leftover — and it is the only scent whose name argues for its hue. Fever is untouched for the same reason in reverse: amber is the counter-accent (`01 §1` rule 4).
+- **`LIQUID_REHUE` added to `prepare-stills.mjs`** rather than asking for two new renders of a bottle that has not otherwise changed. It is safe because of how the keyer already works, not by luck: re-lit glass is written as literal grey, so a hue rotation is a no-op on it *by construction*; and caps/glass measure chroma 0–6 against the liquid's 17–20 (static) and 36–37 (halo), so a `chroma >= 10 && 210°–300°` gate catches 99%/97% of each master's chromatic pixels and no cap or glass pixel. Verified after the run: liquid 251→159°, chroma preserved byte-for-byte (17→17, 36→36), caps and glass identical to the previous output. Raws untouched, so removing an entry restores the original master.
+- `/dev/light`'s registration stack (all five at 40% opacity) shows one silhouette, no double edge — the page's own acceptance criterion, and the thing the volt swap put at risk.
+- **Copy:** `photos.ts` and `journal/003` both described the abstract plate as `violet smoke`; under a green duotone that alt text was simply false, so both now read `green smoke`. The **iris / orris / heliotrope / black plum notes were deliberately left alone** — they name real perfumery materials (orris root is beige), they describe smell rather than house colour, and `halo`'s `the glow. iris in soft focus.` ships as its meta description and schema.org `Product.description`.
+- Swept ~12 stale comment references to `UV` and `lilac-3` that the previous PR's rename missed because they use the bare word rather than the `--color--` prefix (`base.css`, `Footer`, `Nav`, `newsletter`, `btn-line`, `contact`). One `violet` mention survives on purpose, in the Duotone note explaining why the mix ratio moved.
+
 ## 2026-08-31 — feat: the house goes green (01 §2.1 amended, 00-brief §2)
 
 - Accent moves ultraviolet `#be29ff` → signal green **`#008d57`**, following the replacement `volt` master. Volt is item 01 and its scent tint *is* the house accent, so a green bottle made the violet identity wrong — this is the change the new render forces, not a change of taste.

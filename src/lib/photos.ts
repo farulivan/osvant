@@ -93,7 +93,7 @@ export const macro: Record<string, Photo> = {
     alt: "dried chili and rose",
     exposure: 0.86,
   },
-  aldehydes: { image: abstract, alt: "violet smoke" },
+  aldehydes: { image: abstract, alt: "green smoke" },
 };
 
 /**

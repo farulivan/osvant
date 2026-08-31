@@ -115,7 +115,7 @@ describe("modules/newsletter (01 §5.5, 07 §3)", () => {
     vi.useRealTimers();
   });
 
-  it("success: UV pulse, input collapses, success message shows, newsletter_signup tracked (footer)", async () => {
+  it("success: phosphor pulse, input collapses, success message shows, newsletter_signup tracked (footer)", async () => {
     vi.useFakeTimers();
     const module = await load();
     const { form, input, success } = makeForm();

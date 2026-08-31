@@ -6,8 +6,8 @@
 //   the field): empty → `required`; invalid email → `check your email`;
 //   forced failure (?demo=fail) → `didn't send — try again.` Each error
 //   pulses the field line amber once (0.6s — duration unspecified for the
-//   amber pulse; matched to the spec'd UV success pulse, flagged).
-// - Success: input collapses, line pulses UV once (0.6s, 01 §5.5),
+//   amber pulse; matched to the spec'd phosphor success pulse, flagged).
+// - Success: input collapses, line pulses phosphor once (0.6s, 01 §5.5),
 //   message `you're in the current.` (Instrument Serif italic) + muted
 //   sub-line `demo — no list connected.` (07 §3), then
 //   track("newsletter_signup", { source: "footer" }) (07 §5).
@@ -114,7 +114,7 @@ export function createNewsletter(): PageModule {
               return;
             }
 
-            // Success (01 §5.5): line pulses UV once, input collapses,
+            // Success (01 §5.5): line pulses phosphor once, input collapses,
             // serif-italic message + muted demo sub-line.
             pulse(state, input, "var(--color--phosphor)", ctx.reducedMotion);
             if (ctx.reducedMotion) {
