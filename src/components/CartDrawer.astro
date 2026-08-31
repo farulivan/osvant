@@ -5,7 +5,28 @@
 // focus trap + ESC + inert background + lenis.stop() live in
 // modules/cart-drawer.ts. Line rendering is client-side from the
 // commerce port (cart state lives in localStorage).
+import { getImage } from "astro:assets";
+
 import { withBase } from "../lib/url";
+import { stillFor } from "../lib/stills";
+
+// `03 §8` lists the cart as a consumer of the transparent bottle still
+// (review OSV-28). Line items are built at RUNTIME from localStorage, so
+// they cannot call `getImage()` themselves — it is a build-time API. The
+// derivatives are generated here instead and handed to the client as a
+// scent → url map, which also keeps the cart on AVIF like everything else
+// rather than shipping the raw PNG master.
+const SCENTS = ["volt", "nocturne", "static", "fever", "halo"] as const;
+const thumbs: Record<string, string> = {};
+for (const scent of SCENTS) {
+  const image = await getImage({
+    src: stillFor(scent),
+    format: "avif",
+    width: 128,
+    quality: 55,
+  });
+  thumbs[scent] = image.src;
+}
 ---
 
 <div
@@ -36,6 +57,11 @@ import { withBase } from "../lib/url";
       </div>
 
       <ul class="cart-drawer__lines" data-cart-lines></ul>
+      <script
+        type="application/json"
+        data-cart-thumbs
+        set:html={JSON.stringify(thumbs)}
+      />
 
       <div class="cart-drawer__summary" data-cart-summary hidden>
         <p class="cart-drawer__subtotal">
@@ -144,7 +170,16 @@ import { withBase } from "../lib/url";
     overflow-y: auto;
   }
 
-  .cart-line {
+  /* These selectors are :global() on purpose. Cart lines are built at
+     runtime by `modules/cart-drawer.ts` via innerHTML, so they never
+     receive this component's `data-astro-cid-*` attribute — a plain
+     `.cart-line` rule compiles to `.cart-line[data-astro-cid-...]` and
+     matches nothing. Every rule below was dead code: the steppers and the
+     remove button rendered as raw browser chrome (grey fill, black text,
+     `2px outset`), which is also how neutral grey got onto a page that
+     stylelint forbids it on. The review logged this as "the stepper does
+     not render" (OSV-28); it rendered, unstyled. */
+  :global(.cart-line) {
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -152,31 +187,45 @@ import { withBase } from "../lib/url";
     border-bottom: 1px solid var(--color--ink-3);
   }
 
-  .cart-line__info {
+  /* 03 §8 — the cart is a consumer of the bottle still. */
+  :global(.cart-line__thumb) {
+    flex: none;
+    width: 4rem;
+    height: 4rem;
+    object-fit: contain;
+    border-radius: var(--radius--xs);
+    background: var(--color--black);
+  }
+
+  :global(.cart-line__info) {
     flex: 1;
     min-width: 0;
   }
 
-  .cart-line__name {
+  :global(.cart-line__name) {
     margin: 0;
     font-size: var(--text--h6);
     font-weight: 700;
   }
 
-  .cart-line__meta {
+  /* The unit price used to sit here as well as in `.cart-line__price`,
+     which duplicated the number at quantity 1 and wrapped the line. It
+     now appears only when it says something the row total does not — at
+     quantity 2 or more. */
+  :global(.cart-line__meta) {
     margin: 0.25rem 0 0;
     font-size: var(--text--eyebrow);
     letter-spacing: 0.12em;
     color: var(--color--lilac-3);
   }
 
-  .cart-line__steppers {
+  :global(.cart-line__steppers) {
     display: flex;
     align-items: center;
     gap: 0.5rem;
   }
 
-  .cart-line__steppers button {
+  :global(.cart-line__steppers button) {
     width: 1.75rem;
     height: 1.75rem;
     background: transparent;
@@ -187,20 +236,20 @@ import { withBase } from "../lib/url";
     cursor: pointer;
   }
 
-  .cart-line__qty {
+  :global(.cart-line__qty) {
     min-width: 1.5rem;
     text-align: center;
     font-size: var(--text--h6);
   }
 
-  .cart-line__price {
+  :global(.cart-line__price) {
     margin: 0;
     min-width: 3.5rem;
     text-align: right;
     font-size: var(--text--h6);
   }
 
-  .cart-line__remove {
+  :global(.cart-line__remove) {
     background: none;
     border: 0;
     color: var(--color--lilac-3);
