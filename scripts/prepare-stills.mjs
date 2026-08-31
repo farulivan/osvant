@@ -442,31 +442,33 @@ async function reshape(mask, width, height, sigma, cutoff) {
  * When the house moved from ultraviolet to signal green, volt was re-shot
  * (its tint *is* the house accent, so it had to be). Nocturne stays blue —
  * a blue night reads correctly against a green house — and fever is the
- * amber counter-accent. That leaves static and halo, whose liquid is a
- * pale lilac and a pale violet: in a green house they read as leftovers
- * from the old palette rather than as members of the collection.
+ * amber counter-accent. Halo was re-hued here briefly and then reverted:
+ * it keeps the retired house ultraviolet as its own signature (01 §2.3,
+ * amended 2026-08-31), so its master keeps the violet liquid it shipped
+ * with. That leaves static, whose pale lilac liquid has no such argument
+ * and in a green house reads as a leftover from the old palette.
  *
- * Rather than ask for two new renders of a bottle that has not otherwise
- * changed, their liquid is rotated here. The value is the target HSL hue.
+ * Rather than ask for a new render of a bottle that has not otherwise
+ * changed, its liquid is rotated here. The value is the target HSL hue.
  *
  * This is safe because of how the keyer already works, not by luck:
  *
  *   - The re-lit glass is written as literal grey (`out[i] = out[i+1] =
  *     out[i+2] = lit`), so a hue rotation cannot touch it — it is a no-op
  *     on any pixel with zero chroma, by construction.
- *   - Caps and glass measure chroma 0–6 in the keyed masters; the liquid
- *     measures 17–20 (static) and 36–37 (halo), at hue 251–255° and
- *     263–267°. Gating on `chroma >= 10 && 210° <= hue <= 300°` catches
- *     99% / 97% of each master's chromatic pixels and no cap or glass
- *     pixel at all.
+ *   - Caps and glass measure chroma 0–6 in the keyed masters; static's
+ *     liquid measures 17–20 at hue 251–255°. Gating on `chroma >= 10 &&
+ *     210° <= hue <= 300°` catches 99% of the master's chromatic pixels
+ *     and no cap or glass pixel at all.
  *
  * Saturation and lightness are preserved, so the liquid keeps its own
  * density and its meniscus. The raws are untouched, so removing an entry
- * restores the original master on the next run.
+ * restores the original master on the next run — which is exactly how
+ * halo was reverted.
  */
 const LIQUID_REHUE = {
-  static: 158,
-  halo: 158,
+  static: { hue: 158 },
+  halo: { hue: 282, deepen: 0.35 },
 };
 
 /** Below this a pixel is neutral, and rotating its hue would do nothing. */
@@ -475,10 +477,20 @@ const REHUE_MIN_CHROMA = 10;
 const REHUE_BAND = [210, 300];
 
 /**
- * Rotates the liquid to `targetHue`, preserving saturation and lightness.
+ * Rotates the liquid to `hue`, and optionally deepens it.
+ *
+ * `deepen` pulls lightness toward 0.5, which is the only way to give a
+ * liquid more chroma: halo's measures S 0.90 already, but at L 0.92 no
+ * hue can carry colour — it rendered as a white body inside a vivid
+ * violet rim, which read as a mismatched gel rather than as the bottle's
+ * own glow. Saturating it does nothing; darkening it is the fix.
+ *
+ * Saturation is always preserved, so the liquid keeps its own density
+ * and its meniscus.
+ *
  * Operates in place on RGBA, and only on pixels inside REHUE_BAND.
  */
-function rehueLiquid(data, targetHue) {
+function rehueLiquid(data, { hue: targetHue, deepen = 0 }) {
   let rotated = 0;
 
   for (let i = 0; i < data.length; i += 4) {
@@ -501,9 +513,11 @@ function rehueLiquid(data, targetHue) {
 
     if (hue < REHUE_BAND[0] || hue > REHUE_BAND[1]) continue;
 
-    // Back to RGB at the new hue, with S and L carried over untouched.
-    const lightness = (max + min) / 2;
-    const saturation = delta / (1 - Math.abs(2 * lightness - 1));
+    // Back to RGB at the new hue. S is always carried over; L is carried
+    // over unless `deepen` pulls it toward mid-grey.
+    const sourceLightness = (max + min) / 2;
+    const saturation = delta / (1 - Math.abs(2 * sourceLightness - 1));
+    const lightness = 0.5 + (sourceLightness - 0.5) * (1 - deepen);
     const c = (1 - Math.abs(2 * lightness - 1)) * saturation;
     const x = c * (1 - Math.abs(((targetHue / 60) % 2) - 1));
     const m = lightness - c / 2;
@@ -704,7 +718,9 @@ async function prepare(rawPath, outPath, borrowFrom, rehueTo) {
   }
   if (rehueTo !== undefined) {
     const rotated = rehueLiquid(out, rehueTo);
-    report += `, ${rotated} px liquid re-hued to ${rehueTo}°`;
+    report += `, ${rotated} px liquid re-hued to ${rehueTo.hue}°${
+      rehueTo.deepen ? ` (deepened ${rehueTo.deepen})` : ""
+    }`;
   }
 
   const { minX, minY, maxX, maxY } = alphaBounds(out, width, height);

@@ -2,6 +2,14 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
+## 2026-08-31 — feat: halo keeps the retired house ultraviolet (01 §2.3 amended)
+
+- Owner call: `halo` carries `#be29ff`, the accent the whole system used until this release. It is the one deliberate exception to the rule that a scent tint tracks its bottle's liquid, and the name is the argument — a halo is the light *around* an object. It also fits the notes better than the green did: iris, orris and heliotrope are all violet materials, and `docs/engineering/worklog.md`'s own copy sign-off flagged iris as load-bearing for this scent.
+- **The tint change alone was not shippable, and looking at it is what proved that.** Halo's liquid measures S 0.90 but L 0.92, and at that lightness no hue can carry chroma — beside a vivid violet rim the body rendered as *white*, a mismatched gel rather than the bottle's own glow. Every other scent sits within 16° and ~2 chroma of its own liquid; halo was 178 chroma points away.
+- Saturating it does nothing — the saturation is already 0.90. **Deepening is the fix**, so `LIQUID_REHUE` entries became `{ hue, deepen }` and halo is `{ hue: 282, deepen: 0.35 }`: L 0.92 → 0.77, chroma 36 → 103. Chosen over 0.45 (chroma 123) by eye because it keeps halo the lightest coloured bottle of the five, which is what `the glow. iris in soft focus.` asks for. Caps and glass measure chroma 6 and 0 after the pass — untouched, as designed.
+- Halo **gains** a tinted text identity it did not have. Under the old palette it was near-neutral pale violet, so `01 §2.4` banned it from text; at `#be29ff` it is 4.47:1, so it takes `--scent-tint-text: #c33afe` (4.84:1) — the same clamp volt used under the old house colour, now free. The §2.4 guardrail was rewritten accordingly: the near-neutral rule now names `static` only, and halo joins phosphor and amber in the display-sizes-only list.
+- `static` stays green — it has no equivalent argument, and its pale lilac was the one liquid that genuinely read as a leftover.
+
 ## 2026-08-31 — fix: 404's drifted btn-primary copy (01 §2.1, §6.2)
 
 - Lighthouse's colour-contrast audit came back clean on every route except `/404`, which failed at 4.47:1. Cause: `404.astro` re-declared the whole `.btn-primary` component locally, and because Astro's scoped styles outrank `base.css` the copy won — including its `color: var(--color--black)`, which never received the 2026-08-26 `--color--on-phosphor` amendment. Every other `btn-primary` on the site had been fixed; this one was invisible because it was a duplicate rather than a reference.

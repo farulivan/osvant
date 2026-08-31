@@ -42,10 +42,9 @@
      --scent-tint is a light source: liquid, rim glow, hover border,
      marker, ambient wash. It is not a text colour, and measuring it
      proves why — nocturne lands at 2.11:1, unreadable at any size, while
-     static and halo are so near-neutral that tinting a word does nothing
-     at all. Only volt and nocturne have a usable tinted text identity;
-     the rest resolve to white, per 01 §2.4's rule that near-neutral
-     tints are never text. */
+     static is so near-neutral that tinting a word does nothing at all.
+     Volt, nocturne and halo have a usable tinted text identity; static
+     and fever resolve to white, per 01 §2.4. */
   --scent-tint-text: var(--color--white);
 
   /* ---- Type scale (01 §3.2) ---- */
@@ -169,10 +168,10 @@
   --scent-tint-text: #7d75d3; /* 4.84:1 — the raw tint is 2.11:1 */
 }
 
-/* static, fever and halo inherit --scent-tint-text: white.
-   static and halo are near-neutral, so a tinted word is indistinguishable
-   from an untinted one (01 §2.4); fever's amber is reserved for scarcity
-   and error states (01 §1 rule 4) and must not leak into body copy. */
+/* static and fever inherit --scent-tint-text: white. static is
+   near-neutral, so a tinted word is indistinguishable from an untinted
+   one (01 §2.4); fever's amber is reserved for scarcity and error states
+   (01 §1 rule 4) and must not leak into body copy. */
 [data-scent="static"] {
   --scent-tint: #bad2c3;
 }
@@ -181,6 +180,13 @@
   --scent-tint: #ffb000;
 }
 
+/* halo keeps the retired house ultraviolet (01 §2.3, amended 2026-08-31).
+   It is the only tint that is not its bottle's liquid colour, and that is
+   the point: a halo is the light AROUND an object, so the pale violet
+   liquid sits inside a vivid UV glow rather than matching it. Same value
+   the house carried until the collection went green, and the same 4.47:1
+   — so display sizes only, exactly as volt was. */
 [data-scent="halo"] {
-  --scent-tint: #c5edd4;
+  --scent-tint: #be29ff;
+  --scent-tint-text: #c33afe; /* 4.84:1 — the raw tint is 4.47:1 */
 }

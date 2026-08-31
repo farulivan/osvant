@@ -100,7 +100,7 @@ Each scent detail page (and its card hover state) swaps ONE variable, nothing el
 [data-scent="nocturne"] { --scent-tint: #3a2fbf;          --scent-tint-text: #7d75d3; }
 [data-scent="static"]   { --scent-tint: #bad2c3; }
 [data-scent="fever"]    { --scent-tint: #ffb000; }
-[data-scent="halo"]     { --scent-tint: #c5edd4; }
+[data-scent="halo"]     { --scent-tint: #be29ff;          --scent-tint-text: #c33afe; }
 ```
 
 Components reference `--scent-tint` (falls back to `--color--phosphor`). This mirrors the reference build's per-item theme classes (research: `hero-nav-theme.is-1/is-2` pattern, §3/S2).
@@ -109,24 +109,45 @@ Components reference `--scent-tint` (falls back to `--color--phosphor`). This mi
 >
 > **`--scent-tint` is a light source, not a text colour.** Measured against
 > `--color--black`: volt 4.47:1, nocturne **2.11:1**, static 11.84:1,
-> fever 10.36:1, halo 14.86:1. Nocturne is unreadable at any size; static
-> and halo are so near-neutral that tinting a word changes nothing; fever's
-> amber collides with its reserved scarcity role (§1 rule 4). Four of five
-> fail as text — so the token stops being asked to do that job.
+> fever 10.36:1, halo 4.47:1. Nocturne is unreadable at any size; static
+> is so near-neutral that tinting a word changes nothing; fever's
+> amber collides with its reserved scarcity role (§1 rule 4). Most fail as
+> text — so the token stops being asked to do that job.
 >
 > **Permitted surfaces:** bottle liquid and rim glow · hover border ·
 > underline or marker beside a name · the section's ambient wash. That is
 > still ONE attribute swap and still satisfies `03 §3.1`.
 >
 > **`--scent-tint-text`** covers the rare genuinely-tinted word, clamped to
-> ≥4.5:1. Only volt and nocturne have a usable tinted text identity; static,
-> fever and halo resolve to `--color--white`, per §2.4.
+> ≥4.5:1. Volt, nocturne and halo have a usable tinted text identity; static
+> and fever resolve to `--color--white`, per §2.4.
+
+> **Amended 2026-08-31** (house colour, owner-approved). **Halo keeps the
+> retired house ultraviolet `#be29ff`** — the accent the whole system carried
+> until this release. It is the one deliberate exception to the rule that a
+> scent tint tracks its bottle's liquid, and the name is the argument: a halo
+> is the light *around* an object, and halo's notes are iris, orris and
+> heliotrope, all violet materials. The retired accent surviving as one
+> scent's signature is also the more honest record of where the house came
+> from than deleting it everywhere would be.
+>
+> Its master was re-hued to match at 282° and **deepened 0.35**. That second
+> step is not cosmetic. Halo's liquid measured S 0.90 but L 0.92, and at that
+> lightness no hue can carry chroma — shipped against the vivid tint it read
+> as a *white* body inside a violet rim, a mismatched gel rather than the
+> bottle's own glow. Deepening to L 0.77 (chroma 36 → 103) makes bottle and
+> glow agree while keeping halo the lightest coloured bottle of the five,
+> which is what `the glow. iris in soft focus.` asks for.
+>
+> Halo therefore **gains** a tinted text identity it did not have: at 4.47:1
+> the raw tint is display-only, so `--scent-tint-text: #c33afe` (4.84:1)
+> carries the word — the same clamp volt used under the old house colour.
 
 ### 2.4 Accessibility guardrails
 
 - Body text is always `--color--white` or `--color--black` — never the accent, never a tint.
-- Phosphor and amber on black: **display sizes (≥24px) only.** For small text, verify AA (4.5:1) with tooling before shipping; if it fails, use `--color--white` and reserve the accent for an underline/marker element.
-- `static` and `halo` tints are near-neutral: never use them for text — surfaces and liquid renders only.
+- Phosphor, amber and halo's ultraviolet on black: **display sizes (≥24px) only.** For small text, verify AA (4.5:1) with tooling before shipping; if it fails, use `--color--white` and reserve the accent for an underline/marker element.
+- The `static` tint is near-neutral: never use it for text — surfaces and liquid renders only.
 - Any boundary the user can operate — input underline, chip, stepper, secondary button — uses `--color--ink-4` (3:1, WCAG 1.4.11). `--color--ink-3` is for decorative rules only.
 - Nav links never take the scent tint. Under a `scent`-themed section the links stay `--color--white`; the scent shows in the wordmark and an underline marker.
 

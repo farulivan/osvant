@@ -51,7 +51,7 @@ Five scents. Each has a scent-scoped accent tint (used ONLY on its detail page a
 | 02 | **nocturne** | oud, black plum, amber | the night | `#3A2FBF` |
 | 03 | **static** | aldehydes, white musk, iris | the white noise | `#BAD2C3` |
 | 04 | **fever** | saffron, chili-rose, benzoin | the heat | `#FFB000` |
-| 05 | **halo** | iris, cashmeran, pale musk | the glow | `#C5EDD4` |
+| 05 | **halo** | iris, cashmeran, pale musk | the glow | `#BE29FF` (the retired house UV) |
 
 **Bottle design (settled 2026-08-21):** a **heavy squat rectangular flacon** — roughly 1:1.2 width-to-height, thick pressed-glass walls with a visible glass floor, sharp square shoulders, no neck taper, and a solid machined cap flush with the body width, so the silhouette is one unbroken block. Label: a small silk-screened rectangle, lowercase, batch number in mono.
 

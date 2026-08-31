@@ -683,7 +683,8 @@ Journal needs three articles and a feature card. Contact is the best-composed pa
 > from ultraviolet to signal green (`01 §2.1`, amended 2026-08-31). **Before
 > reusing any prompt below, substitute the hue**: "violet" → "green" and the
 > per-scent liquid list → volt `#008d57` · nocturne `#3a2fbf` · static
-> `#bad2c3` · fever `#ffb000` · halo `#c5edd4`. The measured contrast table in
+> `#bad2c3` · fever `#ffb000` · halo `#be29ff` (the retired house UV, kept as
+> that scent's signature). The measured contrast table in
 > §6 is likewise superseded by `01 §2.1`. Volt's master was re-shot green and
 > delivered; nocturne and fever are unaffected; static and halo are re-hued
 > programmatically by `pnpm stills` (`LIQUID_REHUE` in `scripts/prepare-stills.mjs`).
