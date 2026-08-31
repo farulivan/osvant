@@ -3,24 +3,42 @@
 // across navigations, same as Nav.astro.
 import { withBase } from "../lib/url";
 
-const sitemap = [
-  { href: "collection", label: "collection" },
-  { href: "the-house", label: "the house" },
-  { href: "journal", label: "journal" },
-  { href: "contact", label: "contact" },
+// `01 §5.6` calls the footer "a designed destination". It was four rows
+// crammed into the left third with a void to the right, three unlabelled
+// link lists, and no legal row at all (review OSV-22). The lists carry
+// their own headings now, so a column says what it is.
+const columns = [
+  {
+    label: "explore",
+    external: false,
+    links: [
+      { href: "collection", label: "collection" },
+      { href: "the-house", label: "the house" },
+      { href: "journal", label: "journal" },
+      { href: "contact", label: "contact" },
+    ],
+  },
+  {
+    label: "follow",
+    external: true,
+    links: [
+      { href: "https://instagram.com", label: "instagram" },
+      { href: "https://tiktok.com", label: "tiktok" },
+      { href: "https://youtube.com", label: "youtube" },
+      { href: "https://twitch.tv", label: "twitch" },
+    ],
+  },
+  {
+    label: "legal",
+    external: false,
+    links: [
+      { href: "legal/privacy", label: "privacy" },
+      { href: "legal/terms", label: "terms" },
+    ],
+  },
 ];
 
-const legal = [
-  { href: "legal/privacy", label: "privacy" },
-  { href: "legal/terms", label: "terms" },
-];
-
-const socials = [
-  { href: "https://instagram.com", label: "instagram" },
-  { href: "https://tiktok.com", label: "tiktok" },
-  { href: "https://youtube.com", label: "youtube" },
-  { href: "https://twitch.tv", label: "twitch" },
-];
+const year = new Date().getFullYear();
 ---
 
 <footer class="footer" data-nav-theme="dark">
@@ -31,6 +49,9 @@ const socials = [
 
   <div class="footer__newsletter">
     <p class="footer__newsletter-label">join the current</p>
+    <p class="footer__newsletter-lede">
+      batch drops and nothing else — roughly six times a year.
+    </p>
     <form class="footer__newsletter-form" data-newsletter-form>
       <label class="visually-hidden" for="newsletter-email">Email</label>
       <input
@@ -52,38 +73,33 @@ const socials = [
   </div>
 
   <div class="footer__rows">
-    <ul class="footer__list">
-      {
-        sitemap.map((item) => (
-          <li>
-            <a href={withBase(item.href)}>{item.label}</a>
-          </li>
-        ))
-      }
-    </ul>
-
-    <ul class="footer__list">
-      {
-        socials.map((item) => (
-          <li>
-            <a href={item.href} target="_blank" rel="noreferrer">
-              {item.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-
-    <ul class="footer__list">
-      {
-        legal.map((item) => (
-          <li>
-            <a href={withBase(item.href)}>{item.label}</a>
-          </li>
-        ))
-      }
-    </ul>
+    {
+      columns.map((column) => (
+        <nav class="footer__column" aria-label={column.label}>
+          <p class="footer__column-label">{column.label}</p>
+          <ul class="footer__list">
+            {column.links.map((item) => (
+              <li>
+                {column.external ? (
+                  <a href={item.href} target="_blank" rel="noreferrer">
+                    {item.label}
+                  </a>
+                ) : (
+                  <a href={withBase(item.href)}>{item.label}</a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))
+    }
   </div>
+
+  <p class="footer__legal">
+    <span>&copy; {year} osvant</span>
+    <span class="footer__legal-sep" aria-hidden="true">·</span>
+    <span>a portfolio demonstration — no real orders are taken.</span>
+  </p>
 
   <p class="footer__wordmark" aria-hidden="true">osvant</p>
 </footer>
@@ -123,21 +139,34 @@ const socials = [
     color: color-mix(in oklab, var(--color--lilac-3) 60%, var(--color--black));
   }
 
+  /* The site's secondary conversion. It sat at the same weight as a
+     sitemap link; it now leads the footer at display scale and spans the
+     full width instead of being boxed into the left third. */
   .footer__newsletter {
     margin-top: 4rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--color--ink-3);
   }
 
   .footer__newsletter-label {
-    font-size: var(--text--h4);
+    margin: 0;
+    font-size: var(--text--h3);
     font-family: "Instrument Serif", serif;
     font-style: italic;
+  }
+
+  .footer__newsletter-lede {
+    margin: var(--space--2xs) 0 var(--space--s);
+    max-width: 36ch;
+    font-size: var(--text--h6);
+    color: var(--color--lilac-2);
   }
 
   .footer__newsletter-form {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    max-width: 28rem;
+    max-width: 34rem;
     overflow: hidden;
   }
 
@@ -185,12 +214,42 @@ const socials = [
     border-bottom-color: var(--color--uv);
   }
 
+  /* Three columns across the full width, rather than three lists stacked
+     into the left third with a void beside them. */
   .footer__rows {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--grid-gap);
+    margin-top: 3rem;
+    font-size: var(--text--h6);
+  }
+
+  .footer__column-label {
+    margin: 0 0 var(--space--xs);
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  /* The legal row the footer never had (01 §5.6, review OSV-22). */
+  .footer__legal {
     display: flex;
     flex-wrap: wrap;
-    gap: 3rem;
-    margin-top: 4rem;
-    font-size: var(--text--h6);
+    gap: var(--space--2xs) var(--space--xs);
+    margin: 3rem 0 0;
+    padding-top: var(--space--s);
+    border-top: 1px solid var(--color--ink-3);
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+
+    /* lilac-3, not ink-4. `01 §6.2` scopes ink-4 to operable elements at
+       the 3:1 non-text floor; this is small text and needs 4.5:1. */
+    color: var(--color--lilac-3);
+  }
+
+  .footer__legal-sep {
+    color: var(--color--ink-3);
   }
 
   .footer__list {
@@ -212,11 +271,24 @@ const socials = [
   }
 
   .footer__wordmark {
-    margin: 4rem 0 0;
+    margin: 3rem 0 0;
     font-size: clamp(6rem, 20vw, 16rem);
     font-weight: 900;
     line-height: 0.8;
     color: color-mix(in oklab, var(--color--lilac-3) 60%, var(--color--black));
     transform: translateY(20%);
+  }
+
+  @media (width <= 47.9375rem) {
+    .footer__rows {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      row-gap: var(--space--l);
+    }
+  }
+
+  @media (width <= 29.9375rem) {
+    .footer__rows {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 </style>
