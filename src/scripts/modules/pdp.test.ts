@@ -85,6 +85,36 @@ describe("modules/pdp (03 §3.1, RFC-001 B2/B3/B7)", () => {
     module.destroy();
   });
 
+  it("a single-size scent has no chips and takes its SKU from data-default-sku (OSV-26)", async () => {
+    const module = await load();
+    const el = document.createElement("div");
+    el.dataset.pdp = "";
+    el.dataset.scent = "fever";
+    // 03 §3.4 / review OSV-26: one size is a spec line, not a selector, so
+    // there is deliberately no [data-size-chip] to read the sku from.
+    el.dataset.defaultSku = "OSV-FEVER-50";
+    el.innerHTML = `
+      <p class="pdp-buy__spec"><span>50ml</span><span class="pdp-buy__badge">limited</span></p>
+      <p data-price>€135</p>
+      <button data-add-to-cart><span data-btn-label>add to cart</span></button>
+    `;
+    document.body.append(el);
+    module.mount(el, CTX);
+
+    expect(el.querySelectorAll("[data-size-chip]")).toHaveLength(0);
+
+    el.querySelector<HTMLButtonElement>("[data-add-to-cart]")!.click();
+    await vi.waitFor(() => expect(cartAddLineMock).toHaveBeenCalled());
+
+    expect(cartAddLineMock).toHaveBeenCalledWith("OSV-FEVER-50", 1);
+    expect(trackMock).toHaveBeenCalledWith("add_to_cart", {
+      sku: "OSV-FEVER-50",
+      scent: "fever",
+    });
+
+    module.destroy();
+  });
+
   it("sold-out: get-notified fires sold_out_notify_signup and swaps to the success message (B3)", async () => {
     const module = await load();
     const el = makePdp(true);

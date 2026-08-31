@@ -119,7 +119,15 @@ const craft = [
   </section>
 
   {/* CTA band → collection (03 §4) */}
-  <section class="house-cta" data-nav-theme="dark">
+  <section
+    class="house-cta"
+    data-nav-theme="dark"
+    aria-labelledby="house-cta-title"
+  >
+    <p class="house-cta__eyebrow" data-eyebrow>five formulas</p>
+    <h2 class="house-cta__title" id="house-cta-title" data-anim="split">
+      the rest is on your skin
+    </h2>
     <a class="btn-primary" href={withBase("collection")} data-anim="btn-line">
       <span data-btn-label>shop the collection</span>
     </a>
@@ -232,11 +240,34 @@ const craft = [
     overflow: hidden;
   }
 
+  /* `03 §9` requires every animated section to resolve to a CTA. This one
+     resolved to ONLY a CTA: a single centred button floating in a 300px
+     band with nothing above it (review OSV-23). */
   .house-cta {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     padding: 15vh var(--gutter);
     background: var(--color--ink-1);
+    text-align: center;
+  }
+
+  .house-cta__eyebrow {
+    margin: 0 0 var(--space--eyebrow-headline);
+    font-size: var(--text--eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
+  }
+
+  .house-cta__title {
+    margin: 0 0 var(--space--lede-content);
+    max-width: 18ch;
+    font-size: var(--text--h2);
+    font-weight: 900;
+    font-stretch: 125%;
+    line-height: 1.05;
   }
 
   /* Tablet (768–991px) had no layout of its own: the site defined four

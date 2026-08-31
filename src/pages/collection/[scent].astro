@@ -18,7 +18,8 @@ import {
   OG_DEFAULT_PATH,
   pdpTitle,
 } from "../../lib/seo";
-import { catalog as products } from "../../lib/commerce";
+import { catalog as products, summaryNotes } from "../../lib/commerce";
+import { Image } from "astro:assets";
 
 export function getStaticPaths() {
   return products.map((product) => ({
@@ -56,7 +57,11 @@ const rows = [
   description={`${product.name} — ${product.character}`}
 >
   <script slot="head" type="application/ld+json" is:inline set:html={jsonLd} />
-  <div data-scent={product.scent} data-pdp>
+  <div
+    data-scent={product.scent}
+    data-pdp
+    data-default-sku={product.variants[0].sku}
+  >
     {/* 3.1 scent hero */}
     <section class="pdp-hero" data-nav-theme="scent">
       <div class="pdp-hero__column">
@@ -77,24 +82,41 @@ const rows = [
           mobile bar can detach without reflowing the column. */
         }
         <div class="pdp-buy">
-          <div class="pdp-buy__chips" role="group" aria-label="size">
-            {
-              product.variants.map((variant, i) => (
-                <button
-                  class="pdp-buy__chip"
-                  type="button"
-                  data-size-chip
-                  data-sku={variant.sku}
-                  data-price={`€${variant.price}`}
-                  aria-pressed={i === 0}
-                  {...(i === 0 ? { "data-selected": true } : {})}
-                >
-                  {variant.size}
-                </button>
-              ))
-            }
-            {limited && <span class="pdp-buy__limited">limited</span>}
-          </div>
+          {
+            /* One size is not a choice. Rendering it as a lone chip offers
+              a control that cannot be operated, and next to the `limited`
+              badge the two were indistinguishable (review OSV-26). */
+            product.variants.length === 1 ? (
+              <p class="pdp-buy__spec">
+                <span>{product.variants[0].size}</span>
+                {limited && (
+                  <>
+                    <span class="pdp-buy__spec-sep" aria-hidden="true">
+                      ·
+                    </span>
+                    <span class="pdp-buy__badge">limited</span>
+                  </>
+                )}
+              </p>
+            ) : (
+              <div class="pdp-buy__chips" role="group" aria-label="size">
+                {product.variants.map((variant, i) => (
+                  <button
+                    class="pdp-buy__chip"
+                    type="button"
+                    data-size-chip
+                    data-sku={variant.sku}
+                    data-price={`€${variant.price}`}
+                    aria-pressed={i === 0}
+                    {...(i === 0 ? { "data-selected": true } : {})}
+                  >
+                    {variant.size}
+                  </button>
+                ))}
+                {limited && <span class="pdp-buy__badge">limited</span>}
+              </div>
+            )
+          }
 
           <p class="pdp-buy__price" data-price>
             €{available[0]?.price ?? product.variants[0].price}
@@ -203,6 +225,21 @@ const rows = [
                 href={withBase(`collection/${other.scent}/`)}
                 data-scent={other.scent}
               >
+                <Image
+                  class="xsell__still"
+                  src={stillFor(other.scent)}
+                  alt=""
+                  width={320}
+                  widths={[220, 320]}
+                  sizes="16rem"
+                  format="avif"
+                  quality={55}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="xsell__notes">
+                  {summaryNotes(other).join(" · ")}
+                </span>
                 <span class="xsell__name">{other.name}</span>
                 <span class="xsell__price">€{other.variants[0].price}</span>
               </a>
@@ -322,19 +359,43 @@ const rows = [
     cursor: pointer;
   }
 
+  /* Selected reads as filled, not merely re-bordered. A border-colour
+     swap alone is a weak selected state next to an unselected sibling
+     that also has a border. */
   .pdp-buy__chip[aria-pressed="true"] {
     border-color: var(--scent-tint);
+    background: color-mix(in oklab, var(--scent-tint) 18%, transparent);
     color: var(--color--white);
   }
 
-  /* Amber canonical role: scarcity signal (01 §1 rule 4) */
-  .pdp-buy__limited {
+  /* Form encodes function (review OSV-26). A CONTROL carries a border and
+     gains a fill when selected; a BADGE is a tinted field with no border,
+     because a border is what the eye reads as "you can press this". The
+     size chip and the limited badge previously shared both, sat adjacent
+     on the fever PDP, and were indistinguishable.
+
+     Amber canonical role: scarcity signal (01 §1 rule 4). */
+  .pdp-buy__badge {
     padding: 0.375rem 0.75rem;
-    border: 1px solid var(--color--amber);
     border-radius: var(--radius--xs);
+    background: color-mix(in oklab, var(--color--amber) 16%, transparent);
     color: var(--color--amber);
     font-size: var(--text--eyebrow);
     letter-spacing: 0.12em;
+  }
+
+  /* One size is a fact about the product, so it is set as one. */
+  .pdp-buy__spec {
+    display: flex;
+    align-items: center;
+    gap: var(--space--2xs);
+    margin: 0;
+    font-size: var(--text--btn);
+    color: var(--color--lilac-2);
+  }
+
+  .pdp-buy__spec-sep {
+    color: var(--color--ink-4);
   }
 
   .pdp-buy__price {
@@ -471,6 +532,12 @@ const rows = [
     scroll-snap-align: start;
   }
 
+  /* `03 §3.4` asks for a drag-scroll rail with native snap. The rail always
+     had `overflow-x: auto` and `scroll-snap-type`, but four 275x100px
+     boxes never overflowed, so the interaction did not exist (review
+     OSV-25). Cards now carry the bottle still and the scent's own notes,
+     which is both the missing information and the height that makes the
+     rail a rail. */
   .xsell__card {
     display: flex;
     flex-direction: column;
@@ -481,6 +548,27 @@ const rows = [
     border-radius: var(--radius--xs);
     text-decoration: none;
     color: var(--color--white);
+  }
+
+  /* Flat-lit still on the scent's own ambient wash — tint as a light
+     source, never as a text colour (01 §6.1). */
+  .xsell__still {
+    width: 100%;
+    aspect-ratio: 1;
+    margin-bottom: 0.25rem;
+    object-fit: contain;
+    border-radius: var(--radius--xs);
+    background: radial-gradient(
+      circle at 50% 55%,
+      color-mix(in oklab, var(--scent-tint) 22%, transparent),
+      transparent 70%
+    );
+  }
+
+  .xsell__notes {
+    font-size: var(--text--eyebrow);
+    letter-spacing: 0.12em;
+    color: var(--color--lilac-3);
   }
 
   .xsell__name {

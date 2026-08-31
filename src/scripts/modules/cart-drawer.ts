@@ -44,6 +44,22 @@ interface DrawerState {
   trigger: HTMLElement | null;
 }
 
+/**
+ * Bottle-still URLs by scent, published by CartDrawer.astro as a JSON
+ * script tag. Returns an empty map rather than throwing if the tag is
+ * missing or malformed — a cart that renders without thumbnails is a
+ * degraded cart, but a cart that throws is a broken checkout.
+ */
+function readThumbs(root: HTMLElement): Record<string, string> {
+  const tag = root.querySelector<HTMLScriptElement>("[data-cart-thumbs]");
+  if (!tag?.textContent) return {};
+  try {
+    return JSON.parse(tag.textContent) as Record<string, string>;
+  } catch {
+    return {};
+  }
+}
+
 export function createCartDrawer(): PageModule {
   const states: DrawerState[] = [];
 
@@ -59,14 +75,20 @@ export function createCartDrawer(): PageModule {
 
     const lines = cart?.lines ?? [];
     linesEl.innerHTML = "";
+    // Bottle stills, keyed by scent. CartDrawer.astro generates the AVIF
+    // derivatives at build time and hands them over as JSON — `getImage()`
+    // is build-only, and these list items are created here at runtime.
+    const thumbs = readThumbs(state.el);
     for (const line of lines) {
       const li = document.createElement("li");
       li.className = "cart-line";
       const unavailable = !line.variant.availableForSale;
+      const thumb = thumbs[line.variant.scent];
       li.innerHTML = `
+        ${thumb ? `<img class="cart-line__thumb" src="${thumb}" alt="" width="64" height="64" loading="lazy" decoding="async">` : ""}
         <div class="cart-line__info">
           <p class="cart-line__name">the ${line.variant.scent}</p>
-          <p class="cart-line__meta">${line.variant.size} — €${line.variant.price}</p>
+          <p class="cart-line__meta">${line.quantity > 1 ? `${line.variant.size} · €${line.variant.price} each` : line.variant.size}</p>
           ${unavailable ? '<p class="cart-line__meta cart-line__meta--gone">no longer available</p>' : ""}
         </div>
         <div class="cart-line__steppers">

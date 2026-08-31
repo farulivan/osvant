@@ -43,9 +43,13 @@ export function createPdp(): PageModule {
       const notifyDone = el.querySelector<HTMLElement>("[data-notify-done]");
       const scent = el.dataset.scent ?? "";
 
+      // A single-size scent renders its size as a spec line rather than a
+      // one-option "selector" (review OSV-26), so there is no chip to read
+      // the sku from — the root declares it instead.
       let selectedSku =
         chips.find((chip) => chip.hasAttribute("data-selected"))?.dataset.sku ??
         chips[0]?.dataset.sku ??
+        el.dataset.defaultSku ??
         "";
 
       for (const chip of chips) {
