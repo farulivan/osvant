@@ -17,7 +17,7 @@
 ## 2. Positioning & Concept
 
 **Concept: "Scent beyond the visible."**
-Scent is invisible — like ultraviolet light. Osvant's entire visual identity is built on this metaphor: an ultraviolet accent burning on near-black, as if the site renders what the eye can't normally see.
+Scent is invisible, and the only way to see one is on an instrument. Osvant's entire visual identity is built on that reading: a signal-green trace burning on near-black — the colour a chromatograph, an oscilloscope or a night optic uses to draw what the eye cannot — so the site reads as the *readout* of a scent rather than a picture of a bottle.
 
 ## 3. The Personality Tension
 
@@ -26,7 +26,7 @@ Per the research methodology (one tension, two axes):
 | Axis | Expression | Where it lives |
 |---|---|---|
 | **Precision** (the lab) | Structure, grid, near-black surfaces, expanded grotesk type, technical eyebrow labels, note pyramids, batch numbers | Layout, typography, information design |
-| **Provocation** (the cult) | Ultraviolet accent, oversized lowercase display type, serif-italic whispers, fast motion ripples, elastic UI toys, drifting vapor and raking light | Color accents, motion, light, copy voice |
+| **Provocation** (the cult) | Signal-green accent, oversized lowercase display type, serif-italic whispers, fast motion ripples, elastic UI toys, drifting vapor and raking light | Color accents, motion, light, copy voice |
 
 **Rule of thumb for any undefined decision:** structure decides *where* things go (precision); motion and accent decide *how* they feel (provocation). Every animated moment must resolve into a CTA (research §1).
 
@@ -43,15 +43,15 @@ Per the research methodology (one tension, two axes):
 
 ## 5. The Collection — "five currents"
 
-Five scents. Each has a scent-scoped accent tint (used ONLY on its detail page and card hover; the house accent stays ultraviolet everywhere else — see `01-design-system.md §2.3`).
+Five scents. Each has a scent-scoped accent tint (used ONLY on its detail page and card hover; the house accent stays signal green everywhere else — see `01-design-system.md §2.3`).
 
 | # | Name | Olfactive sketch | Character | Scent tint |
 |---|---|---|---|---|
-| 01 | **volt** | neroli, yuzu, mint spark | the jolt | `#BE29FF` (house UV) |
+| 01 | **volt** | neroli, yuzu, mint spark | the jolt | `#008D57` (house phosphor) |
 | 02 | **nocturne** | oud, black plum, amber | the night | `#3A2FBF` |
-| 03 | **static** | aldehydes, white musk, iris | the white noise | `#CDC7DE` |
+| 03 | **static** | aldehydes, white musk, iris | the white noise | `#BAD2C3` |
 | 04 | **fever** | saffron, chili-rose, benzoin | the heat | `#FFB000` |
-| 05 | **halo** | iris, cashmeran, pale musk | the glow | `#EBD9FF` |
+| 05 | **halo** | iris, cashmeran, pale musk | the glow | `#C5EDD4` |
 
 **Bottle design (settled 2026-08-21):** a **heavy squat rectangular flacon** — roughly 1:1.2 width-to-height, thick pressed-glass walls with a visible glass floor, sharp square shoulders, no neck taper, and a solid machined cap flush with the body width, so the silhouette is one unbroken block. Label: a small silk-screened rectangle, lowercase, batch number in mono.
 

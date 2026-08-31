@@ -447,11 +447,24 @@ async function reshape(mask, width, height, sigma, cutoff) {
  * Nocturne's clear glass gives the fill a way in that the others do not,
  * and chasing it was costing the four that already worked.
  *
+ * Volt joined it on 2026-08-31, when the house colour changed. The old
+ * volt master's violet liquid bled into the glass walls (chroma 28 on the
+ * keyed panel), and that colour edge was what stopped the fill; the green
+ * replacement's glass is genuinely clear, so the fill walks through it.
+ * Unkeyed it came out 882x1227 against ~886x1402 for its siblings — both
+ * side panels eaten and the whole clear base below the liquid gone. The
+ * leak channel is wider than SEAL_RADIUS, so sealing does not close it.
+ *
+ * Both now borrow from `static`, which keys cleanly. Note that a donor is
+ * resolved to its RAW and re-keyed, so nocturne could not keep borrowing
+ * from volt — it would have inherited volt's broken key.
+ *
  * A per-master escape hatch, not a default. Remove an entry when a
  * replacement master keys on its own.
  */
 const BORROWED_SILHOUETTE = {
-  nocturne: "volt",
+  volt: "static",
+  nocturne: "static",
 };
 
 /** Radius, in pixels, of the widest leak channel worth sealing. */

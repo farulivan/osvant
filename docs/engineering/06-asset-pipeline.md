@@ -11,13 +11,13 @@
 | `logo.riv` | inputs `hover` (bool), `scrolled` (bool) — `M §7` | EOW3 | static SVG wordmark |
 | `page-transition.riv` | inputs `in`, `out` (triggers), `speed` (number); covers viewport ≤0.9s per leg | EOW3 | CSS clip-path wipe, same JS API |
 | `btn-ui.riv` | inputs `hover` (bool), `press` (trigger) | w4–6 | CSS label y-flip (`M §4.8`) |
-| `vapor.riv` | input `intensity` (number 0–1) | w4–6 | UV radial-gradient drift (CSS) |
+| `vapor.riv` | input `intensity` (number 0–1) | w4–6 | phosphor radial-gradient drift (CSS) |
 | `mob-landscape.riv` | autoplay loop | w4–6 | static branded card |
 | **Bottle stills ×5** (AST-03a) | 2000px long edge, transparent AVIF, **flat-lit** — no baked specular/rim/shadow (`M §8.3`); identical camera, framing and scale across all five; ≥12% transparent margin every side; ≤180KB at 1× | w6 | duotone silhouette block behind the same `--light-angle` contract |
 | **Bottle detail macro ×5** (AST-03b) | 1600px AVIF, close crop of cap / label edge / liquid meniscus, same lighting family as AST-03a | w6 | duotone block |
 | OG images | 1200×630, bottle on `--color--black`, wordmark bottom-left, ×5 + 1 house (RFC C4) | w6 | house-default only |
-| Campaign + macro photography | duotone-violet grade, AVIF masters ≥2000px | w6 | duotone solid blocks |
-| Favicon/app icons | UV `o` glyph on black, SVG + PNG set (RFC C4) | w3 (with logo batch) | plain `o` text SVG |
+| Campaign + macro photography | duotone-green grade, AVIF masters ≥2000px | w6 | duotone solid blocks |
+| Favicon/app icons | phosphor `o` glyph on black, SVG + PNG set (RFC C4) | w3 (with logo batch) | plain `o` text SVG |
 | Fonts | Archivo Variable woff2 (subset latin), Instrument Serif regular+italic woff2 | have (OFL) | — |
 | Email header assets | wordmark/black for Shopify notifications (RFC B1.3) | w3 | Shopify default |
 

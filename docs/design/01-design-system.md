@@ -8,7 +8,7 @@
 ## 1. Token Architecture Rules (inherited from research §3)
 
 1. The identity must read as a **2-color system**: `--color--phosphor` on `--color--black`, even though the full ramp has ~16 tokens.
-2. **No pure white (`#fff`), no pure black (`#000`), no neutral gray** anywhere. Every neutral is violet-tinted.
+2. **No pure white (`#fff`), no pure black (`#000`), no neutral gray** anywhere. Every neutral is green-tinted.
 3. The accent has a **transparent twin** (`--color--phosphor-zero`) for gradient/fade animation endpoints and an **off state** (`--color--phosphor-off`).
 4. One counter-accent (`--color--amber`) = scarcity/commerce-urgency and error signals ONLY: `limited` chips, cart badge, sold-out states, form error/validation states. Never decorative. (RFC-001 A3/C3)
 
@@ -19,44 +19,67 @@
 ```css
 :root {
   /* Core brand pair */
-  --color--phosphor:        #be29ff;   /* ultraviolet — CTAs, highlights, live states */
-  --color--black:     #111013;   /* near-black, violet-shifted — default page bg */
+  --color--phosphor:        #008d57;   /* signal green — CTAs, highlights, live states */
+  --color--black:     #0e1110;   /* near-black, green-shifted — default page bg */
 
   /* Accent variants */
-  --color--phosphor-off:    #8f4fb3;   /* desaturated UV — hover-off, visited, disabled-accent */
-  --color--phosphor-zero:   #be29ff00; /* transparent UV — gradient/fade endpoints */
+  --color--phosphor-off:    #427558;   /* desaturated phosphor — hover-off, visited, disabled-accent */
+  --color--phosphor-zero:   #008d5700; /* transparent phosphor — gradient/fade endpoints */
   --color--amber:     #ffb000;   /* counter-accent — heat, scarcity, cart badge */
 
-  /* Light neutrals (violet-tinted, warm-to-cool) */
-  --color--white:     #f5f3f7;   /* off-white — primary text on dark */
-  --color--cream:     #efeaf2;
-  --color--haze-1:   #e9e4ee;   /* light section backgrounds */
-  --color--haze-2:   #cdc7de;
-  --color--haze-3:   #b3abbc;   /* muted text on dark */
+  /* Light neutrals (green-tinted, warm-to-cool) */
+  --color--white:     #f1f5f2;   /* off-white — primary text on dark */
+  --color--cream:     #e6efe9;
+  --color--haze-1:   #dfe9e3;   /* light section backgrounds */
+  --color--haze-2:   #bad2c3;
+  --color--haze-3:   #a2b4a9;   /* muted text on dark */
 
-  /* Dark neutrals (violet-tinted) */
-  --color--ink-4:     #6b6575;   /* 3.38:1 — boundary of anything OPERABLE */
-  --color--ink-3:     #524d59;   /* 2.32:1 — decorative rules only */
-  --color--ink-2:     #3b3740;   /* raised surfaces, cards on black */
-  --color--ink-1:     #201c24;   /* alt dark section bg */
+  /* Dark neutrals (green-tinted) */
+  --color--ink-4:     #5c6d63;   /* 3.46:1 — boundary of anything OPERABLE */
+  --color--ink-3:     #47534b;   /* 2.36:1 — decorative rules only */
+  --color--ink-2:     #323c36;   /* raised surfaces, cards on black */
+  --color--ink-1:     #18201b;   /* alt dark section bg */
 
-  /* Label on a UV fill */
-  --color--on-phosphor:     #0b0a0c;   /* 4.66:1 on --color--phosphor */
+  /* Label on a phosphor fill */
+  --color--on-phosphor:     #090b0a;   /* 4.65:1 on --color--phosphor */
 }
 ```
 
 > **Amended 2026-08-26** (design review §6.2, signed off). `--color--ink-4`
 > and `--color--on-phosphor` are new.
 >
-> `ink-3` measures **2.32:1** on `--color--black`, below the 3:1 that
+> `ink-3` measures **2.36:1** on `--color--black`, below the 3:1 that
 > WCAG 1.4.11 requires of a control boundary, and it was bounding input
 > underlines, size chips and the `next drop` chip. `ink-4` takes every
 > boundary that is **operable**; `ink-3` keeps the decorative rules.
 >
-> `--color--on-phosphor` exists because black on UV measures **4.47:1** and
-> misses AA — the one accessibility failure Lighthouse reported. Darkening
-> the label clears it at 4.66:1 and leaves `--color--phosphor` untouched, so the
-> brand accent is unchanged.
+> `--color--on-phosphor` exists because black on the accent measures
+> **4.47:1** and misses AA — the one accessibility failure Lighthouse
+> reported. Darkening the label clears it at 4.65:1 and leaves
+> `--color--phosphor` untouched, so the brand accent is unchanged.
+
+> **Amended 2026-08-31** (house colour, owner-approved). The accent moves
+> from **ultraviolet `#be29ff` to signal green `#008d57`**, following the
+> replacement `volt` master — volt is item 01 and its scent tint *is* the
+> house accent, so a green bottle made the violet identity wrong.
+>
+> `#008d57` is the bottle's own liquid hue (sampled `#008351`, 157°) at the
+> accent's existing luminance. It is a **luminance twin** of `#be29ff`:
+> 4.47:1 on `--color--black`, 3.42:1 on a light interlude, 4.65:1 for the
+> label — the same numbers the violet carried, so nothing in this document
+> needed re-deriving and the Lighthouse posture is unchanged.
+>
+> The owner proposed `#015833`. It measures **2.21:1** and cannot carry the
+> focus ring (WCAG 1.4.11 wants 3:1) or the primary button, so the hue was
+> kept and the luminance raised.
+>
+> **Every neutral moved with it** (§1 rule 2), by pure OKLCH hue rotation —
+> each token keeps its L and C exactly and only its hue changes, to 157.9°.
+> That is why every ratio above shifted by ≤0.05 and all upward. `ink-3`
+> 2.32 → 2.36, `ink-4` 3.38 → 3.46, `haze-3` 8.55 → 8.71.
+>
+> `--color--amber` is untouched: it is the counter-accent (§1 rule 4) and
+> sits 116° from the new accent, wider separation than it had from violet.
 
 ### 2.2 Usage matrix
 
@@ -73,11 +96,11 @@
 Each scent detail page (and its card hover state) swaps ONE variable, nothing else:
 
 ```css
-[data-scent="volt"]     { --scent-tint: var(--color--phosphor); --scent-tint-text: #c33afe; }
+[data-scent="volt"]     { --scent-tint: var(--color--phosphor); --scent-tint-text: #19935d; }
 [data-scent="nocturne"] { --scent-tint: #3a2fbf;          --scent-tint-text: #7d75d3; }
-[data-scent="static"]   { --scent-tint: #cdc7de; }
+[data-scent="static"]   { --scent-tint: #bad2c3; }
 [data-scent="fever"]    { --scent-tint: #ffb000; }
-[data-scent="halo"]     { --scent-tint: #ebd9ff; }
+[data-scent="halo"]     { --scent-tint: #c5edd4; }
 ```
 
 Components reference `--scent-tint` (falls back to `--color--phosphor`). This mirrors the reference build's per-item theme classes (research: `hero-nav-theme.is-1/is-2` pattern, §3/S2).
@@ -85,8 +108,8 @@ Components reference `--scent-tint` (falls back to `--color--phosphor`). This mi
 > **Amended 2026-08-26** (design review §6.1, signed off).
 >
 > **`--scent-tint` is a light source, not a text colour.** Measured against
-> `--color--black`: volt 4.47:1, nocturne **2.11:1**, static 11.58:1,
-> fever 10.35:1, halo 14.36:1. Nocturne is unreadable at any size; static
+> `--color--black`: volt 4.47:1, nocturne **2.11:1**, static 11.84:1,
+> fever 10.36:1, halo 14.86:1. Nocturne is unreadable at any size; static
 > and halo are so near-neutral that tinting a word changes nothing; fever's
 > amber collides with its reserved scarcity role (§1 rule 4). Four of five
 > fail as text — so the token stops being asked to do that job.
@@ -101,8 +124,8 @@ Components reference `--scent-tint` (falls back to `--color--phosphor`). This mi
 
 ### 2.4 Accessibility guardrails
 
-- Body text is always `--color--white` or `--color--black` — never UV, never a tint.
-- UV and amber on black: **display sizes (≥24px) only.** For small text, verify AA (4.5:1) with tooling before shipping; if it fails, use `--color--white` and reserve the accent for an underline/marker element.
+- Body text is always `--color--white` or `--color--black` — never the accent, never a tint.
+- Phosphor and amber on black: **display sizes (≥24px) only.** For small text, verify AA (4.5:1) with tooling before shipping; if it fails, use `--color--white` and reserve the accent for an underline/marker element.
 - `static` and `halo` tints are near-neutral: never use them for text — surfaces and liquid renders only.
 - Any boundary the user can operate — input underline, chip, stepper, secondary button — uses `--color--ink-4` (3:1, WCAG 1.4.11). `--color--ink-3` is for decorative rules only.
 - Nav links never take the scent tint. Under a `scent`-themed section the links stay `--color--white`; the scent shows in the wordmark and an underline marker.
@@ -276,8 +299,8 @@ Every component below lists its motion hook — the class/attribute the animatio
 
 | Variant | Style | Motion hook |
 |---|---|---|
-| `btn-primary` | UV fill, black text, `--radius--xs`, `--text--btn` Archivo 600 | `data-rive="btn-ui"` — Rive micro-animation on hover/press (research §4.4) |
-| `btn-secondary` | 1px `--color--ink-3` border, white text; border → UV on hover | `data-anim="btn-line"` — GSAP border/label swap, 0.3s `power2.out` |
+| `btn-primary` | phosphor fill, black text, `--radius--xs`, `--text--btn` Archivo 600 | `data-rive="btn-ui"` — Rive micro-animation on hover/press (research §4.4) |
+| `btn-secondary` | 1px `--color--ink-3` border, white text; border → phosphor on hover | `data-anim="btn-line"` — GSAP border/label swap, 0.3s `power2.out` |
 | `btn-text` | label + arrow `->`, no box | arrow shifts 0.4em right on hover, 0.3s |
 
 All buttons: label wrapped in `<span data-btn-label>` (needed for the y-flip label swap animation).
@@ -300,8 +323,8 @@ Three rows — `top / heart / base` — each: eyebrow label + note names at `--t
 
 ### 5.5 Newsletter block ("join the current")
 
-- Input: transparent bg, 1px bottom border `--color--ink-3` → UV on focus, `--radius--xs` 0.
-- Submit: `btn-primary`. Success state: input collapses, line pulses UV once (0.6s), message `you're in the current.` in Instrument Serif italic.
+- Input: transparent bg, 1px bottom border `--color--ink-3` → phosphor on focus, `--radius--xs` 0.
+- Submit: `btn-primary`. Success state: input collapses, line pulses phosphor once (0.6s), message `you're in the current.` in Instrument Serif italic.
 - Error/validation state (RFC-001 C3/C7): message at `--text--eyebrow` below the field in `--color--amber`, line pulses amber once. Copy: `required` · `check your email` · `didn't send — try again.`
 - Wire to Klaviyo-equivalent provider (research §2 — Klaviyo verified in reference).
 
@@ -319,7 +342,7 @@ Full-bleed `--color--black`. Rows: (1) marquee tagline `provocation, bottled.` a
 ## 6. Iconography & Imagery
 
 - Icons: 1.5px stroke, square terminals, monochrome `--color--white` — Lucide with adjusted stroke works. No filled icons.
-- Photography: high-contrast on-black studio product shots; skin/vapor imagery duotoned toward violet. No lifestyle-stock aesthetics.
+- Photography: high-contrast on-black studio product shots; skin/vapor imagery duotoned toward green. No lifestyle-stock aesthetics.
 - All media in AVIF with lazy-loading (research §6). No video ships in v1 — the alpha-turntable path was withdrawn with ADR-013.
 - **Bottle renders: transparent AVIF, flat-lit.** The bottle is never shipped pre-lit: every highlight, rim and caustic is a composited layer driven by `--light-angle` (`02-motion-guidelines.md §8`). A dramatically-lit master double-lights and is rejected at handoff (`06 §2`). All five share one camera, one framing, one scale.
 - Bottle silhouette per `00-design-brief.md §5` — squat rectangular flacon, square shoulders, cap flush to body width.

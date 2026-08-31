@@ -11,8 +11,8 @@
 //   - the grade stays a token, so changing the house colour is one edit
 //     rather than a re-export of every image;
 //   - a section can grade toward its own `--scent-tint` instead of the
-//     house violet, which is what the fever campaign band needs — an
-//     ember plate graded violet throws away the only reason it works.
+//     house green, which is what the fever campaign band needs — an
+//     ember plate graded green throws away the only reason it works.
 //
 // Mechanically: the image is desaturated and its tonality shaped with
 // contrast/brightness, then a tint layer in `mix-blend-mode: color` takes
@@ -45,7 +45,7 @@ interface Props {
   widths?: number[];
   /** Layout hint for the srcset. Defaults to full-bleed. */
   sizes?: string;
-  /** Any colour; defaults to the house violet. Pass `var(--scent-tint)`
+  /** Any colour; defaults to the house green. Pass `var(--scent-tint)`
    * to grade a section toward its own scent. */
   tint?: string;
   /** <1 darkens. Use it to bring a bright frame down to the set. */
@@ -70,11 +70,25 @@ const {
   alt,
   widths = [640, 1080, 1600],
   sizes = "100vw",
-  // Softened off pure UV. `mix-blend-mode: color` takes hue AND
-  // saturation from this layer, so grading against the raw accent turns
-  // every photograph electric — the macro plates came out as vivid
-  // poster purple rather than as specimen photography.
-  tint = "color-mix(in oklab, var(--color--phosphor) 42%, var(--color--haze-3))",
+  // Softened off the raw accent. `mix-blend-mode: color` takes hue AND
+  // saturation from this layer, so grading against it undiluted turns
+  // every photograph electric — the macro plates came out as a poster
+  // print rather than as specimen photography.
+  //
+  // The ratio was 42% under the violet accent and moved to 62% when the
+  // house went green (2026-08-31). It is not a free number: the mix sets
+  // the tint layer's chroma, and `#008d57` carries OKLCH C 0.155 where
+  // `#be29ff` carried 0.288 — the green is a luminance twin of the violet,
+  // not a chroma twin, because violet holds far more chroma at the same
+  // lightness. At 42% the plates came out barely tinted, reading as
+  // monochrome with a cast rather than as a duotone. Matching the violet's
+  // tint chroma exactly would need ~85%, which overshoots into poster
+  // territory: green is perceptually a much calmer hue than magenta at
+  // equal chroma, so it needs less of it, not the same. 62% (tint chroma
+  // 0.106, ~78% of the violet's) is where the craft grid and both doors
+  // read as graded specimen photography again — set by eye against those
+  // three surfaces, as the 42% was.
+  tint = "color-mix(in oklab, var(--color--phosphor) 62%, var(--color--haze-3))",
   exposure = 1,
   contrast = 1.22,
   quality = 48,

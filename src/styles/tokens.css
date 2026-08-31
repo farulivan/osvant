@@ -8,32 +8,32 @@
   /* ---- Color (01 §2.1) ---- */
 
   /* Core brand pair */
-  --color--phosphor: #be29ff; /* ultraviolet — CTAs, highlights, live states */
-  --color--black: #111013; /* near-black, violet-shifted — default page bg */
+  --color--phosphor: #008d57; /* signal green — CTAs, highlights, live states */
+  --color--black: #0e1110; /* near-black, green-shifted — default page bg */
 
   /* Accent variants */
-  --color--phosphor-off: #8f4fb3; /* desaturated UV — hover-off, visited, disabled-accent */
-  --color--phosphor-zero: #be29ff00; /* transparent UV — gradient/fade endpoints */
+  --color--phosphor-off: #427558; /* desaturated phosphor — hover-off, visited, disabled-accent */
+  --color--phosphor-zero: #008d5700; /* transparent phosphor — gradient/fade endpoints */
   --color--amber: #ffb000; /* counter-accent — heat, scarcity, cart badge */
 
-  /* Light neutrals (violet-tinted, warm-to-cool) */
-  --color--white: #f5f3f7; /* off-white — primary text on dark */
-  --color--cream: #efeaf2;
-  --color--haze-1: #e9e4ee; /* light section backgrounds */
-  --color--haze-2: #cdc7de;
-  --color--haze-3: #b3abbc; /* muted text on dark */
+  /* Light neutrals (green-tinted, warm-to-cool) */
+  --color--white: #f1f5f2; /* off-white — primary text on dark */
+  --color--cream: #e6efe9;
+  --color--haze-1: #dfe9e3; /* light section backgrounds */
+  --color--haze-2: #bad2c3;
+  --color--haze-3: #a2b4a9; /* muted text on dark */
 
-  /* Dark neutrals (violet-tinted) */
-  --color--ink-4: #6b6575; /* 3.38:1 — boundaries of anything OPERABLE */
-  --color--ink-3: #524d59; /* 2.32:1 — decorative rules only, never a control */
-  --color--ink-2: #3b3740; /* raised surfaces, cards on black */
-  --color--ink-1: #201c24; /* alt dark section bg */
+  /* Dark neutrals (green-tinted) */
+  --color--ink-4: #5c6d63; /* 3.46:1 — boundaries of anything OPERABLE */
+  --color--ink-3: #47534b; /* 2.36:1 — decorative rules only, never a control */
+  --color--ink-2: #323c36; /* raised surfaces, cards on black */
+  --color--ink-1: #18201b; /* alt dark section bg */
 
-  /* Label on a UV fill. Black-on-UV measures 4.47:1 and misses AA by a
-     hair, which is the single accessibility failure Lighthouse reports;
-     this clears it at 4.66:1 without touching --color--phosphor itself, so the
-     brand accent stays exactly as specified (01 §6.2). */
-  --color--on-phosphor: #0b0a0c;
+  /* Label on a phosphor fill. Black-on-phosphor measures 4.47:1 and misses
+     AA by a hair, which is the single accessibility failure Lighthouse
+     reports; this clears it at 4.65:1 without touching --color--phosphor
+     itself, so the brand accent stays exactly as specified (01 §6.2). */
+  --color--on-phosphor: #090b0a;
 
   /* ---- Scent tint fallback (01 §2.3) ---- */
   --scent-tint: var(--color--phosphor);
@@ -161,7 +161,7 @@
 
 [data-scent="volt"] {
   --scent-tint: var(--color--phosphor);
-  --scent-tint-text: #c33afe; /* 4.84:1 */
+  --scent-tint-text: #19935d; /* 4.86:1 */
 }
 
 [data-scent="nocturne"] {
@@ -174,7 +174,7 @@
    from an untinted one (01 §2.4); fever's amber is reserved for scarcity
    and error states (01 §1 rule 4) and must not leak into body copy. */
 [data-scent="static"] {
-  --scent-tint: #cdc7de;
+  --scent-tint: #bad2c3;
 }
 
 [data-scent="fever"] {
@@ -182,5 +182,5 @@
 }
 
 [data-scent="halo"] {
-  --scent-tint: #ebd9ff;
+  --scent-tint: #c5edd4;
 }
