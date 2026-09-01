@@ -27,11 +27,12 @@
     "fonts": "node scripts/subset-fonts.mjs",
     "fonts:inspect": "node scripts/inspect-fonts.mjs",
     "check:glyphs": "node scripts/check-glyphs.mjs",
-    "check:responsive": "node scripts/check-responsive.mjs"
+    "check:responsive": "node scripts/check-responsive.mjs",
+    "parity:styles": "node scripts/style-parity.mjs"
   },
   "size-limit": [
     {
-      "name": "core+transitions JS (M \u00a710 / 04-qa \u00a74)",
+      "name": "core+transitions JS (M §10 / 04-qa §4)",
       "path": "dist/**/*.js",
       "limit": "350 KB",
       "gzip": true
