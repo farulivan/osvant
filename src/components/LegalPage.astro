@@ -9,8 +9,10 @@ const { title } = Astro.props;
 ---
 
 <section class="legal" data-nav-theme="dark" aria-labelledby="legal-title">
-  <p class="legal__eyebrow" data-eyebrow>legal</p>
-  <h1 class="legal__title" id="legal-title" data-anim="split">{title}</h1>
+  <p class="legal__eyebrow eyebrow" data-eyebrow>legal</p>
+  <h1 class="legal__title display" id="legal-title" data-anim="split">
+    {title}
+  </h1>
 
   <p class="legal__notice">
     osvant is a portfolio demonstration. it is not a real shop, no real orders
@@ -33,16 +35,11 @@ const { title } = Astro.props;
   .legal__eyebrow {
     margin: 0 0 var(--space--eyebrow-headline);
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .legal__title {
     margin: 0;
     font-size: var(--text--h1);
-    font-weight: 900;
-    font-stretch: 125%;
   }
 
   /* The demo statement is the most load-bearing sentence on the page, so

@@ -1,7 +1,7 @@
 ---
 // Journal article template (03 §5): lead image parallax (M §4.5),
 // --text--body two-thirds column, pull-quotes (markdown blockquote) in
-// Instrument Serif italic, ends with a cross-sell band. Content renders
+// the muted tone rung, ends with a cross-sell band. Content renders
 // fully at build — zero content JS ships (07 §2, ADR-010).
 // Lead image is a wash placeholder until photography lands (ADR-008).
 import { getCollection, render } from "astro:content";
@@ -34,7 +34,7 @@ const linked = article.data.scent
 >
   <article class="article" data-nav-theme="dark">
     <header class="article__header">
-      <p class="article__date" data-eyebrow>
+      <p class="article__date eyebrow" data-eyebrow>
         <time datetime={article.data.date.toISOString()}>
           {
             new Intl.DateTimeFormat("en-GB", {
@@ -47,7 +47,7 @@ const linked = article.data.scent
           }
         </time>
       </p>
-      <h1 class="article__title">{article.data.title}</h1>
+      <h1 class="article__title display">{article.data.title}</h1>
     </header>
 
     {
@@ -84,20 +84,20 @@ const linked = article.data.scent
           class="article__xsell-link"
           href={withBase(`collection/${linked.scent}/`)}
         >
-          <span class="article__xsell-eyebrow" data-eyebrow>
+          <span class="article__xsell-eyebrow eyebrow" data-eyebrow>
             in this story
           </span>
-          <span class="article__xsell-name">{linked.name}</span>
+          <span class="article__xsell-name display">{linked.name}</span>
           <span class="article__xsell-price">
             €{linked.variants[0].price} — discover
           </span>
         </a>
       ) : (
         <a class="article__xsell-link" href={withBase("collection")}>
-          <span class="article__xsell-eyebrow" data-eyebrow>
+          <span class="article__xsell-eyebrow eyebrow" data-eyebrow>
             the collection
           </span>
-          <span class="article__xsell-name">five currents</span>
+          <span class="article__xsell-name display">five currents</span>
           <span class="article__xsell-price">shop the collection</span>
         </a>
       )
@@ -118,17 +118,11 @@ const linked = article.data.scent
   .article__date {
     margin: 0 0 1.5rem;
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .article__title {
     margin: 0 0 4rem;
     font-size: var(--text--h2);
-    font-weight: 800;
-    font-stretch: 125%;
-    line-height: 1.02;
     letter-spacing: -0.01em;
     color: var(--color--white);
   }
@@ -162,23 +156,26 @@ const linked = article.data.scent
     margin: 0 0 1.5em;
   }
 
+  /* Markdown headings take the display cut like every other heading. */
   .article__body :global(h3) {
     margin: 3em 0 1em;
+    font-family: var(--font--display);
     font-size: var(--text--h3);
-    font-weight: 700;
+    font-weight: 900;
+    font-stretch: 125%;
     color: var(--color--white);
   }
 
-  /* Pull-quotes (03 §5): Instrument Serif italic */
+  /* Pull-quotes (03 §5): the muted rung of the tone ladder (01 §3.3).
+     Markdown-rendered, so the .whisper recipe is written out rather than
+     applied as a class. */
   .article__body :global(blockquote) {
     margin: 3em 0;
     padding: 0 0 0 1.5rem;
     border-left: 1px solid var(--color--phosphor);
-    font-family: "Instrument Serif", serif;
-    font-style: italic;
     font-size: var(--text--h3);
     line-height: 1.2;
-    color: var(--color--white);
+    color: var(--color--haze-3);
   }
 
   .article__body :global(blockquote p) {
@@ -205,15 +202,10 @@ const linked = article.data.scent
 
   .article__xsell-eyebrow {
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .article__xsell-name {
     font-size: var(--text--h2);
-    font-weight: 800;
-    font-stretch: 125%;
     color: var(--scent-tint-text, var(--color--white));
   }
 

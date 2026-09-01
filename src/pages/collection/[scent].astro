@@ -66,10 +66,10 @@ const rows = [
     <section class="pdp-hero" data-nav-theme="scent">
       <div class="pdp-hero__column">
         <div class="pdp-hero__info">
-          <p class="pdp-hero__eyebrow" data-eyebrow>
+          <p class="pdp-hero__eyebrow eyebrow" data-eyebrow>
             batch {product.batch} — eau de parfum
           </p>
-          <h1 class="pdp-hero__name">
+          <h1 class="pdp-hero__name display">
             <em>{article}</em>{" "}
             {rest.join(" ")}
           </h1>
@@ -94,7 +94,7 @@ const rows = [
                     <span class="pdp-buy__spec-sep" aria-hidden="true">
                       ·
                     </span>
-                    <span class="pdp-buy__badge">limited</span>
+                    <span class="pdp-buy__badge eyebrow">limited</span>
                   </>
                 )}
               </p>
@@ -113,7 +113,7 @@ const rows = [
                     {variant.size}
                   </button>
                 ))}
-                {limited && <span class="pdp-buy__badge">limited</span>}
+                {limited && <span class="pdp-buy__badge eyebrow">limited</span>}
               </div>
             )
           }
@@ -196,8 +196,8 @@ const rows = [
       {
         rows.map((row) => (
           <div class="pyramid__row" data-pyramid-row>
-            <p class="pyramid__eyebrow">{row.label}</p>
-            <p class="pyramid__notes" data-pyramid-notes>
+            <p class="pyramid__eyebrow eyebrow">{row.label}</p>
+            <p class="pyramid__notes display" data-pyramid-notes>
               {row.notes.join(" · ")}
             </p>
             <span
@@ -215,7 +215,7 @@ const rows = [
 
     {/* 3.4 cross-sell — native overflow-x + scroll-snap (no hijacking) */}
     <section class="xsell" data-nav-theme="dark" aria-labelledby="xsell-title">
-      <h2 class="xsell__title" id="xsell-title">also in the current</h2>
+      <h2 class="xsell__title display" id="xsell-title">also in the current</h2>
       <ul class="xsell__rail">
         {
           others.map((other) => (
@@ -237,11 +237,13 @@ const rows = [
                   loading="lazy"
                   decoding="async"
                 />
-                <span class="xsell__notes">
+                <span class="xsell__notes eyebrow">
                   {summaryNotes(other).join(" · ")}
                 </span>
-                <span class="xsell__name">{other.name}</span>
-                <span class="xsell__price">€{other.variants[0].price}</span>
+                <span class="xsell__name display">{other.name}</span>
+                <span class="xsell__price eyebrow">
+                  €{other.variants[0].price}
+                </span>
               </a>
             </li>
           ))
@@ -292,23 +294,16 @@ const rows = [
   .pdp-hero__eyebrow {
     margin: 0 0 var(--space--eyebrow-headline);
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .pdp-hero__name {
     margin: 0;
     font-size: var(--text--impact);
-    font-weight: 900;
-    font-stretch: 125%;
-    line-height: 1.05;
   }
 
   .pdp-hero__name em {
-    font-family: "Instrument Serif", serif;
-    font-style: italic;
-    font-weight: 400;
+    font-style: normal;
+    color: var(--scent-tint-text);
   }
 
   .pdp-hero__character {
@@ -381,7 +376,6 @@ const rows = [
     background: color-mix(in oklab, var(--color--amber) 16%, transparent);
     color: var(--color--amber);
     font-size: var(--text--eyebrow);
-    letter-spacing: 0.12em;
   }
 
   /* One size is a fact about the product, so it is set as one. */
@@ -464,11 +458,11 @@ const rows = [
     cursor: pointer;
   }
 
+  /* Size alone lifts this out of the UI around it — the italic serif that
+     used to sit here was decoration on top of that (01 §3.3). */
   .pdp-buy__notify-done {
     margin: 0;
     margin-left: auto;
-    font-family: "Instrument Serif", serif;
-    font-style: italic;
     font-size: var(--text--h5);
   }
 
@@ -486,15 +480,11 @@ const rows = [
   .pyramid__eyebrow {
     margin: 0 0 var(--space--eyebrow-headline);
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .pyramid__notes {
     margin: 0;
     font-size: var(--text--h3);
-    font-weight: 800;
   }
 
   .pyramid__divider {
@@ -514,7 +504,6 @@ const rows = [
   .xsell__title {
     margin: 0 0 2rem;
     font-size: var(--text--h3);
-    font-weight: 800;
   }
 
   .xsell__rail {
@@ -567,19 +556,14 @@ const rows = [
 
   .xsell__notes {
     font-size: var(--text--eyebrow);
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .xsell__name {
     font-size: var(--text--h5);
-    font-weight: 700;
   }
 
   .xsell__price {
     font-size: var(--text--eyebrow);
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   @media (prefers-reduced-motion: no-preference) {

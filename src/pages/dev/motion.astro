@@ -9,7 +9,7 @@ import DevHarness from "../../layouts/DevHarness.astro";
 
 <DevHarness title="motion playground" spec="M §4 · guide §8 trap #10">
   <section class="harness-block">
-    <h2 class="harness-block__title">core state</h2>
+    <h2 class="harness-block__title display">core state</h2>
     <dl class="harness-stats">
       <div class="harness-stat">
         <dt>reduced motion (M §9)</dt>
@@ -27,7 +27,7 @@ import DevHarness from "../../layouts/DevHarness.astro";
   </section>
 
   <section class="harness-block">
-    <h2 class="harness-block__title">
+    <h2 class="harness-block__title display">
       marquee — trap #10 reference implementation
     </h2>
     <p class="harness-block__note">
@@ -149,8 +149,10 @@ import DevHarness from "../../layouts/DevHarness.astro";
   }
 
   .harness-marquee__item {
+    font-family: var(--font--display);
     font-size: var(--text--h1);
     font-weight: 900;
+    font-stretch: 125%;
   }
 
   .harness-scroll-space {

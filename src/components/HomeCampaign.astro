@@ -20,7 +20,7 @@ const fever = catalog.find((product) => product.scent === "fever");
   aria-labelledby="campaign-title"
 >
   <div class="campaign__marquee" aria-hidden="true">
-    <div class="campaign__marquee-track" data-anim="marquee">
+    <div class="campaign__marquee-track display" data-anim="marquee">
       <span>fever — limited batch 001 &nbsp;·&nbsp; </span>
     </div>
   </div>
@@ -37,10 +37,10 @@ const fever = catalog.find((product) => product.scent === "fever");
     />
 
     <div class="campaign__content">
-      <p class="campaign__eyebrow" data-eyebrow>
+      <p class="campaign__eyebrow eyebrow" data-eyebrow>
         batch 001 — the featured drop
       </p>
-      <h2 class="campaign__title" id="campaign-title" data-anim="split">
+      <h2 class="campaign__title display" id="campaign-title" data-anim="split">
         the fever
       </h2>
       <p class="campaign__lead">
@@ -48,8 +48,8 @@ const fever = catalog.find((product) => product.scent === "fever");
       </p>
 
       <div class="campaign__buy">
-        <p class="campaign__price">€{fever?.variants[0].price}</p>
-        <span class="campaign__chip">limited</span>
+        <p class="campaign__price display">€{fever?.variants[0].price}</p>
+        <span class="campaign__chip eyebrow">limited</span>
       </div>
 
       <a class="btn-primary" href={withBase("collection/fever/")}>
@@ -76,8 +76,6 @@ const fever = catalog.find((product) => product.scent === "fever");
     white-space: nowrap;
     width: max-content;
     font-size: var(--text--h3);
-    font-weight: 900;
-    font-stretch: 125%;
     will-change: transform;
   }
 
@@ -97,16 +95,11 @@ const fever = catalog.find((product) => product.scent === "fever");
   .campaign__eyebrow {
     margin: 0 0 var(--space--eyebrow-headline);
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .campaign__title {
     margin: 0 0 var(--space--headline-lede);
     font-size: var(--text--h2);
-    font-weight: 900;
-    font-stretch: 125%;
   }
 
   /* Price and scarcity chip together — the home page previously showed no
@@ -121,7 +114,6 @@ const fever = catalog.find((product) => product.scent === "fever");
   .campaign__price {
     margin: 0;
     font-size: var(--text--med);
-    font-weight: 800;
   }
 
   .campaign__content {
@@ -138,7 +130,6 @@ const fever = catalog.find((product) => product.scent === "fever");
     border-radius: var(--radius--xs);
     color: var(--color--amber);
     font-size: var(--text--eyebrow);
-    letter-spacing: 0.12em;
   }
 
   .campaign__lead {

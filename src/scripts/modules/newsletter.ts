@@ -8,7 +8,7 @@
 //   pulses the field line amber once (0.6s — duration unspecified for the
 //   amber pulse; matched to the spec'd phosphor success pulse, flagged).
 // - Success: input collapses, line pulses phosphor once (0.6s, 01 §5.5),
-//   message `you're in the current.` (Instrument Serif italic) + muted
+//   message `you're in the current.` (display cut, peak tone) + muted
 //   sub-line `demo — no list connected.` (07 §3), then
 //   track("newsletter_signup", { source: "footer" }) (07 §5).
 //

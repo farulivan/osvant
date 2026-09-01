@@ -18,14 +18,16 @@ import { withBase } from "../lib/url";
     data-hero-chip
     href={withBase("journal/001-batch-002/")}
   >
-    <span class="hero__chip-eyebrow">next drop</span>
+    <span class="hero__chip-eyebrow eyebrow">next drop</span>
     <span class="hero__chip-label">batch 002 — fall</span>
   </a>
 
   <div class="hero__inner">
-    <p class="hero__eyebrow" data-eyebrow>eau de parfum — est. batch 001</p>
-    <h1 class="hero__title" data-anim="split">osvant</h1>
-    <p class="hero__subline" data-hero-subline>
+    <p class="hero__eyebrow eyebrow" data-eyebrow>
+      eau de parfum — est. batch 001
+    </p>
+    <h1 class="hero__title display" data-anim="split">osvant</h1>
+    <p class="hero__subline whisper" data-hero-subline>
       scent <em>beyond</em> the visible
     </p>
   </div>
@@ -86,8 +88,6 @@ import { withBase } from "../lib/url";
 
   .hero__chip-eyebrow {
     font-size: var(--text--eyebrow);
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .hero__chip-label {
@@ -101,17 +101,11 @@ import { withBase } from "../lib/url";
   .hero__eyebrow {
     margin: 0 0 var(--space--eyebrow-headline);
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .hero__title {
     margin: 0;
     font-size: var(--text--impact);
-    font-weight: 900;
-    font-stretch: 125%;
-    line-height: 1.05;
   }
 
   .hero__subline {
@@ -120,8 +114,8 @@ import { withBase } from "../lib/url";
   }
 
   .hero__subline em {
-    font-family: "Instrument Serif", serif;
-    font-style: italic;
+    font-style: normal;
+    color: var(--color--white);
   }
 
   .hero__cue {

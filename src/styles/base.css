@@ -123,6 +123,55 @@ canvas {
   transform: translateX(0.4em);
 }
 
+/* ---------------------------------------------------------------------
+   Typographic roles (01 §3.3)
+
+   The three settings the design system names, as classes rather than as a
+   recipe re-typed per component. Before these, the eyebrow block was
+   hand-copied in 38 places across 17 files and the expanded-headline block
+   in 19 across 16 — which is how line-heights of 0.8/0.95/1.02 and
+   letter-spacing of -0.01em/-0.02em entered the build with no doc source.
+
+   None of them set `font-size`. Size stays with the component via the
+   §3.2 tokens, so these compose with the 82 existing `var(--text--*)`
+   declarations instead of fighting them.
+   --------------------------------------------------------------------- */
+
+/* Every heading, h1 through h5, plus impact moments and the wordmark.
+   Weight is pinned at the loudest cut on purpose — hierarchy comes from
+   size and from tone, never from weight (01 §3.3, amended 2026-08-31). */
+.display {
+  font-family: var(--font--display);
+  font-weight: 900;
+  font-stretch: 125%;
+  line-height: 1.05;
+}
+
+/* Micro-labels: batch no., nav meta, section eyebrows. 600 and not 500
+   because Mosvita has no Medium — asking for 500 gets a synthesised fake,
+   silently (01 §3.1). */
+.eyebrow {
+  font-family: var(--font--body);
+  font-weight: 600;
+  font-stretch: 100%;
+  letter-spacing: 0.12em;
+  color: var(--color--haze-3);
+}
+
+/* The muted rung of the tone ladder — what used to be set in italic serif.
+   Same face, same weight as body, dropped in light (01 §3.3). */
+.whisper {
+  font-family: var(--font--body);
+  font-weight: 400;
+  color: var(--color--haze-3);
+}
+
+/* The peak rung: one word, never a phrase, never more than one per
+   headline. Pairs with .display on an inline element inside it. */
+.peak {
+  color: var(--scent-tint-text);
+}
+
 /* Mask for SplitText line wrapping — headline reveal (M §4.2) */
 .line-mask {
   overflow: hidden;

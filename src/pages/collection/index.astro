@@ -18,8 +18,8 @@ const SPANS: Array<1 | 2 | 3> = [2, 1, 1, 2, 3];
 >
   <section class="plp" data-nav-theme="dark" aria-labelledby="plp-title">
     <header class="plp__header">
-      <p class="plp__eyebrow" data-eyebrow>all formulas</p>
-      <h1 class="plp__title" id="plp-title">
+      <p class="plp__eyebrow eyebrow" data-eyebrow>all formulas</p>
+      <h1 class="plp__title display" id="plp-title">
         <span class="plp__fragment" data-anim="split">five</span>
         <span class="plp__fragment" data-anim="split">currents</span>
       </h1>
@@ -62,17 +62,11 @@ const SPANS: Array<1 | 2 | 3> = [2, 1, 1, 2, 3];
   .plp__eyebrow {
     margin: 0 0 var(--space--eyebrow-headline);
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .plp__title {
     margin: 0;
     font-size: var(--text--h1);
-    font-weight: 900;
-    font-stretch: 125%;
-    line-height: 1.05;
   }
 
   .plp__fragment {
