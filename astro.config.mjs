@@ -20,10 +20,26 @@ export default defineConfig({
   site: "https://osvant.example",
 
   build: {
-    // Critical CSS inline on every document. The stylesheet is small enough
-    // that a separate request cost more than the bytes did — this was an LCP
-    // fix, not a preference.
-    inlineStylesheets: "always",
+    /*
+     * Astro's default. It inlines a stylesheet only while it is small
+     * enough to be worth the bytes, and links it once it is not.
+     *
+     * This was "always" from the day the whole stylesheet was 462 lines,
+     * and the comment then read: "the stylesheet is small enough that a
+     * separate request cost more than the bytes did — this was an LCP fix,
+     * not a preference." That premise stopped being true here. Under
+     * utility-first authoring the CSS is one bundle shared by every route
+     * rather than per-page scoped blocks, so "always" pays for it 20 times
+     * over: converting five components added 2.75KB of utilities and
+     * therefore 51KB to the site, because every one of the 20 documents
+     * carried the new bytes whether or not it used them.
+     *
+     * Linked, that bundle is fetched once, hashed, immutable-cached, and
+     * reused across every route — and taxi.js navigations never re-parse
+     * it at all. Measured, not assumed: LCP moved 1811-2132ms -> see the
+     * worklog for the table.
+     */
+    inlineStylesheets: "auto",
   },
 
   /*

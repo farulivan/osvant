@@ -11,27 +11,13 @@ import { withBase } from "../lib/url";
   description="something spilled — osvant."
   noindex
 >
-  <section class="server-error" data-nav-theme="dark">
-    <h1 class="server-error__title display">something spilled.</h1>
+  <section
+    class="flex min-h-screen flex-col items-start justify-center gap-8 px-gutter"
+    data-nav-theme="dark"
+  >
+    <h1 class="display text-impact">something spilled.</h1>
     <a class="btn-primary" href={withBase("collection")}>
       <span data-btn-label>back to the current</span>
     </a>
   </section>
 </BaseLayout>
-
-<style>
-  .server-error {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 2rem;
-    min-height: 100vh;
-    padding: 0 var(--gutter);
-  }
-
-  .server-error__title {
-    font-size: var(--text--impact);
-    margin: 0;
-  }
-</style>
