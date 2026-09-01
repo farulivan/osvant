@@ -157,10 +157,56 @@ Components reference `--scent-tint` (falls back to `--color--phosphor`). This mi
 
 | Role | Face | Loading |
 |---|---|---|
-| Workhorse — all UI, headings, body | **Archivo Variable** (`wdth` 100–125, `wght` 400–900) | self-hosted `woff2` subset, `font-display: swap`, preload |
-| Display — emotional peaks only | **Instrument Serif** (regular + italic) | self-hosted `woff2`, load on idle |
+| The entire house — display, headings, UI, body | **Mosvita**, three static cuts | self-hosted `woff2` subsets through the Astro Fonts API (ADR-014); `font-display: swap`; metric-matched fallbacks; display + body cuts preloaded |
 
-> **Amended 2026-08-27 (owner sign-off).** The workhorse axis ranges were
+| Cut | `font-weight` | `font-stretch` | Role |
+|---|---|---|---|
+| Regular | 400 | 100% | body, lead, long-form, form fields |
+| SemiBold | 600 | 100% | eyebrows, buttons, nav, UI labels |
+| Black Expanded | 900 | 125% | every heading — h1…h5, impact, wordmark |
+
+```css
+:root {
+  --font--display: var(--font--mosvita);
+  --font--body: var(--font--mosvita);
+}
+```
+
+Two tokens, one family — deliberately. `--font--mosvita` is emitted by Astro's `<Font />`
+and already carries the metric-matched fallback stack, so neither token appends its own.
+The display/body seam stays addressable if the house ever splits again, and costs
+nothing while it does not.
+
+> **Amended 2026-08-31 (owner sign-off) — one face, and tone does the rest.**
+> The house ran two faces: Archivo Variable as workhorse, Instrument Serif regular +
+> italic for emotional peaks. It now runs **Mosvita** alone, and the contrast the
+> second face carried is carried by weight and luminance instead (§3.3, brief §3).
+>
+> **Three cuts, not twelve.** Mosvita ships 6 weights × 2 widths. The three shipped are
+> exactly the three weight/width pairs §3.3 specifies and no others. Measured:
+> 36.7KB → 11.5KB per cut (−69%), **34.7KB total** against 56.8KB for the two-face
+> build (Archivo 35.8 + serif 21.0) — a 22.1KB cut, and *less than Archivo cost on its
+> own*. `scripts/font-budget.mjs` caps the shipped payload at 50KB and is enforced in
+> CI by the asset guard, closing the hole where the old 48KB Archivo ceiling only ever
+> ran on a manual `pnpm fonts`.
+>
+> **Two traps this creates.** (1) Mosvita has **no Medium** — the family runs
+> 300/400/600/700/800/900 — which is why eyebrows move from `wght` 500 to 600 in §3.3.
+> Asking for 500 does not fail loudly; the browser synthesises it. (2) Expanded is a
+> **separate static master**, not a `wdth` axis. `font-stretch: 125%` selects it only
+> because the variant declares `stretch: "125%"`; drop that descriptor and the browser
+> synthesises a stretch of the 100% cut instead.
+>
+> **Reserved, not shipped:** `Mosvita-Black` at 100% width. If Black Expanded reads too
+> loud at `--text--h5` (1.2rem), h3–h5 move to it while h1/h2/impact keep Expanded.
+> That lands at 46.3KB, still inside the cap. The cap's headroom is sized to exactly
+> this one hatch — a fifth cut does not fit, by design.
+>
+> Widening the ladder means amending this section, `scripts/subset-fonts.mjs` and
+> `scripts/font-budget.mjs` together, then re-running `pnpm fonts`.
+
+> **Amended 2026-08-27 (owner sign-off), superseded above — retained for the reasoning.**
+> The workhorse axis ranges were
 > `wdth` 62–125 / `wght` 100–900. Nothing in the built site ever rendered
 > outside `wdth` 100–125 / `wght` 400–900, and shipping the unused ranges
 > cost 16.6KB — the `wdth` axis is expensive, and dropping its lower half
@@ -173,7 +219,12 @@ Components reference `--scent-tint` (falls back to `--color--phosphor`). This mi
 > re-run first — otherwise the browser synthesises the missing range and
 > renders a faked weight rather than the real one, silently.
 
-**Pairing logic (the tension, brief §3):** Archivo Expanded Black = precision/loud. Instrument Serif Italic = provocation/liquid whisper. The italic serif appears ONLY in: scent names inline, pull-quote lines, one word inside impact headlines (e.g. `the *cult*`). Never for UI, never for paragraphs.
+**Pairing logic (the tension, brief §3):** the tension is no longer between two faces —
+it is between two *volumes* of one. Mosvita Black Expanded = precision/loud. The same
+family at 400, dropped to `--color--haze-3`, = provocation/whisper. What used to be set
+in italic serif — scent names inline, pull-quote lines, one word inside an impact
+headline (e.g. `the *cult*`) — is now the **same cut in a different light**: the word
+does not change voice, it changes brightness. See the tone ladder in §3.3.
 
 ### 3.2 Scale tokens
 
@@ -221,11 +272,32 @@ Note: the reference build sizes its `h2` token above `h1` (research §3.2). We n
 
 ### 3.3 Setting rules
 
-- Headlines: Archivo, `wght` 800–900, `wdth` 115–125 (expanded), `line-height: 1.05–1.2`, **lowercase**.
+- **Headlines:** Mosvita, `wght` 900, `font-stretch: 125%` (the Expanded cut), `line-height: 1.05–1.2`, **lowercase**. Every heading level takes the same cut — h1 through h5. Hierarchy comes from the §3.2 size scale and from tone, never from weight. Use `.display`.
 - `--text--impact` moments: single word or name only, broken into stacked fragments for line-level animation (e.g. `the` / `collection`). Each fragment is its own element — this is an animation contract (see `02-motion-guidelines.md §4.2`).
-- Eyebrows: Archivo, `wght` 500, `wdth` 100, `letter-spacing: 0.12em`, color `--color--haze-3`, paired with every h1/h2. Extreme size contrast (eyebrow ↔ impact) is THE typographic move.
-- Body/lead: Archivo `wght` 400, `wdth` 100, `line-height: 1.5`.
+- **Eyebrows:** Mosvita, `wght` 600, `font-stretch: 100%`, `letter-spacing: 0.12em`, color `--color--haze-3`, paired with every h1/h2. Extreme size contrast (eyebrow ↔ impact) is THE typographic move. Use `.eyebrow`.
+- **Body/lead:** Mosvita `wght` 400, `font-stretch: 100%`, `line-height: 1.5`.
+- **The tone ladder.** With one face, luminance carries what the second face used to. Three levels, composed from existing §2.1 tokens — no new colour values:
+
+  | Level | Token | Use |
+  |---|---|---|
+  | **peak** | `--scent-tint-text` | the one accent word — `the *cult*`, a scent name inline |
+  | **loud** | `--color--white` | headlines, primary body |
+  | **muted** | `--color--haze-3` | eyebrows, whispers, secondary body. Use `.whisper` |
+
+  A peak is **one word**, never a phrase, and never more than one per headline — the same discipline the italic serif carried. §2.4 still binds: body text is white or black, never a tint, and `static`/`fever` resolve to white.
+
 - No `text-transform: uppercase` anywhere (brief §4).
+- **One exception, written down rather than invented:** the full-bleed footer wordmark sets at `clamp(6rem, 20vw, 16rem)` with `line-height: 0.8` — outside the §3.2 scale and outside the headline line-height range above. It is a graphic element, not a heading. Nothing else may leave the scale.
+
+> **Amended 2026-08-31 (owner sign-off).** Three changes, following the single-face swap in §3.1.
+>
+> **Eyebrows 500 → 600 is forced, not chosen.** Mosvita has no Medium (300/400/600/700/800/900). 500 would be synthesised silently, which is the failure mode §3.1's amendment warns about. 600 also reads bolder, which is the brand direction.
+>
+> **Headlines 800–900 → 900, at every level.** The old range let h3–h5 drift to 700 and 800 (7 and 11 sites respectively) with no rule saying which went where. Pinning weight and moving hierarchy onto size and tone is what makes a single face read as a decision rather than a constraint.
+>
+> **The tone ladder replaces the italic-serif rule.** It is stated here as a rule rather than as tokens because `tokens.css` is implemented verbatim from this document and may not invent values — the ladder composes `--color--white`, `--color--haze-3` and `--scent-tint-text`, all of which already exist in §2.1.
+>
+> `.display`, `.eyebrow` and `.whisper` in `src/styles/base.css` are the only sanctioned implementations. Before this, the eyebrow recipe was hand-copied in 38 places across 17 files and the expanded-headline recipe in 19 across 16 — which is how `line-height` values of 0.8, 0.95 and 1.02 and letter-spacing of −0.01em/−0.02em entered the build with no doc source. Those are normalised back into range by the classes; the footer wordmark is the one survivor, and it is now specified above.
 
 ## 4. Layout
 

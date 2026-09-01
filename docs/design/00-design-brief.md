@@ -26,7 +26,26 @@ Per the research methodology (one tension, two axes):
 | Axis | Expression | Where it lives |
 |---|---|---|
 | **Precision** (the lab) | Structure, grid, near-black surfaces, expanded grotesk type, technical eyebrow labels, note pyramids, batch numbers | Layout, typography, information design |
-| **Provocation** (the cult) | Signal-green accent, oversized lowercase display type, serif-italic whispers, fast motion ripples, elastic UI toys, drifting vapor and raking light | Color accents, motion, light, copy voice |
+| **Provocation** (the cult) | Signal-green accent, oversized lowercase display type, tonal whispers, fast motion ripples, elastic UI toys, drifting vapor and raking light | Color accents, motion, light, copy voice |
+
+> **Amended 2026-08-31 (owner sign-off) — the tension is carried by one face, not two.**
+> The Provocation axis read *"serif-italic whispers"*, and the site paired Archivo
+> Expanded Black against Instrument Serif Italic: two typefaces carrying two moods.
+> The house now sets in a single family (Mosvita, `01 §3.1`), and the whisper is a
+> **tonal** move instead of a second face — the same cut dropped to `--color--haze-3`,
+> or lifted to the scent tint for a peak.
+>
+> This is a correction, not a concession. §2 asks the site to read as *"the readout of
+> a scent"*, and the instruments it names — a chromatograph, an oscilloscope, a night
+> optic — all draw in **one colour at varying intensity**. A second typeface was the
+> one element of the identity arguing against its own concept. One face at varying
+> weight and luminance *is* the instrument.
+>
+> The Precision axis is untouched and now reads more literally than before: *"expanded
+> grotesk type"* was a `wdth` axis on a variable font; it is now Mosvita's drawn
+> Expanded cut at `usWidthClass` 7 (= `font-stretch: 125%`). Everything else on the
+> Provocation axis — oversized lowercase display type, the signal-green accent,
+> ripples, vapor, raking light — is unchanged.
 
 **Rule of thumb for any undefined decision:** structure decides *where* things go (precision); motion and accent decide *how* they feel (provocation). Every animated moment must resolve into a CTA (research §1).
 
