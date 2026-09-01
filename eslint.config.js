@@ -18,7 +18,7 @@ export default defineConfig(
     // `page.evaluate()` callbacks are serialised and executed in the page,
     // not in Node, so they legitimately reference document/window. Node
     // globals stay available for the rest of the file.
-    files: ["scripts/check-responsive.mjs"],
+    files: ["scripts/check-responsive.mjs", "scripts/style-parity.mjs"],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
   eslint.configs.recommended,

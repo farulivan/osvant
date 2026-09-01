@@ -62,6 +62,12 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm size
+      # The three brand bans, checked against what actually ships
+      # (ADR-017). stylelint only ever saw authored CSS, which is how
+      # neutral grey and pure black reached a page in August through
+      # runtime-injected markup — and it cannot see generated utilities
+      # at all now that Tailwind emits them (ADR-015).
+      - run: pnpm check:guardrails
       # Placeholder copy shipped to production once (review OSV-08) —
       # twelve [draft] markers, one inside a <title>.
       - run: pnpm check:copy

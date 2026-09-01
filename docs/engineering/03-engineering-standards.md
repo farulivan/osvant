@@ -12,7 +12,9 @@
 
 - Files: kebab-case (`note-pyramid.ts`); PageModules named after their `data-module` value.
 - CSS: design tokens verbatim from `01-design-system.md` in `src/styles/tokens.css` — the ONLY place raw color/size values may appear. Components use custom properties exclusively.
-- Class naming: component-scoped BEM-lite (`.scent-card__note`); state via `is-*` classes toggled by JS (`nav--solid` pattern from `01 §5.2` is grandfathered).
+- Styling is utility-first through Tailwind v4 (ADR-015/016). `src/styles/app.css` is the single entry: it maps tokens to utilities with `@theme inline` — a mapping, never a redeclaration — and deletes Tailwind's default theme with `--*: initial`, so a value the design system does not name has no utility. Astro-scoped `<style>` blocks are retired section by section; new components do not add one.
+- Two kinds of CSS still live in `app.css`, and the boundary is mechanical: `@utility` for the four typographic roles `01 §3.3` names (`.display`, `.eyebrow`, `.whisper`, `.peak`), and `@layer components` for every class JavaScript creates or toggles. The latter must be a layer rule, not a `@utility` — layer rules are always emitted, `@utility` definitions are usage-driven and would be tree-shaken.
+- Class naming: BEM-lite (`.scent-card__note`) applies to those JS-contract classes in `@layer components`; state via `is-*` classes toggled by JS (`nav--solid` pattern from `01 §5.2` is grandfathered). Markup itself carries utilities.
 - One PageModule per file in `src/scripts/modules/`; singletons in `src/scripts/core/`.
 
 ## 3. Motion-hook conventions (markup is the API)
@@ -35,7 +37,7 @@ These attributes are the contract between markup and the animation layer — des
 3. Scrubbed tweens: `ease: "none"`, always (`M §2`). Pins: max 3 per page — reviewer counts them.
 4. No `window.addEventListener("scroll")` anywhere — Lenis events + ScrollTrigger only. No standalone `requestAnimationFrame` — use `gsap.ticker`.
 5. Reduced-motion branches are written WITH the feature, not retrofitted: every module implements the `M §9` degradation or documents why it's exempt.
-6. No `box-shadow`, no `text-transform: uppercase`, no pure `#fff`/`#000` — enforced by a stylelint rule, not just review (`03 §9`).
+6. No `box-shadow`, no `text-transform: uppercase`, no pure `#fff`/`#000` — enforced against the **built output** by `pnpm check:guardrails` in CI, not just review (`03 §9`, ADR-017). The stylelint rules stay as the fast local loop, but they only ever saw authored CSS in files they were pointed at: that is how neutral grey and pure black reached a page through runtime-injected markup on 2026-08-28, and it is why generated utilities need a check that reads `dist/`.
 
 ## 5. Git & review
 

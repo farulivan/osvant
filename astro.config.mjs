@@ -1,8 +1,20 @@
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
+  /*
+   * Tailwind v4 (ADR-015). The Vite plugin, NOT the @astrojs/tailwind
+   * integration — that one is a v3-era package and is deprecated.
+   *
+   * Build-time only: Tailwind emits CSS and ships no runtime and no
+   * network request, so ADR-012 is untouched.
+   */
+  vite: {
+    plugins: [tailwindcss()],
+  },
+
   // Placeholder origin — kept in sync with SITE_PLACEHOLDER in src/lib/seo.ts.
   // Swap both together when a real domain lands.
   site: "https://osvant.example",
