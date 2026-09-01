@@ -22,6 +22,7 @@
     "lhci": "lhci autorun",
     "check:assets": "node scripts/check-assets.mjs",
     "check:copy": "node scripts/check-copy.mjs",
+    "check:guardrails": "node scripts/check-guardrails.mjs",
     "stills": "node scripts/prepare-stills.mjs",
     "fonts": "node scripts/subset-fonts.mjs",
     "fonts:inspect": "node scripts/inspect-fonts.mjs",
