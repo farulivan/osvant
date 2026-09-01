@@ -57,10 +57,13 @@ const craft = [
     data-nav-theme="dark"
     aria-labelledby="house-title"
   >
-    <p class="house-hero__eyebrow" data-eyebrow>the lab</p>
+    <p class="house-hero__eyebrow eyebrow" data-eyebrow>the lab</p>
     <h1 class="house-hero__title" id="house-title">
-      <span class="house-hero__fragment" data-anim="split">the lab</span>
-      <span class="house-hero__fragment" data-anim="split">behind osvant</span>
+      <span class="house-hero__fragment display" data-anim="split">the lab</span
+      >
+      <span class="house-hero__fragment display" data-anim="split"
+        >behind osvant</span
+      >
     </h1>
     <p class="house-hero__lead">
       we are a laboratory that sells five things. no seasonal editions, no
@@ -81,7 +84,7 @@ const craft = [
   >
     {
       statements.map((statement) => (
-        <p class="manifesto__line" data-manifesto-line>
+        <p class="manifesto__line display" data-manifesto-line>
           {statement}
         </p>
       ))
@@ -93,7 +96,9 @@ const craft = [
       shoot lands (ADR-008) */
   }
   <section class="craft" data-nav-theme="dark" aria-labelledby="craft-title">
-    <h2 class="craft__title" id="craft-title" data-anim="split">the craft</h2>
+    <h2 class="craft__title display" id="craft-title" data-anim="split">
+      the craft
+    </h2>
     <div class="craft__grid">
       {
         craft.map((tile) => (
@@ -107,7 +112,7 @@ const craft = [
               exposure={tile.photo.exposure}
             />
             <figcaption class="craft__caption">
-              <span class="craft__eyebrow" data-eyebrow>
+              <span class="craft__eyebrow eyebrow" data-eyebrow>
                 {tile.eyebrow}
               </span>
               {tile.caption}
@@ -124,8 +129,8 @@ const craft = [
     data-nav-theme="dark"
     aria-labelledby="house-cta-title"
   >
-    <p class="house-cta__eyebrow" data-eyebrow>five formulas</p>
-    <h2 class="house-cta__title" id="house-cta-title" data-anim="split">
+    <p class="house-cta__eyebrow eyebrow" data-eyebrow>five formulas</p>
+    <h2 class="house-cta__title display" id="house-cta-title" data-anim="split">
       the rest is on your skin
     </h2>
     <a class="btn-primary" href={withBase("collection")} data-anim="btn-line">
@@ -148,9 +153,6 @@ const craft = [
   .house-hero__eyebrow {
     margin: 0 0 var(--space--eyebrow-headline);
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .house-hero__title {
@@ -160,9 +162,6 @@ const craft = [
   .house-hero__fragment {
     display: block;
     font-size: var(--text--impact);
-    font-weight: 800;
-    font-stretch: 125%;
-    line-height: 0.95;
     letter-spacing: -0.02em;
     color: var(--color--white);
   }
@@ -188,9 +187,6 @@ const craft = [
     margin: 0;
     max-width: 26ch;
     font-size: var(--text--h1);
-    font-weight: 800;
-    font-stretch: 125%;
-    line-height: 1.05;
     color: var(--color--white); /* RM/static path: statements sit lit */
   }
 
@@ -202,8 +198,6 @@ const craft = [
   .craft__title {
     margin: 0 0 4rem;
     font-size: var(--text--h2);
-    font-weight: 800;
-    font-stretch: 125%;
     color: var(--color--white);
   }
 
@@ -229,9 +223,6 @@ const craft = [
 
   .craft__eyebrow {
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .craft__figure :global(.craft__tile) {
@@ -256,18 +247,12 @@ const craft = [
   .house-cta__eyebrow {
     margin: 0 0 var(--space--eyebrow-headline);
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .house-cta__title {
     margin: 0 0 var(--space--lede-content);
     max-width: 18ch;
     font-size: var(--text--h2);
-    font-weight: 900;
-    font-stretch: 125%;
-    line-height: 1.05;
   }
 
   /* Tablet (768–991px) had no layout of its own: the site defined four

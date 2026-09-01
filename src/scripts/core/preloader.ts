@@ -2,7 +2,7 @@
 // (guide §6.3: "cart drawer + nav + preloader are core singletons, not page
 // modules") — runs once per browser session, gated on real asset loads.
 //
-// Gated assets (M §6.2, RFC A2): Archivo woff2 + `logo.riv` +
+// Gated assets (M §6.2, RFC A2): the Mosvita woff2 cuts + `logo.riv` +
 // `page-transition.riv` + hero `vapor.riv`. The three Rive assets are still
 // CSS/SVG placeholders (06-asset-pipeline §1) with no network load of their
 // own, so GATES only lists `document.fonts.ready` today — add the real

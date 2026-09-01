@@ -27,7 +27,7 @@ const dateFmt = new Intl.DateTimeFormat("en-GB", {
     data-nav-theme="dark"
     aria-labelledby="journal-title"
   >
-    <h1 class="journal__title" id="journal-title">transmissions</h1>
+    <h1 class="journal__title display" id="journal-title">transmissions</h1>
 
     <ul class="journal__list">
       {
@@ -40,12 +40,12 @@ const dateFmt = new Intl.DateTimeFormat("en-GB", {
             >
               {/* ADR-008: wash placeholder until leadImage photography lands */}
               <span class="journal__media" aria-hidden="true" />
-              <span class="journal__date">
+              <span class="journal__date eyebrow">
                 <time datetime={article.data.date.toISOString()}>
                   {dateFmt.format(article.data.date).toLowerCase()}
                 </time>
               </span>
-              <span class="journal__name">{article.data.title}</span>
+              <span class="journal__name display">{article.data.title}</span>
             </a>
           </li>
         ))
@@ -64,9 +64,6 @@ const dateFmt = new Intl.DateTimeFormat("en-GB", {
   .journal__title {
     margin: 0 0 4rem;
     font-size: var(--text--impact);
-    font-weight: 800;
-    font-stretch: 125%;
-    line-height: 0.95;
     letter-spacing: -0.02em;
     color: var(--color--white);
   }
@@ -104,14 +101,10 @@ const dateFmt = new Intl.DateTimeFormat("en-GB", {
 
   .journal__date {
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .journal__name {
     font-size: var(--text--h3);
-    font-weight: 700;
     line-height: 1.1;
     color: var(--color--white);
   }

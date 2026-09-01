@@ -65,7 +65,7 @@ Work top-to-bottom; each row ≈ one PR. Acceptance = the listed doc sections.
 | # | Task | Spec |
 |---|---|---|
 | 1.1 | Scaffold: Astro + TS strict + pnpm + lint/stylelint/prettier + `.nvmrc` + repo layout per `01-arch §7`; README with AI-process section; PR template with `04-qa §5` checklist | `03-eng §1/§2` |
-| 1.2 | `tokens.css` verbatim from `01 §2/§3/§4` + base styles (selection, focus, scrollbar `01 §6`) + font self-hosting (Archivo preload, Instrument Serif idle) | `01` |
+| 1.2 | `tokens.css` verbatim from `01 §2/§3/§4` + base styles (selection, focus, scrollbar `01 §6`) + font self-hosting (Mosvita via the Astro Fonts API, ADR-014) | `01` |
 | 1.3 | CI: lint/types/unit/build + size-limit + LHCI skeleton + asset guard; S3/CloudFront staging+prod deploy jobs, previews `previews/pr-<n>/`, OIDC | `05-cicd` |
 | 1.4 | Core singletons: `scroll.ts` (Lenis+ticker, §6.1 below), `track.ts`, module registry + `PageModule` contract (§6.2) | `01-arch §3` |
 | 1.5 | Router: taxi.js wiring, transition API with clip-path placeholder, lifecycle order, reduced-motion crossfade, `document.title` sync | `01-arch §3.3`, `M §5` |
@@ -156,7 +156,7 @@ Everything else — file structure detail, test organization, internal naming wi
 
 1. **taxi.js swaps only the view container.** Core scripts/nav/scrim live OUTSIDE `[data-taxi]`; per-page `<script>` tags inside views will NOT re-execute reliably — all behavior goes through PageModules. Sync `document.title`/meta manually on nav (crawlers see static HTML, so SEO is unaffected).
 2. **Astro `base` on previews:** preview deploys serve under `/previews/pr-<n>/` — use `import.meta.env.BASE_URL`-aware URLs everywhere (assets, internal links, fetches of `products.json` if fetched). Absolute-root paths will 404 on previews only.
-3. **SplitText before fonts = garbage line breaks.** Await `document.fonts.ready` (preloader already gates Archivo) before any split; re-split on debounced resize; `revert()` in destroy (`M §4.2`).
+3. **SplitText before fonts = garbage line breaks.** Await `document.fonts.ready` (preloader already gates the Mosvita cuts) before any split; re-split on debounced resize; `revert()` in destroy (`M §4.2`).
 4. **ScrollTrigger + pinned sections after swap:** create triggers in mount order top-to-bottom, then one `ScrollTrigger.refresh()`; set `ScrollTrigger.config({ ignoreMobileResize: true })` once — iOS URL-bar resize otherwise re-layouts pins mid-scroll.
 5. **Scroll restoration:** `history.scrollRestoration = "manual"`; router resets to top during cover (except back/forward — restore saved position after mount).
 6. **Lenis + overlay scroll lock:** drawer/menu open = `lenis.stop()`, close = `lenis.start()` (`M §4.10`); focus trap + ESC per `03 §9`; `inert` on background content.

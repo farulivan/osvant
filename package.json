@@ -24,6 +24,7 @@
     "check:copy": "node scripts/check-copy.mjs",
     "stills": "node scripts/prepare-stills.mjs",
     "fonts": "node scripts/subset-fonts.mjs",
+    "fonts:inspect": "node scripts/inspect-fonts.mjs",
     "check:glyphs": "node scripts/check-glyphs.mjs",
     "check:responsive": "node scripts/check-responsive.mjs"
   },

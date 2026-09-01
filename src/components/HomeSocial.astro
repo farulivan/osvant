@@ -5,8 +5,8 @@
 ---
 
 <section class="social" data-nav-theme="dark" aria-labelledby="social-title">
-  <p class="social__eyebrow" data-eyebrow>what's diffusing</p>
-  <h2 class="social__title" id="social-title">
+  <p class="social__eyebrow eyebrow" data-eyebrow>what's diffusing</p>
+  <h2 class="social__title display" id="social-title">
     <span class="social__fragment" data-anim="split">@osvant</span>
     <span class="social__fragment" data-anim="split">everywhere</span>
   </h2>
@@ -26,8 +26,8 @@
             target="_blank"
             rel="noreferrer"
           >
-            <span class="social__card-label">{item.label}</span>
-            <span class="social__card-handle">@osvant</span>
+            <span class="social__card-label display">{item.label}</span>
+            <span class="social__card-handle eyebrow">@osvant</span>
           </a>
         </li>
       ))
@@ -44,17 +44,11 @@
   .social__eyebrow {
     margin: 0 0 var(--space--eyebrow-headline);
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .social__title {
     margin: 0 0 3rem;
     font-size: var(--text--h1);
-    font-weight: 900;
-    font-stretch: 125%;
-    line-height: 1.05;
   }
 
   .social__fragment {
@@ -84,13 +78,10 @@
 
   .social__card-label {
     font-size: var(--text--h5);
-    font-weight: 700;
   }
 
   .social__card-handle {
     font-size: var(--text--eyebrow);
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   @media (prefers-reduced-motion: no-preference) {

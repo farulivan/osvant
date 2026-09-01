@@ -2,8 +2,8 @@
 // Base shell (01-arch §7): head/meta, nav, taxi container, footer,
 // transition scrim, skip link. Every route renders through this layout.
 import "../styles/tokens.css";
-import "../styles/fonts.css";
 import "../styles/base.css";
+import { Font } from "astro:assets";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import CartDrawer from "../components/CartDrawer.astro";
@@ -75,12 +75,15 @@ const ogImageUrl = absoluteUrl(withBase(ogImage), Astro.site);
       data-twitter-description
     />
     <meta name="twitter:image" content={ogImageUrl} data-twitter-image />
-    <link
-      rel="preload"
-      href={withBase("assets/fonts/archivo-var.woff2")}
-      as="font"
-      type="font/woff2"
-      crossorigin
+    {
+      /* @font-face + the --font--mosvita stack, plus preload links for the
+        filtered cuts. Display first: the LCP element on most routes is an
+        impact headline (01 §3.3). SemiBold is left to swap — eyebrows set at
+        0.625rem and the metric-matched fallback covers them (ADR-014). */
+    }
+    <Font
+      cssVariable="--font--mosvita"
+      preload={[{ weight: 900 }, { weight: 400 }]}
     />
     <title>{title}</title>
 
@@ -121,7 +124,7 @@ const ogImageUrl = absoluteUrl(withBase(ogImage), Astro.site);
          lands with the asset batch (06 §1); placeholder card until then.
          Copy is unstated in LAW docs — flagged as a gap. -->
     <div class="landscape-prompt" role="status">
-      <p class="landscape-prompt__mark" aria-hidden="true">osvant</p>
+      <p class="landscape-prompt__mark display" aria-hidden="true">osvant</p>
       <p class="landscape-prompt__copy">rotate your phone</p>
     </div>
 
@@ -193,8 +196,6 @@ const ogImageUrl = absoluteUrl(withBase(ogImage), Astro.site);
 
     .landscape-prompt__mark {
       margin: 0;
-      font-weight: 800;
-      font-stretch: 125%;
       color: var(--color--phosphor);
     }
 

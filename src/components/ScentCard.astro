@@ -31,15 +31,15 @@ const [article, ...rest] = name.split(" ");
   data-stagger={stagger}
   data-span={span}
 >
-  <p class="scent-card__eyebrow">batch {batch}</p>
-  <h2 class="scent-card__name">
+  <p class="scent-card__eyebrow eyebrow">batch {batch}</p>
+  <h2 class="scent-card__name display">
     <em>{article}</em>{" "}
     {rest.join(" ")}
   </h2>
 
   <div class="scent-card__bottle" aria-hidden="true"></div>
 
-  <ul class="scent-card__notes">
+  <ul class="scent-card__notes eyebrow">
     {notes.map((note) => <li>{note}</li>)}
   </ul>
 
@@ -80,21 +80,19 @@ const [article, ...rest] = name.split(" ");
   .scent-card__eyebrow {
     margin: 0;
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .scent-card__name {
     margin: 0;
     font-size: var(--text--h3);
-    font-weight: 800;
   }
 
+  /* The peak rung (01 §3.3): the accent word keeps the display cut and
+     changes only its light. Under a scent scope this is that scent's tint;
+     at house level --scent-tint-text resolves to white. */
   .scent-card__name em {
-    font-family: "Instrument Serif", serif;
-    font-style: italic;
-    font-weight: 400;
+    font-style: normal;
+    color: var(--scent-tint-text);
   }
 
   /* Scent-tinted duotone wash, standing in for the bottle render.
@@ -120,8 +118,6 @@ const [article, ...rest] = name.split(" ");
     margin: 0;
     padding: 0;
     font-size: var(--text--eyebrow);
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .scent-card__footer {

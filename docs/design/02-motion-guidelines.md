@@ -157,8 +157,8 @@ The hero never just scrolls away. Scrubbed timeline (`start: "top top", end: "+=
 
 ## 6. Preloader
 
-1. Black screen, `decanting…` (Archivo, `--text--h5`) + percent counter (`--text--eyebrow`, tabular numerals).
-2. Real asset progress — gates **Archivo woff2 + `logo.riv` + `page-transition.riv` + `vapor.riv` only**; bottle stills load with their sections after first paint (the gallery's first bottle at `fetchpriority="high"`, never a preloader gate), Instrument Serif stays idle-loaded. Never faked below 90%; ~3s hard cap on a median connection (RFC-001 A2).
+1. Black screen, `decanting…` (Mosvita, `--text--h5`) + percent counter (`--text--eyebrow`, tabular numerals).
+2. Real asset progress — gates **the Mosvita woff2 cuts + `logo.riv` + `page-transition.riv` + `vapor.riv` only**; bottle stills load with their sections after first paint (the gallery's first bottle at `fetchpriority="high"`, never a preloader gate). Never faked below 90%; ~3s hard cap on a median connection (RFC-001 A2).
 3. Exit: counter fades 0.3s → viewport wipe with same `page-transition` artboard (1.2s) → hero impact reveal overlaps at 50%.
 4. Shown once per session (`sessionStorage`), skipped on internal navigations.
 

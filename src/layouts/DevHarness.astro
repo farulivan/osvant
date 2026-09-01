@@ -5,8 +5,8 @@
 // build sets PUBLIC_DEV_HARNESS=true (staging/preview CI per 05 §1) —
 // production builds get the disabled notice, not the tools.
 import "../styles/tokens.css";
-import "../styles/fonts.css";
 import "../styles/base.css";
+import { Font } from "astro:assets";
 
 interface Props {
   title: string;
@@ -23,13 +23,18 @@ const enabled =
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="robots" content="noindex, nofollow" />
+    {
+      /* The harness renders real components, so it needs the real face —
+        --font--mosvita is undefined without this and every rule falls back. */
+    }
+    <Font cssVariable="--font--mosvita" />
     <title>{title} — osvant dev</title>
   </head>
   <body>
     <main class="harness">
       <header class="harness__header">
         <p class="harness__eyebrow">dev harness · {spec}</p>
-        <h1 class="harness__title">{title}</h1>
+        <h1 class="harness__title display">{title}</h1>
       </header>
       {
         enabled ? (

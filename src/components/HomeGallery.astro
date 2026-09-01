@@ -58,10 +58,10 @@ const scents = await getProducts();
     </div>
 
     <div class="home-gallery__overlay">
-      <p class="home-gallery__eyebrow" data-eyebrow>the collection</p>
+      <p class="home-gallery__eyebrow eyebrow" data-eyebrow>the collection</p>
 
       {/* Stacked fragments — restores parity beat 4 (M §11) */}
-      <h2 class="home-gallery__title" id="gallery-title">
+      <h2 class="home-gallery__title display" id="gallery-title">
         <span class="home-gallery__fragment" data-anim="split">five</span>
         <span class="home-gallery__fragment" data-anim="split">currents</span>
       </h2>
@@ -101,7 +101,7 @@ const scents = await getProducts();
             width={420}
           />
           <p class="home-gallery__static-name">{scent.name}</p>
-          <p class="home-gallery__static-notes">
+          <p class="home-gallery__static-notes eyebrow">
             {summaryNotes(scent).join(" · ")}
           </p>
           <a class="btn-text" href={withBase(`collection/${scent.scent}/`)}>
@@ -158,9 +158,6 @@ const scents = await getProducts();
   .home-gallery__eyebrow {
     margin: 0;
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .home-gallery__title {
@@ -168,9 +165,6 @@ const scents = await getProducts();
     flex-direction: column;
     margin: 0;
     font-size: var(--text--h2);
-    font-weight: 900;
-    font-stretch: 125%;
-    line-height: 0.95;
   }
 
   .home-gallery__readout {
@@ -182,9 +176,7 @@ const scents = await getProducts();
   .home-gallery__name {
     margin: 0;
     overflow: hidden;
-    font-family: "Instrument Serif", serif;
     font-size: var(--text--h3);
-    font-style: italic;
     line-height: 1.1;
   }
 
@@ -228,15 +220,11 @@ const scents = await getProducts();
 
   .home-gallery__static-name {
     margin: 0.5rem 0 0;
-    font-family: "Instrument Serif", serif;
     font-size: var(--text--h4);
-    font-style: italic;
   }
 
   .home-gallery__static-notes {
     margin: 0;
     font-size: var(--text--eyebrow);
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 </style>

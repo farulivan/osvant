@@ -34,7 +34,7 @@ Per `M §6`. Copy: `decanting…`
 - [ ] real progress; shown once per session; exit overlaps hero reveal at 50%
 
 ### 1.2 Hero — the name
-- Full viewport, `--color--black`. Eyebrow: `eau de parfum — est. batch 001`. `osvant` at `--text--impact` (Archivo 900, wdth 125). Subline: `scent beyond the visible` — `beyond` in Instrument Serif italic. Rive `vapor` motif drifting behind type, `intensity` driven by scroll velocity.
+- Full viewport, `--color--black`. Eyebrow: `eau de parfum — est. batch 001`. `osvant` at `--text--impact` (Mosvita 900, `font-stretch: 125%`). Subline: `scent beyond the visible` on the muted rung — `beyond` steps up to `--color--white` (`01 §3.3`). Rive `vapor` motif drifting behind type, `intensity` driven by scroll velocity.
 - **`next drop` chip** (reference: hero next-race chip, `M §11.3`): small bordered chip top-right of hero — eyebrow `next drop` + `batch 002 — fall` → links to `/journal`. Enters last in the hero sequence (0.5s default register).
 - Below-fold cue: `btn-text` `explore the collection ->` + scroll indicator line scrubbing scaleY.
 - Motion: impact chars reveal per `M §4.2` (0.02 stagger, `power3.out`); vapor ambient register; **hero scroll-out per `M §4.10`** — type drifts/dims as the doors slide over it.
@@ -170,7 +170,7 @@ Rive `mob-landscape` full-screen when `orientation: landscape` and viewport heig
 | AST-08 | Journal lead images × 3 | 2000×1250 lead + 1200×750 card | journal |
 | AST-09 | Social band plates × 4 | 800×500, no platform logos | home §1.6 |
 | AST-10 | OG images × 9 | 1200×630; per-scent cards composite AST-03a on `--color--black` — generate at build, not by hand | global |
-| — | Fonts | Archivo Variable woff2 (preload), Instrument Serif woff2 (idle-load) | global |
+| — | Fonts | Mosvita woff2 — 3 static cuts; display + body preloaded, SemiBold swaps (`01 §3.1`, ADR-014) | global |
 
 **Flat-lit is the load-bearing constraint.** Layers 1/3/4 of the light study supply every highlight, rim and caustic (`M §8.1`). A master that already carries dramatic lighting double-lights and reads as a compositing error — it will be rejected at handoff (`06 §2`).
 

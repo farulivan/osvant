@@ -4,7 +4,7 @@
 // reason to spend €110 rather than €40.
 //
 // Three alternating image/text rows with media parallax (M §4.5), and
-// exactly one pull-quote in Instrument Serif italic at --text--h3.
+// exactly one pull-quote, muted rung of the tone ladder, at --text--h3.
 //
 // Row 1 is the BOTTLE macro, not an ingredient macro — 03 §3.3 is
 // explicit and marks it not optional. Without it the page never shows the
@@ -39,8 +39,12 @@ const [heart, base] = macroPair([
   data-nav-theme="scent"
   aria-labelledby={`formula-${product.scent}`}
 >
-  <p class="formula__eyebrow" data-eyebrow>the formula</p>
-  <h2 class="formula__title" id={`formula-${product.scent}`} data-anim="split">
+  <p class="formula__eyebrow eyebrow" data-eyebrow>the formula</p>
+  <h2
+    class="formula__title display"
+    id={`formula-${product.scent}`}
+    data-anim="split"
+  >
     how it is built
   </h2>
 
@@ -92,7 +96,7 @@ const [heart, base] = macroPair([
       sizes="(width <= 47.9375rem) 100vw, 50vw"
       exposure={base.exposure}
     />
-    <blockquote class="formula__quote">
+    <blockquote class="formula__quote whisper">
       <p>{product.formula.pullQuote}</p>
     </blockquote>
   </div>
@@ -107,16 +111,11 @@ const [heart, base] = macroPair([
   .formula__eyebrow {
     margin: 0 0 var(--space--eyebrow-headline);
     font-size: var(--text--eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .formula__title {
     margin: 0 0 var(--space--lede-content);
     font-size: var(--text--h2);
-    font-weight: 900;
-    font-stretch: 125%;
   }
 
   .formula__row {
@@ -161,9 +160,7 @@ const [heart, base] = macroPair([
 
   .formula__quote p {
     margin: 0;
-    font-family: "Instrument Serif", serif;
     font-size: var(--text--h3);
-    font-style: italic;
     line-height: 1.2;
     color: var(--color--white);
   }

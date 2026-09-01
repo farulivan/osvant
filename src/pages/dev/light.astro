@@ -27,7 +27,7 @@ const stills = SCENTS.map((scent) => ({ scent, image: stillFor(scent) }));
   <section class="panel" data-light-harness>
     <div class="controls">
       <label class="control">
-        <span class="control__label">
+        <span class="control__label eyebrow">
           --light-angle <output data-angle-out>0.50</output>
         </span>
         <input
@@ -42,22 +42,27 @@ const stills = SCENTS.map((scent) => ({ scent, image: stillFor(scent) }));
 
       <label class="control control--inline">
         <input type="checkbox" data-ambient checked />
-        <span class="control__label">ambient oscillation (0.45 ↔ 0.55)</span>
+        <span class="control__label eyebrow"
+          >ambient oscillation (0.45 ↔ 0.55)</span
+        >
       </label>
 
       <label class="control control--inline">
         <input type="checkbox" data-sweep />
-        <span class="control__label">auto-sweep 0 → 1 (acceptance check 1)</span
+        <span class="control__label eyebrow"
+          >auto-sweep 0 → 1 (acceptance check 1)</span
         >
       </label>
 
       <label class="control control--inline">
         <input type="checkbox" data-light-ground />
-        <span class="control__label">light ground (edge/fringe check)</span>
+        <span class="control__label eyebrow"
+          >light ground (edge/fringe check)</span
+        >
       </label>
 
       <fieldset class="control control--layers">
-        <legend class="control__label">isolate layer</legend>
+        <legend class="control__label eyebrow">isolate layer</legend>
         {
           ["all", "wash", "caustic", "bottle", "sheen", "rim", "vapor"].map(
             (layer, i) => (
@@ -230,8 +235,6 @@ const stills = SCENTS.map((scent) => ({ scent, image: stillFor(scent) }));
 
   .control__label {
     font-size: var(--text--eyebrow);
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
   }
 
   .stages {

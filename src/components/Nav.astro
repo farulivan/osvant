@@ -21,9 +21,7 @@ const links = [
       role="img"
       aria-hidden="true"
     >
-      <text x="0" y="15" font-family="Archivo, sans-serif" font-weight="800"
-        >osvant</text
-      >
+      <text x="0" y="15">osvant</text>
     </svg>
   </a>
 
@@ -113,8 +111,15 @@ const links = [
     height: 1.25rem;
   }
 
+  /* Set in CSS, not as SVG presentation attributes: those cannot read a
+     custom property, and `font-stretch` does not take a percentage as an
+     attribute — which is exactly the descriptor that selects Mosvita's
+     Expanded master (01 §3.1). */
   .nav__logo-mark text {
     fill: var(--color--white);
+    font-family: var(--font--display);
+    font-weight: 900;
+    font-stretch: 125%;
   }
 
   /* The menu button. `01 §5.2` specifies the overlay menu it opens but

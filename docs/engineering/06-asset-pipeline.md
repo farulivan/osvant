@@ -18,7 +18,7 @@
 | OG images | 1200×630, bottle on `--color--black`, wordmark bottom-left, ×5 + 1 house (RFC C4) | w6 | house-default only |
 | Campaign + macro photography | duotone-green grade, AVIF masters ≥2000px | w6 | duotone solid blocks |
 | Favicon/app icons | phosphor `o` glyph on black, SVG + PNG set (RFC C4) | w3 (with logo batch) | plain `o` text SVG |
-| Fonts | Archivo Variable woff2 (subset latin), Instrument Serif regular+italic woff2 | have (OFL) | — |
+| Fonts | Mosvita woff2 subsets — 3 static cuts (400/100%, 600/100%, 900/125%); licensed `.otf` masters gitignored under `src/assets/fonts/masters/` | have (licensed) | — |
 | Email header assets | wordmark/black for Shopify notifications (RFC B1.3) | w3 | Shopify default |
 
 ## 2. Handoff acceptance (per asset class)
@@ -34,10 +34,17 @@ public/assets/
   rive/       logo.riv, page-transition.riv, btn-ui.riv, vapor.riv, mob-landscape.riv
   img/        stills/bottle-<scent>.avif, stills/bottle-<scent>-detail.avif,
               og/og-<scent|house>.avif→png, photo/<set>/<slug>.avif
-  fonts/      archivo-var.woff2, instrument-serif[-italic].woff2
+```
+
+```
+src/assets/
+  fonts/          mosvita-regular.woff2, mosvita-semibold.woff2,
+                  mosvita-black-expanded.woff2      ← committed, shipped
+  fonts/masters/  Mosvita-*.otf                     ← gitignored, never served
 ```
 
 - kebab-case, scent names as in brief §5, no version suffixes in filenames — versioning via git; replacing an asset = one-file PR (placeholder swaps are drop-in, ADR-008).
+- **Fonts are the one asset class that does not live under `public/assets/`** (ADR-014). Astro's local font provider reads them from `src/assets/fonts/` and emits content-hashed copies under `_astro/fonts/`; a `public/` copy would be duplicated into the build output. Font filenames therefore carry no hash of their own — Astro adds one.
 
 ## 4. Optimization ownership
 
