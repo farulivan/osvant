@@ -46,16 +46,19 @@ export default {
       },
     },
     {
-      // The Tailwind entry (ADR-015). Only the at-rule vocabulary is
-      // exempted — every brand guardrail above still applies here, and
+      // The Tailwind stylesheets (ADR-015/018). Only the at-rule
+      // vocabulary is exempted — every brand guardrail above still applies here, and
       // that matters: app.css is now the one file where a raw value or a
       // fifth breakpoint could be introduced. `color-no-hex` needs no
       // exemption because the theme holds var() references exclusively.
-      files: ["src/styles/app.css"],
+      files: ["src/styles/*.css"],
       rules: {
         // Tailwind requires `@import "tailwindcss"`; the bare-string form
         // is what the plugin resolves, so `url()` is not available.
         "import-notation": null,
+        // `@utility` bodies nest with `&`, which stylelint cannot see as a
+        // scoping root because it does not know the at-rule.
+        "nesting-selector-no-missing-scoping-root": null,
         "at-rule-no-unknown": [
           true,
           {
@@ -71,17 +74,6 @@ export default {
               "config",
             ],
           },
-        ],
-      },
-    },
-    {
-      files: ["**/*.astro"],
-      customSyntax: "postcss-html",
-      rules: {
-        // Astro's scoped-style escape hatch (markdown body styling)
-        "selector-pseudo-class-no-unknown": [
-          true,
-          { ignorePseudoClasses: ["global"] },
         ],
       },
     },
