@@ -181,7 +181,12 @@ async function snapshot(dist, out) {
 
       result[`${route}@${width}`] = await page.evaluate((props) => {
         const rows = [];
-        const all = document.querySelectorAll("*");
+        /* Body only. <head> children have computed styles but render
+           nothing, and their COUNT is not stable across builds — flipping
+           `inlineStylesheets` swaps one <style> for three <link>s, which
+           read as a structural change on every page and drown the signal
+           this tool exists to produce. */
+        const all = document.body.querySelectorAll("*");
         for (let i = 0; i < all.length; i++) {
           const el = all[i];
           if (el.tagName === "SCRIPT" || el.tagName === "STYLE") continue;

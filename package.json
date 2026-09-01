@@ -32,9 +32,15 @@
   },
   "size-limit": [
     {
-      "name": "core+transitions JS (M §10 / 04-qa §4)",
+      "name": "core+transitions JS (M \u00a710 / 04-qa \u00a74)",
       "path": "dist/**/*.js",
       "limit": "350 KB",
+      "gzip": true
+    },
+    {
+      "name": "styles CSS (ADR-018 \u2014 external since inlineStylesheets: auto)",
+      "path": "dist/**/*.css",
+      "limit": "40 KB",
       "gzip": true
     }
   ],

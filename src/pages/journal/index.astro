@@ -23,29 +23,43 @@ const dateFmt = new Intl.DateTimeFormat("en-GB", {
   description="transmissions — the osvant journal."
 >
   <section
-    class="journal"
+    class="min-h-screen bg-black px-gutter pt-40 pb-32"
     data-nav-theme="dark"
     aria-labelledby="journal-title"
   >
-    <h1 class="journal__title display" id="journal-title">transmissions</h1>
+    <h1 class="mb-16 display text-impact text-white" id="journal-title">
+      transmissions
+    </h1>
 
-    <ul class="journal__list">
+    {
+      /* Tablet had no layout of its own: the site defined four breakpoints
+        in tokens and shipped one, so a 3-up grid stayed 3-up at 834px and
+        gave each cell ~240px (review OSV-13). */
+    }
+    <ul
+      class="grid list-none grid-cols-3 gap-5 max-lg:grid-cols-2 max-md:grid-cols-1"
+    >
       {
         articles.map((article) => (
-          <li class="journal__item" data-anim="card">
+          <li data-anim="card">
             <a
-              class="journal__card"
+              class="group flex flex-col gap-3 no-underline"
               href={withBase(`journal/${article.id.replace(/\.md$/, "")}/`)}
               data-scent={article.data.scent}
             >
               {/* ADR-008: wash placeholder until leadImage photography lands */}
-              <span class="journal__media" aria-hidden="true" />
-              <span class="journal__date eyebrow">
+              <span
+                class="aspect-4/3 rounded-media scent-wash"
+                aria-hidden="true"
+              />
+              <span class="eyebrow text-xs">
                 <time datetime={article.data.date.toISOString()}>
                   {dateFmt.format(article.data.date).toLowerCase()}
                 </time>
               </span>
-              <span class="journal__name display">{article.data.title}</span>
+              <span class="display text-3xl text-white group-hover:text-scent-tint-text">
+                {article.data.title}
+              </span>
             </a>
           </li>
         ))
@@ -53,78 +67,3 @@ const dateFmt = new Intl.DateTimeFormat("en-GB", {
     </ul>
   </section>
 </BaseLayout>
-
-<style>
-  .journal {
-    min-height: 100vh;
-    padding: 20vh var(--gutter) 15vh;
-    background: var(--color--black);
-  }
-
-  .journal__title {
-    margin: 0 0 4rem;
-    font-size: var(--text--impact);
-    letter-spacing: -0.02em;
-    color: var(--color--white);
-  }
-
-  .journal__list {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--grid-gap);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .journal__card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    text-decoration: none;
-  }
-
-  .journal__media {
-    aspect-ratio: 4 / 3;
-    border-radius: var(--radius--media);
-    background: radial-gradient(
-      ellipse 70% 60% at 50% 55%,
-      color-mix(
-          in oklab,
-          var(--scent-tint, var(--color--phosphor)) 22%,
-          var(--color--ink-1)
-        )
-        0%,
-      var(--color--ink-1) 80%
-    );
-  }
-
-  .journal__date {
-    font-size: var(--text--eyebrow);
-  }
-
-  .journal__name {
-    font-size: var(--text--h3);
-    line-height: 1.1;
-    color: var(--color--white);
-  }
-
-  .journal__card:hover .journal__name {
-    color: var(--scent-tint-text, var(--color--white));
-  }
-
-  /* Tablet (768–991px) had no layout of its own: the site defined four
-     breakpoints in tokens and shipped one, so a 3-up grid stayed 3-up at
-     834px and gave each cell ~240px (review OSV-13). */
-  @media (61.9375rem >= width > 47.9375rem) {
-    .journal__list {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (width <= 47.9375rem) {
-    .journal__list {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>

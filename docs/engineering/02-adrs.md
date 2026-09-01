@@ -163,3 +163,61 @@
 - **It parses declarations, not strings** — established by the false positives found while writing it: `box-shadow` legitimately appears as a *name* inside `transition-property: …,box-shadow,…`, and Lightning CSS minifies an authored `transparent` down to `#0000`, which is neutral by channel and paints nothing. Fully transparent values are exempt at any channel, as the token system already ships one deliberately (`--color--phosphor-zero`).
 - **Consequences:** the guarantee gets strictly stronger — it now covers generated CSS, runtime-injected markup and inline styles, none of which stylelint could reach. Verified against planted violations: `box-shadow: 0 2px 8px #0008`, `text-transform: uppercase`, `#ccc`, `#FFFFFF` and `rgb(136 136 136)` are each caught and named with their spec section.
 - **Known gap, recorded rather than papered over:** `--*: initial` cannot remove Tailwind's *static* utilities. `uppercase` still exists as a class and `shadow-[…]` arbitrary values still compile. The output scan is the backstop for both, which is the reason it is a merge gate and not an advisory.
+
+---
+
+## ADR-018 — Default-first: Tailwind's scale is the scale (supersedes the `--*: initial` decision in ADR-015)
+
+- **Context:** ADR-015 wiped Tailwind's entire default theme so a value the design system does not name would have no utility. It bought exactness — the built site rendered `01 §3.2`/`§4.4` to the pixel — and it charged for it in complexity: twelve custom type steps, nine custom spacing steps, four `@custom-variant` breakpoints, and markup that needed `gap-[2rem]` and `pt-[calc(var(--nav-height)+var(--space--xl))]` to say ordinary things. Owner direction, 2026-09-01: **prefer Tailwind's defaults; a utility that is 1–2px off but reads instantly to any Tailwind developer beats an exact custom step only this repo understands.** Simplicity is the reason the migration is happening.
+- **Decision:** `--*: initial` is withdrawn. `@import "tailwindcss"` in full, Preflight included. Custom theme entries must now earn their place by being *absent* from Tailwind, not merely different from it.
+- **The scale was already Tailwind's, which is what makes this cheap.** Every one of the six `01 §4.4` spacing steps is an exact default, because the house scale and Tailwind's `0.25rem` multiplier agree:
+
+  | token | rem | Tailwind |
+  |---|---|---|
+  | `2xs` | 0.5 | `2` |
+  | `xs` | 1 | `4` |
+  | `s` | 1.5 | `6` |
+  | `m` | 2.5 | `10` |
+  | `l` | 4 | `16` |
+  | `xl` | 6 | `24` |
+
+  Both values that were *off* that scale in the old CSS are also exact defaults — `2rem` is `8`, `0.75rem` is `3`. So `gap-6` and `p-10` are not approximations of the design system, they are it.
+
+- **Type: three custom steps instead of twelve.** Only the fluid `clamp()` steps survive, because Tailwind has no equivalent at any size and `01 §3.2` says the extreme jump to `impact` must be preserved. The rest map, with the delta recorded:
+
+  | token | was | now | delta |
+  |---|---|---|---|
+  | `btn` / `h6` | 1rem | `text-base` | exact |
+  | `body` | 1.125rem | `text-lg` | exact |
+  | `h4` | 1.5rem | `text-2xl` | exact |
+  | `h5` | 1.2rem | `text-xl` | +0.8px |
+  | `lead` | 1.6rem | `text-2xl` | −1.6px |
+  | `h3` | 2rem | `text-3xl` | −2px |
+  | `eyebrow` | 0.625rem | `text-xs` | +2px |
+  | `med` | 2.75rem | `text-5xl` | +4px |
+  | `impact` / `h1` / `h2` | clamp() | **custom** | exact |
+
+  `eyebrow` (10px → 12px) is the largest proportional move and the one most worth vetoing if it reads wrong; 12px is also the friendlier number at `letter-spacing: 0.12em`.
+
+- **Colour: `white` and `black` are overridden, not added.** That single pair is the whole defence of `01 §1` now: there is no named utility anywhere in the build that emits `#fff` or `#000`, because the two that would have are the house's green-shifted values. The rest of Tailwind's palette stays available and unused — **the guardrail does not depend on the vocabulary being small.** `scripts/check-guardrails.mjs` (ADR-017) scans the built output, so `shadow-md` or `text-gray-500` existing is harmless and *using* one fails CI with the spec section it violates. That check is why this trade is affordable at all.
+- **Radius:** `xs` 3px → `rounded-sm` 4px (+1px). `media` is `1vw` and stays custom. **Breakpoints:** only `tiny` (30rem) is custom — 480px has no near default, `sm` being 160px away. `max-md` (<768px) is the `mobile` contract exactly; `tablet`/`desktop` move from 992px to `lg`'s 1024px, a deliberate 32px shift on the laptop boundary.
+- **Preflight is now imported**, reversing ADR-015. It removes the per-element `m-0` noise the old setup required, and measurement showed it mostly *fixes* things: anchors were inheriting the UA link blue `rgb(0,0,238)` (96 elements) and buttons were rendering in Arial at 13.33px instead of Mosvita at 18px (102 elements). Two real regressions were found and handled — markdown `<h2>` lost its bold (restored as `font-semibold`, which is *more* correct since Mosvita ships no 700 and the browser had been synthesising one), and `the-house`'s `<h1>` dropped 36px → 18px but is a semantic wrapper whose visible text lives in child spans that set their own size.
+- **Consequences:** the theme block goes from ~40 mapped entries to 20, all of them things Tailwind genuinely lacks. Markup reads as ordinary Tailwind. The built site no longer renders `01 §3.2` to the pixel at seven of twelve type steps — an owner-approved deviation, recorded here rather than silently absorbed; `01 §3.2` should be amended to Tailwind's numbers if this holds through the migration.
+- **Rejected alternatives:** (a) *keep `--*: initial`* — exact, and every section PR pays for it in custom-step lookups and arbitrary values; (b) *defaults for spacing but custom for type* — the spacing scale is where the exact match was free, so this keeps the complexity precisely where it costs most.
+
+## ADR-019 — Stylesheets are linked, not inlined (`inlineStylesheets: "auto"`)
+
+- **Context:** `build.inlineStylesheets: "always"` was set when all CSS was 462 lines, and the config comment recorded the reasoning honestly: "the stylesheet is small enough that a separate request cost more than the bytes did — this was an LCP fix, not a preference." Utility-first authoring breaks that premise. The CSS is now one bundle shared by every route rather than per-page scoped blocks, so inlining pays for it once per document: **converting five of 27 components added 2.75KB of utilities and therefore 51KB to the site**, because all 20 documents carried the new bytes whether or not they used them.
+- **Decision:** `inlineStylesheets: "auto"` — Astro's default. Small sheets still inline; the shared bundle is linked, hashed and immutable-cached.
+- **Measured both ways on identical code:**
+
+  | | `always` | `auto` |
+  |---|---|---|
+  | FCP | 1280–1468ms | 1504–1509ms |
+  | LCP `/` (heaviest) | 2286ms | **2182ms** |
+  | LCP `/404` (lightest) | **1819ms** | 1962ms |
+  | Inlined CSS | 36.2KB/page | **3.5KB/page** |
+  | Total gzipped HTML | 215.7KB | **83.9KB** |
+
+  The crossover has already happened on the heaviest page. Inlining still wins on the lightest ones and on FCP, and that cost is stated rather than hidden — but it is a fixed one-time request against a benefit that compounds over 20 routes and grows with every component migrated. taxi.js navigations never re-parse it, and ADR-011's CloudFront immutable caching amplifies a benefit that LHCI's cold local serve cannot see.
+- **Consequences:** total transfer drops 61%. A **CSS size budget now exists** — `dist/**/*.css` ≤ 40KB gzip in `size-limit`, currently 11.1KB — closing a real gap, since `size-limit` watched only `dist/**/*.js` and no CSS regression could ever have failed a build. Revisit if FCP becomes a gate.

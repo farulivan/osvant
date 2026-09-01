@@ -1,6 +1,13 @@
 ---
 // 404 (03-page-specs.md §7). Uses BaseLayout directly (not StubSection) —
 // this page's copy/CTA are final per spec, not a placeholder.
+//
+// No local .btn-primary here. This page used to re-declare the whole
+// component, and because Astro's scoped styles outrank the global sheet
+// the copy won — including its `color: var(--color--black)`, which never
+// received the 2026-08-26 --color--on-phosphor amendment (01 §2.1). That
+// left 404 as the last page failing Lighthouse's colour-contrast audit at
+// 4.47:1. app.css owns the component; nothing here may restate it.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { pageTitle } from "../lib/seo";
 import { withBase } from "../lib/url";
@@ -11,36 +18,13 @@ import { withBase } from "../lib/url";
   description="nothing to smell here — osvant."
   noindex
 >
-  <section class="not-found" data-nav-theme="dark">
-    <h1 class="not-found__title display">nothing to smell here.</h1>
+  <section
+    class="flex min-h-screen flex-col items-start justify-center gap-8 px-gutter"
+    data-nav-theme="dark"
+  >
+    <h1 class="display text-impact">nothing to smell here.</h1>
     <a class="btn-primary" href={withBase("collection")}>
       <span data-btn-label>back to the current</span>
     </a>
   </section>
 </BaseLayout>
-
-<style>
-  .not-found {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 2rem;
-    min-height: 100vh;
-    padding: 0 var(--gutter);
-  }
-
-  .not-found__title {
-    font-size: var(--text--impact);
-    margin: 0;
-  }
-
-  /* No local .btn-primary here. This page used to re-declare the whole
-     component, and because Astro's scoped styles outrank base.css the copy
-     won — including its `color: var(--color--black)`, which never received
-     the 2026-08-26 --color--on-phosphor amendment (01 §2.1). That left 404
-     as the last page in the build failing Lighthouse's colour-contrast
-     audit at 4.47:1 while every other btn-primary passed. Every declaration
-     in the copy was either identical to base.css or that one stale value,
-     so the copy is gone and base.css owns the component. */
-</style>

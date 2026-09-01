@@ -2,70 +2,38 @@
 // Shared shell for the two legal routes (03 §7, review OSV-29). Short is
 // fine for a demo store; empty is not — these were 12-word stubs linked
 // from every page footer.
+//
+// The body is markdown, so its h2/p cannot carry classes; the `[&_h2]:`
+// variants below replace what used to be a `:global()` escape hatch and
+// keep the styling attached to the element that owns it.
 interface Props {
   title: string;
 }
 const { title } = Astro.props;
 ---
 
-<section class="legal" data-nav-theme="dark" aria-labelledby="legal-title">
-  <p class="legal__eyebrow eyebrow" data-eyebrow>legal</p>
-  <h1 class="legal__title display" id="legal-title" data-anim="split">
+<section
+  class="min-h-screen bg-black px-gutter pt-40 pb-24"
+  data-nav-theme="dark"
+  aria-labelledby="legal-title"
+>
+  <p class="mb-4 eyebrow text-xs" data-eyebrow>legal</p>
+  <h1 class="display text-h1" id="legal-title" data-anim="split">
     {title}
   </h1>
 
-  <p class="legal__notice">
+  {
+    /* The demo statement is the most load-bearing sentence on the page, so
+      it is set above body size rather than buried at eyebrow scale. */
+  }
+  <p class="mt-6 max-w-[46ch] text-2xl text-white">
     osvant is a portfolio demonstration. it is not a real shop, no real orders
     are processed, and no payment is ever taken.
   </p>
 
-  <div class="legal__body">
+  <div
+    class="mt-10 max-w-[62ch] text-haze-2 [&_h2]:mt-10 [&_h2]:mb-2 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-white [&_p]:mb-4 [&_p]:text-lg [&_p]:leading-relaxed"
+  >
     <slot />
   </div>
 </section>
-
-<style>
-  .legal {
-    min-height: 100vh;
-    padding: calc(var(--nav-height) + var(--space--xl)) var(--gutter)
-      var(--space--xl);
-    background: var(--color--black);
-  }
-
-  .legal__eyebrow {
-    margin: 0 0 var(--space--eyebrow-headline);
-    font-size: var(--text--eyebrow);
-  }
-
-  .legal__title {
-    margin: 0;
-    font-size: var(--text--h1);
-  }
-
-  /* The demo statement is the most load-bearing sentence on the page, so
-     it is set above body size rather than buried at eyebrow scale. */
-  .legal__notice {
-    margin: var(--space--headline-lede) 0 0;
-    max-width: 46ch;
-    font-size: var(--text--lead);
-    color: var(--color--white);
-  }
-
-  .legal__body {
-    margin-top: var(--space--lede-content);
-    max-width: 62ch;
-    color: var(--color--haze-2);
-  }
-
-  .legal__body :global(h2) {
-    margin: var(--space--m) 0 var(--space--2xs);
-    font-size: var(--text--h5);
-    color: var(--color--white);
-  }
-
-  .legal__body :global(p) {
-    margin: 0 0 var(--space--xs);
-    font-size: var(--text--body);
-    line-height: 1.6;
-  }
-</style>

@@ -164,11 +164,47 @@ for (const { label, width, height } of WIDTHS) {
         // Report the outermost offender: an element whose parent fits.
         const parent = el.parentElement;
         if (parent && parent.getBoundingClientRect().right > vw + 1) continue;
-        const name =
-          el.tagName.toLowerCase() +
-          (el.className
-            ? "." + el.className.toString().trim().split(/\s+/)[0]
-            : "");
+        /*
+         * Name the offender by something that identifies it.
+         *
+         * This used to take the first class name, which worked while
+         * markup was BEM — `section.journal` told you where to look. Under
+         * utility-first markup (ADR-016) the first class is whatever
+         * Prettier sorted to the front, so it reported `ul.m-0` and sent
+         * you nowhere.
+         *
+         * The stable identifiers are the id and the motion hooks ("markup
+         * is the API", 03-eng §3). Plenty of elements carry neither, so
+         * when the offender itself is anonymous we walk up to the nearest
+         * ancestor that isn't and report the pair — `section[data-nav-theme
+         * ="dark"] » ul` locates a thing that `ul.m-0` does not.
+         */
+        const describe = (node) => {
+          const tag = node.tagName.toLowerCase();
+          if (node.id) return `${tag}#${node.id}`;
+          for (const attr of [
+            "data-module",
+            "data-anim",
+            "data-nav-theme",
+            "data-scent",
+          ]) {
+            const value = node.getAttribute(attr);
+            if (value !== null) return `${tag}[${attr}="${value}"]`;
+          }
+          return null;
+        };
+
+        const own = describe(el);
+        let name = own ?? el.tagName.toLowerCase();
+        if (!own) {
+          for (let a = el.parentElement; a; a = a.parentElement) {
+            const parentDesc = describe(a);
+            if (parentDesc) {
+              name = `${parentDesc} » ${name}`;
+              break;
+            }
+          }
+        }
         if (!worst || rect.right > worst.right) {
           worst = {
             name,
