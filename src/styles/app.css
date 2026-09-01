@@ -1,0 +1,480 @@
+/*
+ * The styling entry point (ADR-015). Imported once, by the two layouts.
+ *
+ * Reading order matters here:
+ *   1. Tailwind, which establishes the `theme → base → components →
+ *      utilities` cascade layers.
+ *   2. tokens.css — LAW values, unchanged, still the ONLY file in the
+ *      repo where a raw colour or size may appear (03-eng §2).
+ *   3. The theme, which MAPS those tokens to utilities. It never
+ *      redeclares a value; every entry is a var() reference.
+ *
+ * PREFLIGHT IS DELIBERATELY NOT IMPORTED. `@import "tailwindcss"` is
+ * shorthand for theme + preflight + utilities; importing the three files
+ * separately is the documented way to leave one out.
+ *
+ * Preflight is not a reset, it is a set of opinions, and measuring them
+ * against this build showed they are not free: it zeroes the margins on
+ * every p and h1–h6 (68 elements across the site), strips the underline
+ * from any <a> that has not set one (34), and moved the 404 document 6px
+ * taller. Those are design decisions that belong in the section PRs where
+ * someone can look at them, not smuggled in with the wiring. The five
+ * hand-written reset rules base.css already carried do the structural job
+ * and are kept verbatim in @layer base below.
+ *
+ * `source(none)` turns off Tailwind's automatic content detection and the
+ * @source below replaces it. Auto-detection scans every non-ignored file
+ * in the project, which here means the LAW docs in docs/ — 9,000 lines of
+ * prose in which "block", "grid", "static" and "fixed" all appear as
+ * ordinary English words and would each mint a utility nobody asked for.
+ */
+
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@import "./tokens.css";
+
+@source "../../src/**/*.{astro,html,ts}";
+
+/*
+ * Delete Tailwind's entire default theme.
+ *
+ * This is the load-bearing line of the migration. Without it the build
+ * ships bg-white, text-gray-500, shadow-md, rounded-lg and a 640/768/1024
+ * breakpoint ladder — every one of which 01 §1 ("no pure white, no pure
+ * black, no neutral gray anywhere"), 01 §4.3 ("no drop shadows... never
+ * from box-shadow") and 01 §4.2 (four breakpoints, one spelling each)
+ * forbid. stylelint could never catch those, because they are generated,
+ * not authored.
+ *
+ * With it, a banned utility does not exist. `class="shadow-md"` compiles
+ * to nothing at all. If a token is not declared below, there is no
+ * utility for it — which is the same rule tokens.css already lives under,
+ * now applied to markup.
+ */
+@theme {
+  --*: initial;
+}
+
+/*
+ * `inline` is mandatory here, not stylistic.
+ *
+ * Without it, `bg-scent-tint` compiles to `background: var(--color-scent-tint)`
+ * and Tailwind emits `--color-scent-tint: var(--scent-tint)` on :root — so
+ * the inner var() resolves AT :ROOT and every element gets the phosphor
+ * fallback no matter which [data-scent] scope it sits in. That is exactly
+ * the bug fixed on 2026-08-31, when the nav wordmark never showed the
+ * scent tint because <Nav /> is a sibling of the [data-scent] scope.
+ *
+ * With `inline`, the utility compiles to `background: var(--scent-tint)`
+ * directly, resolved at the element, and the cascade does the work — which
+ * is what 01 §2.3 and guide trap #11 require: scent tinting is ONE
+ * attribute swap, and recolouring elements individually is a review fail.
+ */
+@theme inline {
+  /* ---- Colour (01 §2.1) ---- */
+  --color-phosphor: var(--color--phosphor);
+  --color-phosphor-off: var(--color--phosphor-off);
+  --color-phosphor-zero: var(--color--phosphor-zero);
+  --color-amber: var(--color--amber);
+  --color-black: var(--color--black);
+  --color-white: var(--color--white);
+  --color-cream: var(--color--cream);
+  --color-haze-1: var(--color--haze-1);
+  --color-haze-2: var(--color--haze-2);
+  --color-haze-3: var(--color--haze-3);
+  --color-ink-1: var(--color--ink-1);
+  --color-ink-2: var(--color--ink-2);
+  --color-ink-3: var(--color--ink-3);
+  --color-ink-4: var(--color--ink-4);
+  --color-on-phosphor: var(--color--on-phosphor);
+
+  /* Cascade-resolved: these two are the whole scent system (01 §2.3). */
+  --color-scent-tint: var(--scent-tint);
+  --color-scent-tint-text: var(--scent-tint-text);
+
+  /* ---- Faces (01 §3.1) ---- */
+  --font-display: var(--font--display);
+  --font-body: var(--font--body);
+
+  /* ---- Type scale (01 §3.2) — all twelve steps ---- */
+  --text-impact: var(--text--impact);
+  --text-h1: var(--text--h1);
+  --text-h2: var(--text--h2);
+  --text-med: var(--text--med);
+  --text-h3: var(--text--h3);
+  --text-h4: var(--text--h4);
+  --text-h5: var(--text--h5);
+  --text-h6: var(--text--h6);
+  --text-lead: var(--text--lead);
+  --text-body: var(--text--body);
+  --text-btn: var(--text--btn);
+  --text-eyebrow: var(--text--eyebrow);
+
+  /* ---- Spacing (01 §4.4) — six steps, no in-between ---- */
+  --spacing-2xs: var(--space--2xs);
+  --spacing-xs: var(--space--xs);
+  --spacing-s: var(--space--s);
+  --spacing-m: var(--space--m);
+  --spacing-l: var(--space--l);
+  --spacing-xl: var(--space--xl);
+
+  /* The section-opening cluster, so every section starts on the same
+     rhythm: eyebrow →(xs) headline →(s) lede →(m) content. */
+  --spacing-eyebrow-headline: var(--space--eyebrow-headline);
+  --spacing-headline-lede: var(--space--headline-lede);
+  --spacing-lede-content: var(--space--lede-content);
+
+  /* Layout (01 §4.1). Named `page`, not `max`, because --container-max
+     would mint `max-w-max` and collide with the built-in max-content one. */
+  --spacing-gutter: var(--gutter);
+  --spacing-grid-gap: var(--grid-gap);
+  --spacing-nav-height: var(--nav-height);
+  --container-page: var(--container-max);
+
+  /* ---- Radius (01 §4.3) — circles are rounded-full; nothing else exists ---- */
+  --radius-xs: var(--radius--xs);
+  --radius-media: var(--radius--media);
+
+  /* ---- Easing (M §2 register) ----
+     The house grammar's two CSS-side eases, which are currently retyped
+     as bare cubic-bezier() literals in six places across five files.
+     power2.out is the default register; the expo-ish one is the scent
+     card's. Durations stay literal per M §2 — they are per-recipe. */
+  --ease-power2-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-expo-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/*
+ * The four breakpoints (01 §4.2), as variants rather than as
+ * --breakpoint-* entries.
+ *
+ * Tailwind's own `max-md:` compiles to `@media (width < 48rem)`. The LAW
+ * contract is `(width <= 47.9375rem)`. Those two disagree at 767.5px —
+ * which is precisely the failure the stylelint literal-lock exists to
+ * prevent: "the build previously carried one breakpoint written as 48rem,
+ * 47.9375rem AND 767px, so a 767.5px viewport got different rules from
+ * different components."
+ *
+ * So the literals stay verbatim and desktop-first, matching the 20 media
+ * queries already in the build. Because --breakpoint-* was wiped above,
+ * sm:/md:/lg:/xl: do not exist — a fifth breakpoint cannot be introduced
+ * by muscle memory.
+ */
+@custom-variant tiny {
+  @media (width <= 29.9375rem) {
+    @slot;
+  }
+}
+
+@custom-variant mobile {
+  @media (width <= 47.9375rem) {
+    @slot;
+  }
+}
+
+@custom-variant tablet {
+  @media (61.9375rem >= width > 47.9375rem) {
+    @slot;
+  }
+}
+
+@custom-variant desktop {
+  @media (width >= 62rem) {
+    @slot;
+  }
+}
+
+/* The constraint is the finger, not the viewport (base.css, review OSV-13). */
+@custom-variant coarse {
+  @media (pointer: coarse) {
+    @slot;
+  }
+}
+
+/*
+ * The three settings 01 §3.3 names, plus the peak rung of the tone ladder.
+ *
+ * These stay single-definition rather than dissolving into repeated
+ * utility strings, because the §3.3 amendment exists specifically to stop
+ * that: the eyebrow recipe had been hand-copied in 38 places across 17
+ * files and the expanded-headline recipe in 19 across 16, "which is how
+ * line-heights of 0.8/0.95/1.02 and letter-spacing of -0.01em/-0.02em
+ * entered the build with no doc source". base.css called them "the only
+ * sanctioned implementations"; as @utility they keep that property and
+ * gain variants (mobile:eyebrow) for free.
+ *
+ * None of them sets font-size. Size stays with the component via the §3.2
+ * scale, so these compose with the existing text-* utilities instead of
+ * fighting them.
+ */
+
+/* Every heading h1–h5, plus impact moments and the wordmark. Weight is
+   pinned at the loudest cut on purpose — hierarchy comes from size and
+   from tone, never from weight (01 §3.3, amended 2026-08-31). */
+@utility display {
+  font-family: var(--font--display);
+  font-weight: 900;
+  font-stretch: 125%;
+  line-height: 1.05;
+}
+
+/* Micro-labels: batch no., nav meta, section eyebrows. 600 and not 500
+   because Mosvita has no Medium — asking for 500 gets a synthesised fake,
+   silently (01 §3.1). */
+@utility eyebrow {
+  font-family: var(--font--body);
+  font-weight: 600;
+  font-stretch: 100%;
+  letter-spacing: 0.12em;
+  color: var(--color--haze-3);
+}
+
+/* The muted rung of the tone ladder — what used to be set in italic serif.
+   Same face, same weight as body, dropped in light (01 §3.3). */
+@utility whisper {
+  font-family: var(--font--body);
+  font-weight: 400;
+  color: var(--color--haze-3);
+}
+
+/* The peak rung: one word, never a phrase, never more than one per
+   headline. Pairs with .display on an inline element inside it. */
+@utility peak {
+  color: var(--scent-tint-text);
+}
+
+@layer base {
+  /* The reset, carried over verbatim from base.css. Preflight would cover
+     these three and about nine opinions besides — see the header. */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scrollbar-color: var(--color--ink-4) var(--color--black);
+    scrollbar-width: thin;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color--black);
+    color: var(--color--white);
+    font-family: var(--font--body);
+    font-size: var(--text--body);
+    font-weight: 400;
+    font-stretch: 100%;
+    line-height: 1.5;
+  }
+
+  img,
+  video,
+  canvas {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* The UA sheet's `[hidden] { display: none }` loses to any class that
+     sets `display` — which is how all three cart-drawer states rendered
+     stacked (review OSV-01). Global guard so `.hidden = true` always
+     means hidden. */
+  [hidden] {
+    display: none !important;
+  }
+
+  /* Anchor targets must not land underneath the fixed nav (review OSV-07). */
+  [id] {
+    scroll-margin-top: var(--nav-height);
+  }
+
+  ::selection {
+    background: var(--color--phosphor);
+    color: var(--color--black);
+  }
+
+  /* M §9: never removed. */
+  :focus-visible {
+    outline: 2px solid var(--color--phosphor);
+    outline-offset: 3px;
+  }
+
+  /* Every h1/h2 on this site is a display headline — balance the rag. */
+  h1,
+  h2 {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  /* btn-primary (01 §5.1) — phosphor fill, radius xs. Shared across footer
+     newsletter, campaign CTAs, PDP. The label is --color--on-phosphor rather
+     than --color--black: black on phosphor measures 4.47:1 and misses AA,
+     which was the only accessibility failure Lighthouse reported (01 §6.2). */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color--phosphor);
+    color: var(--color--on-phosphor);
+    border: 0;
+    border-radius: var(--radius--xs);
+    padding: 0.75rem 1.5rem;
+    font-size: var(--text--btn);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* btn-secondary (01 §5.1) — 1px border, white text; border → phosphor on
+     hover, 0.3s power2.out. Label y-flip handled by modules/btn-line.ts.
+     ink-4, not ink-3: this is a control boundary and needs 3:1 (01 §6.2). */
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid var(--color--ink-4);
+    border-radius: var(--radius--xs);
+    padding: 0.75rem 1.5rem;
+    font-size: var(--text--btn);
+    font-weight: 600;
+    color: var(--color--white);
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color 0.3s var(--ease-power2-out);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--color--phosphor);
+  }
+
+  /* btn-text (01 §5.1) — label + arrow, no box; arrow shifts 0.4em right
+     on hover, 0.3s. */
+  .btn-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: var(--text--btn);
+    font-weight: 600;
+    color: var(--color--white);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .btn-text::after {
+    content: "->";
+    transition: transform 0.3s var(--ease-power2-out);
+  }
+
+  .btn-text:hover::after {
+    transform: translateX(0.4em);
+  }
+
+  /* ---------------------------------------------------------------------
+     Classes JavaScript creates or toggles.
+
+     These can never be utilities in markup: GSAP SplitText builds the
+     .line-mask and .split-word elements itself via `linesClass`,
+     btn-line.ts injects the label clone, core/nav.ts toggles nav--solid,
+     and the cart lines are built at runtime with innerHTML.
+
+     @layer components, not @utility, is deliberate — layer rules are
+     always emitted, while @utility definitions are usage-driven and a
+     utility that only ever appears in a .ts string would be tree-shaken
+     out of the build.
+
+     The strings are contracts: nav.test.ts asserts nav--solid and
+     nav--theme-* (7×), btn-line.test.ts asserts .btn-line__label--clone
+     and .btn-line--ready (4×). Do not rename them.
+     --------------------------------------------------------------------- */
+
+  /* Mask for SplitText line wrapping — headline reveal (M §4.2) */
+  .line-mask {
+    overflow: hidden;
+  }
+
+  /* SplitText word wrapper. Char-level splits make every character its own
+     inline element, so without this a line breaks mid-word (review OSV-17). */
+  .split-word {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  /* btn-secondary label y-flip support (01 §5.1, modules/btn-line.ts):
+     the original label and its aria-hidden clone stack in a 1-line mask. */
+  .btn-line--ready {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-line--ready [data-btn-label] {
+    display: inline-block;
+  }
+
+  .btn-line--ready .btn-line__label--clone {
+    position: absolute;
+    inset-inline-start: 0;
+    top: 100%;
+  }
+
+  /* ---------------------------------------------------------------------
+     Touch targets (WCAG 2.5.8 / iOS HIG, review OSV-13)
+
+     Gated on `pointer: coarse`, not on width. The constraint is the finger,
+     not the viewport — a narrow desktop window should keep its typographic
+     rhythm, and a large tablet still needs thumb-sized targets.
+
+     Every rule here grows the HIT AREA and never the type. Nav and footer
+     links were 17px tall boxes: legible, but under half the 24×24 minimum
+     2.5.8 asks for and a quarter of the 44px iOS expects. The text stays
+     exactly as designed; the box around it grows.
+
+     Inline links inside prose are deliberately excluded — 2.5.8 exempts
+     them, and padding them out would break the line rhythm of body copy.
+     --------------------------------------------------------------------- */
+  @media (pointer: coarse) {
+    .nav__logo,
+    .nav__links a,
+    .nav__cart,
+    .footer__list a,
+    .footer__legal a,
+    .contact__socials a,
+    .contact__press a,
+    .scent-card__discover,
+    .hero__cue-btn,
+    .btn-text {
+      /* Pad to the target instead of switching `display`. An earlier pass
+         used `inline-flex` here and silently ate a space: SplitText wraps
+         each word in an inline-block div, and turning the anchor into a
+         flex container makes those divs flex items — which REMOVES the
+         whitespace between them rather than collapsing it. `the house`
+         rendered as `thehouse` in the mobile menu. Leaving `display` alone
+         also spares every element in this list from inheriting a layout
+         model it never asked for. `1lh` keeps the maths correct whatever
+         the type size; if it is unsupported the declaration drops and the
+         target simply stays as it was. */
+      padding-block: max(0px, calc((44px - 1lh) / 2));
+
+      /* Short labels — `terms`, `tiktok` — set narrower than they are tall. */
+      min-width: 44px;
+    }
+
+    /* Controls already carry their own padding; they just sit a couple of
+       pixels under the line. */
+    .btn-primary,
+    .btn-secondary,
+    .pdp-buy__chip,
+    button,
+    select,
+    textarea,
+    input:not([type="checkbox"], [type="radio"]) {
+      min-height: 44px;
+    }
+  }
+}
