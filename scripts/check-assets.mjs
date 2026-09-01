@@ -93,7 +93,15 @@ for (const file of files) {
     }
   }
 
-  if (path.includes("/fonts/") && ext !== ".woff2") {
+  // The licensed .otf originals under `masters/` are what `pnpm fonts`
+  // subsets. They are gitignored and never served, so their format is the
+  // author's business — the same reasoning as the raster masters above.
+  // Only what ships binds.
+  if (
+    path.includes("/fonts/") &&
+    !path.startsWith("src/assets/fonts/masters/") &&
+    ext !== ".woff2"
+  ) {
     violations.push(`${basename(file)} — fonts must be woff2 (06 §1)`);
   }
 }

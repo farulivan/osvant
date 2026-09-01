@@ -25,6 +25,13 @@ dist/
 docs/parity-recordings/*.webm
 scripts/capture-parity.mjs
 
+# --- Font masters (01 §3.1) ---
+# Licensed .otf originals. Only the subset woff2 in src/assets/fonts/ ships,
+# and only that is committed. Regenerate with `pnpm fonts`; inspect with
+# `pnpm fonts:inspect`.
+src/assets/fonts/masters/*
+!src/assets/fonts/masters/README.md
+
 # --- Test & perf artifacts ---
 coverage/
 playwright-report/
