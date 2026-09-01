@@ -46,6 +46,35 @@ export default {
       },
     },
     {
+      // The Tailwind entry (ADR-015). Only the at-rule vocabulary is
+      // exempted — every brand guardrail above still applies here, and
+      // that matters: app.css is now the one file where a raw value or a
+      // fifth breakpoint could be introduced. `color-no-hex` needs no
+      // exemption because the theme holds var() references exclusively.
+      files: ["src/styles/app.css"],
+      rules: {
+        // Tailwind requires `@import "tailwindcss"`; the bare-string form
+        // is what the plugin resolves, so `url()` is not available.
+        "import-notation": null,
+        "at-rule-no-unknown": [
+          true,
+          {
+            ignoreAtRules: [
+              "theme",
+              "source",
+              "utility",
+              "variant",
+              "custom-variant",
+              "apply",
+              "reference",
+              "plugin",
+              "config",
+            ],
+          },
+        ],
+      },
+    },
+    {
       files: ["**/*.astro"],
       customSyntax: "postcss-html",
       rules: {
