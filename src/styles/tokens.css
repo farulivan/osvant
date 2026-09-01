@@ -47,6 +47,14 @@
      and fever resolve to white, per 01 §2.4. */
   --scent-tint-text: var(--color--white);
 
+  /* ---- Faces (01 §3.1) ----
+     --font--mosvita is emitted on :root by Astro's <Font /> and already
+     carries the metric-matched fallback stack, so neither token appends a
+     generic of its own. Two names for one family is deliberate: the
+     display/body seam stays addressable if the house ever splits again. */
+  --font--display: var(--font--mosvita);
+  --font--body: var(--font--mosvita);
+
   /* ---- Type scale (01 §3.2) ---- */
   --text--impact: clamp(2rem, 10vw, 8rem); /* viewport-filling name moments */
   --text--h1: clamp(2rem, 6vw, 4.5rem);

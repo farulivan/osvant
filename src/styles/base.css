@@ -20,7 +20,7 @@ body {
   margin: 0;
   background: var(--color--black);
   color: var(--color--white);
-  font-family: Archivo, sans-serif;
+  font-family: var(--font--body);
   font-size: var(--text--body);
   font-weight: 400;
   font-stretch: 100%;

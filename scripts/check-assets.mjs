@@ -11,7 +11,9 @@
  *   - no video asset class at all (ADR-013)
  *   - raster images must be AVIF; OG images may also be PNG (06 §3)
  *   - bottle stills ≤ 180KB each at 1× (M §10)
- *   - fonts must be woff2
+ *   - fonts must be woff2, and the whole shipped font payload is capped
+ *     (scripts/font-budget.mjs) — Mosvita is a static family, so the
+ *     number that matters is the sum, not any one file
  *
  * Walks both trees: `public/assets/` (served verbatim) and
  * `src/assets/img/` (masters that Astro converts at build).
@@ -20,6 +22,8 @@
 
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { basename, extname, join, relative } from "node:path";
+
+import { FONT_PAYLOAD_LIMIT_BYTES } from "./font-budget.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const PUBLIC_ASSETS = join(ROOT, "public", "assets");
@@ -43,6 +47,7 @@ const files = [...walk(PUBLIC_ASSETS), ...walk(SRC_ASSETS)].filter(
   (f) => !f.endsWith(".gitkeep"),
 );
 const violations = [];
+let fontPayloadBytes = 0;
 
 const rel = (f) => relative(ROOT, f);
 
@@ -99,11 +104,24 @@ for (const file of files) {
   // Only what ships binds.
   if (
     path.includes("/fonts/") &&
-    !path.startsWith("src/assets/fonts/masters/") &&
-    ext !== ".woff2"
+    !path.startsWith("src/assets/fonts/masters/")
   ) {
-    violations.push(`${basename(file)} — fonts must be woff2 (06 §1)`);
+    if (ext !== ".woff2") {
+      violations.push(`${basename(file)} — fonts must be woff2 (06 §1)`);
+    } else {
+      fontPayloadBytes += statSync(file).size;
+    }
   }
+}
+
+// Checked as a total rather than per-file: a static family's payload is a
+// sum, and a per-file cap would happily wave through a fifth cut. `pnpm fonts`
+// runs the same check at generation time; this is the half that runs in CI.
+if (fontPayloadBytes > FONT_PAYLOAD_LIMIT_BYTES) {
+  violations.push(
+    `font payload is ${(fontPayloadBytes / 1024).toFixed(1)}KB, cap ` +
+      `${FONT_PAYLOAD_LIMIT_BYTES / 1024}KB — this is what holds LCP under 2.5s (M §10)`,
+  );
 }
 
 if (violations.length > 0) {
@@ -112,4 +130,7 @@ if (violations.length > 0) {
   process.exit(1);
 }
 
-console.log(`Asset guard: ${files.length} file(s) checked, all within budget.`);
+console.log(
+  `Asset guard: ${files.length} file(s) checked, all within budget ` +
+    `(fonts ${(fontPayloadBytes / 1024).toFixed(1)}KB / ${FONT_PAYLOAD_LIMIT_BYTES / 1024}KB).`,
+);
