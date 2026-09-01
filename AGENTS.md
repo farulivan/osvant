@@ -2,7 +2,7 @@
 
 ## What this repo is
 
-OSVANT — a fictional luxury fragrance brand site, built as a portfolio showcase of animation-first front-end engineering. Fully static (Astro + GSAP/Lenis/taxi.js/Rive/Three.js), zero backend, all integrations mocked behind ports. Docs-first project: every value, motion and behavior is specified before code exists.
+OSVANT — a fictional luxury fragrance brand site, built as a portfolio showcase of animation-first front-end engineering. Fully static (Astro + Tailwind v4 + GSAP/Lenis/taxi.js/Rive), zero backend, all integrations mocked behind ports. Docs-first project: every value, motion and behavior is specified before code exists.
 
 ## Start here (non-optional)
 
@@ -14,9 +14,10 @@ OSVANT — a fictional luxury fragrance brand site, built as a portfolio showcas
 - No new runtime dependency without an ADR entry (`docs/engineering/02-adrs.md`).
 - Zero third-party scripts/requests (ADR-012) — E2E asserts this.
 - Lifecycle discipline: everything a module creates, its `destroy()` kills (guide §6.2).
-- Budgets are merge gates: `core+transitions` ≤ 350KB gzip; Lighthouse ≥ 90 mobile (≥ 75 on WebGL pages); LCP ≤ 2.5s, CLS < 0.1, INP < 200ms.
+- Budgets are merge gates: `core+transitions` ≤ 350KB gzip; Lighthouse ≥ 90 mobile on **every** page — the ≥ 75 WebGL carve-out was withdrawn with ADR-013, there are no WebGL pages; LCP ≤ 2.5s, CLS < 0.1, INP < 200ms.
 - Reduced-motion branches are written with each feature, never retrofitted (`M §9`).
-- No `#fff`/`#000`/neutral gray, no `box-shadow`, no `text-transform: uppercase` — stylelint-enforced.
+- No `#fff`/`#000`/neutral gray, no `box-shadow`, no `text-transform: uppercase` — enforced against the built output by `pnpm check:guardrails` (ADR-017); stylelint keeps the same rules as the local loop.
+- Styling is utility-first (Tailwind v4, ADR-015/016). `tokens.css` still owns every raw value; `app.css` maps them and deletes Tailwind's default theme, so a value the docs don't name has no utility. Don't add an Astro-scoped `<style>` block to a new component.
 
 ## Workflow
 
@@ -35,6 +36,8 @@ Node 24 (`.nvmrc`), pnpm (pinned via `packageManager`).
 - `pnpm verify` — format (Prettier, writes) → lint (ESLint + stylelint) → typecheck (`astro check`) → unit tests (Vitest). Run before every push.
 - `pnpm format:check` — CI-style non-mutating format check
 - Granular: `pnpm format` · `pnpm lint` · `pnpm typecheck` · `pnpm test`
+- `pnpm check:guardrails` — the three brand bans, scanned against `dist/` (needs a build first)
+- `pnpm parity:styles` — computed-style snapshot/diff across a refactor; see the header of `scripts/style-parity.mjs` for the noise floor caveat
 
 ## AI transparency
 
