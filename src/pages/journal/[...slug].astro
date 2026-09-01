@@ -32,9 +32,9 @@ const linked = article.data.scent
   ogType="article"
   ogImage={article.data.ogOverride}
 >
-  <article class="article" data-nav-theme="dark">
-    <header class="article__header">
-      <p class="article__date eyebrow" data-eyebrow>
+  <article class="bg-black px-gutter pt-[20vh]" data-nav-theme="dark">
+    <header class="max-w-[20ch]">
+      <p class="mb-6 eyebrow text-xs" data-eyebrow>
         <time datetime={article.data.date.toISOString()}>
           {
             new Intl.DateTimeFormat("en-GB", {
@@ -47,7 +47,7 @@ const linked = article.data.scent
           }
         </time>
       </p>
-      <h1 class="article__title display">{article.data.title}</h1>
+      <h1 class="mb-16 display text-h2 text-white">{article.data.title}</h1>
     </header>
 
     {
@@ -55,14 +55,16 @@ const linked = article.data.scent
         data-anim="parallax" wires the M §4.5 scrub with real media. */
     }
     <div
-      class="article__lead"
+      class="aspect-video overflow-hidden rounded-media scent-wash"
       data-anim="parallax"
       role="img"
       aria-label={article.data.leadImage.alt}
     >
     </div>
 
-    <div class="article__body">
+    <div
+      class="mx-auto mt-20 max-w-[66.667%] text-lg leading-relaxed text-haze-2 max-md:max-w-full [&_blockquote]:my-[3em] [&_blockquote]:border-l [&_blockquote]:border-phosphor [&_blockquote]:pl-6 [&_blockquote]:text-3xl [&_blockquote]:leading-tight [&_blockquote]:text-haze-3 [&_blockquote_p]:m-0 [&_h3]:mt-[3em] [&_h3]:mb-[1em] [&_h3]:display [&_h3]:text-3xl [&_h3]:text-white [&_p]:mb-[1.5em]"
+    >
       <Content />
     </div>
 
@@ -72,8 +74,15 @@ const linked = article.data.scent
     }
   </article>
 
+  {
+    /* A top-level section, a SIBLING of the article — not a child. The
+      negative gutter margins here were a full-bleed breakout with nothing
+      to break out of, so the band overhung the viewport by a gutter on
+      each side at every width (1440 + 2x57.6 = 1555px measured). It is
+      already full-bleed; it only needs its own padding. */
+  }
   <section
-    class="article__xsell"
+    class="mt-32 bg-ink-1 px-gutter py-16"
     data-nav-theme={linked ? "scent" : "dark"}
     data-scent={linked?.scent}
     aria-label="keep browsing"
@@ -81,142 +90,33 @@ const linked = article.data.scent
     {
       linked ? (
         <a
-          class="article__xsell-link"
+          class="flex flex-col gap-2 no-underline"
           href={withBase(`collection/${linked.scent}/`)}
         >
-          <span class="article__xsell-eyebrow eyebrow" data-eyebrow>
+          <span class="eyebrow text-xs" data-eyebrow>
             in this story
           </span>
-          <span class="article__xsell-name display">{linked.name}</span>
-          <span class="article__xsell-price">
+          <span class="display text-h2 text-scent-tint-text">
+            {linked.name}
+          </span>
+          <span class="text-base text-white">
             €{linked.variants[0].price} — discover
           </span>
         </a>
       ) : (
-        <a class="article__xsell-link" href={withBase("collection")}>
-          <span class="article__xsell-eyebrow eyebrow" data-eyebrow>
+        <a
+          class="flex flex-col gap-2 no-underline"
+          href={withBase("collection")}
+        >
+          <span class="eyebrow text-xs" data-eyebrow>
             the collection
           </span>
-          <span class="article__xsell-name display">five currents</span>
-          <span class="article__xsell-price">shop the collection</span>
+          <span class="display text-h2 text-scent-tint-text">
+            five currents
+          </span>
+          <span class="text-base text-white">shop the collection</span>
         </a>
       )
     }
   </section>
 </BaseLayout>
-
-<style>
-  .article {
-    padding: 20vh var(--gutter) 0;
-    background: var(--color--black);
-  }
-
-  .article__header {
-    max-width: 20ch;
-  }
-
-  .article__date {
-    margin: 0 0 1.5rem;
-    font-size: var(--text--eyebrow);
-  }
-
-  .article__title {
-    margin: 0 0 4rem;
-    font-size: var(--text--h2);
-    letter-spacing: -0.01em;
-    color: var(--color--white);
-  }
-
-  .article__lead {
-    aspect-ratio: 16 / 9;
-    border-radius: var(--radius--media);
-    overflow: hidden;
-    background: radial-gradient(
-      ellipse 70% 60% at 50% 55%,
-      color-mix(
-          in oklab,
-          var(--scent-tint, var(--color--phosphor)) 22%,
-          var(--color--ink-1)
-        )
-        0%,
-      var(--color--ink-1) 80%
-    );
-  }
-
-  /* --text--body two-thirds column (03 §5) */
-  .article__body {
-    max-width: 66.667%;
-    margin: 5rem auto 0;
-    font-size: var(--text--body);
-    line-height: 1.6;
-    color: var(--color--haze-2);
-  }
-
-  .article__body :global(p) {
-    margin: 0 0 1.5em;
-  }
-
-  /* Markdown headings take the display cut like every other heading. */
-  .article__body :global(h3) {
-    margin: 3em 0 1em;
-    font-family: var(--font--display);
-    font-size: var(--text--h3);
-    font-weight: 900;
-    font-stretch: 125%;
-    color: var(--color--white);
-  }
-
-  /* Pull-quotes (03 §5): the muted rung of the tone ladder (01 §3.3).
-     Markdown-rendered, so the .whisper recipe is written out rather than
-     applied as a class. */
-  .article__body :global(blockquote) {
-    margin: 3em 0;
-    padding: 0 0 0 1.5rem;
-    border-left: 1px solid var(--color--phosphor);
-    font-size: var(--text--h3);
-    line-height: 1.2;
-    color: var(--color--haze-3);
-  }
-
-  .article__body :global(blockquote p) {
-    margin: 0;
-  }
-
-  .article__xsell {
-    /* This is a top-level section, a SIBLING of `.article` — not a child.
-       The negative gutter margins were a full-bleed breakout with nothing
-       to break out of, so the band overhung the viewport by a gutter on
-       each side at every width (1440 + 2x57.6 = 1555px measured). It is
-       already full-bleed; it only needs its own padding. */
-    margin: 8rem 0 0;
-    padding: 4rem var(--gutter);
-    background: var(--color--ink-1);
-  }
-
-  .article__xsell-link {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    text-decoration: none;
-  }
-
-  .article__xsell-eyebrow {
-    font-size: var(--text--eyebrow);
-  }
-
-  .article__xsell-name {
-    font-size: var(--text--h2);
-    color: var(--scent-tint-text, var(--color--white));
-  }
-
-  .article__xsell-price {
-    font-size: var(--text--btn);
-    color: var(--color--white);
-  }
-
-  @media (width <= 47.9375rem) {
-    .article__body {
-      max-width: 100%;
-    }
-  }
-</style>

@@ -37,16 +37,16 @@ const ARTBOARDS = [
 
 <DevHarness title="rive handoff" spec="06-assets §2 · M §7">
   <section class="harness-block">
-    <h2 class="harness-block__title display">
-      artboard inventory + presence probe
-    </h2>
-    <p class="harness-block__note">
+    <h2 class="mb-3 display text-2xl">artboard inventory + presence probe</h2>
+    <p class="mb-6 max-w-[44rem] text-lg text-haze-3">
       Artboard + state-machine names are the binding contract (M §7). Inputs
       must be verified in the Rive editor preview before handoff; this probe
       confirms the exported file arrived at its contracted path
       (`public/assets/rive/`).
     </p>
-    <table class="harness-table">
+    <table
+      class="border-collapse text-lg [&_[data-status=missing]]:text-amber [&_[data-status=present]]:text-phosphor [&_td]:border-b [&_td]:border-b-ink-3 [&_td]:py-2 [&_td]:pr-6 [&_td]:text-left [&_th]:border-b [&_th]:border-b-ink-3 [&_th]:py-2 [&_th]:pr-6 [&_th]:text-left [&_th]:font-medium [&_th]:text-haze-3"
+    >
       <thead>
         <tr>
           <th>file</th>
@@ -90,42 +90,3 @@ const ARTBOARDS = [
       }
     });
 </script>
-
-<style>
-  .harness-block__title {
-    font-size: var(--text--h4);
-    margin: 0 0 0.75rem;
-  }
-
-  .harness-block__note {
-    color: var(--color--haze-3);
-    font-size: var(--text--body);
-    margin: 0 0 1.5rem;
-    max-width: 44rem;
-  }
-
-  .harness-table {
-    border-collapse: collapse;
-    font-size: var(--text--body);
-  }
-
-  .harness-table th,
-  .harness-table td {
-    padding: 0.5rem 1.5rem 0.5rem 0;
-    text-align: left;
-    border-bottom: 1px solid var(--color--ink-3);
-  }
-
-  .harness-table th {
-    color: var(--color--haze-3);
-    font-weight: 500;
-  }
-
-  [data-status="present"] {
-    color: var(--color--phosphor);
-  }
-
-  [data-status="missing"] {
-    color: var(--color--amber);
-  }
-</style>

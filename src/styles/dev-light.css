@@ -1,0 +1,31 @@
+/*
+ * /dev/light harness only (guide task 1.9). Imported by that page alone,
+ * so Astro keeps it out of the site bundle — none of this ships to a
+ * real route.
+ *
+ * Both rules are driven by JavaScript in the harness (a class toggle and
+ * a data attribute), so by the ADR-016 rule they are CSS rather than
+ * utilities in markup.
+ */
+
+@layer components {
+  /* Alpha/fringe check — the same silhouette against a pale ground. */
+  .panel--light {
+    background: var(--color--haze-1);
+    padding: 1.5rem;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Layer isolation. Names match the M §8.1 table.
+     `visibility`, never `display: none` — hiding a grid child collapses
+     the stage box, which rescales the mask and makes the diagnostic
+     report a registration fault that is not there. */
+  [data-isolate="wash"] .light-study > *:not(.light-study__wash),
+  [data-isolate="caustic"] .light-study > *:not(.light-study__caustic),
+  [data-isolate="bottle"] .light-study > *:not(.light-study__bottle),
+  [data-isolate="sheen"] .light-study > *:not(.light-study__sheen),
+  [data-isolate="rim"] .light-study > *:not(.light-study__rim),
+  [data-isolate="vapor"] .light-study > *:not(.light-study__vapor) {
+    visibility: hidden;
+  }
+}

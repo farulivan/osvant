@@ -32,6 +32,7 @@
 
 @import "tailwindcss";
 @import "./tokens.css";
+@import "./light-study.css";
 
 @theme inline {
   /* ---- Colour (01 §2.1) ----
@@ -57,6 +58,17 @@
   --color-ink-3: var(--color--ink-3);
   --color-ink-4: var(--color--ink-4);
   --color-on-phosphor: var(--color--on-phosphor);
+
+  /* Ghost type — the footer marquee and wordmark. 01 §5.6 specifies no
+     colour for these and the gap is flagged: ink-2 on black fails WCAG
+     1.4.3 at 1.63:1, so this mix keeps the ghosted look at ~4:1, clearing
+     the 3:1 large-text floor. Named because it is used twice and the
+     reasoning must travel with it. */
+  --color-ghost: color-mix(
+    in oklab,
+    var(--color--haze-3) 60%,
+    var(--color--black)
+  );
 
   /* `inline` is mandatory for these two, not stylistic. Without it the
      utility compiles to var(--color-scent-tint) and Tailwind emits that
@@ -105,6 +117,14 @@
      cubic-bezier() literals in six places across five files today. */
   --ease-power2-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease-expo-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* The landscape prompt's gate (03 §7): mobile landscape only, keyed on
+   height rather than width — a phone on its side, not a small window. */
+@custom-variant landscape-phone {
+  @media (orientation: landscape) and (height <= 480px) {
+    @slot;
+  }
 }
 
 /* The constraint is the finger, not the viewport (review OSV-13). */
@@ -167,6 +187,27 @@
    the card's own [data-scent], so the wash carries the article's scent.
    Named here rather than in markup because the alternative is a
    160-character arbitrary value: legal, unreadable, unreviewable. */
+
+/* The hero's vapor placeholder, standing in until vapor.riv lands
+   (ADR-008, 06 §1). Its OPACITY is the intensity channel the module
+   drives from Lenis velocity, so the wiring is real today and the Rive
+   artboard drops in later without touching modules/home-hero.ts. Two
+   stacked gradients — not expressible as an arbitrary value at any
+   readable length. */
+@utility hero-vapor {
+  background:
+    radial-gradient(
+      ellipse 60% 45% at 50% 60%,
+      var(--color--phosphor-zero) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 45% 35% at 35% 45%,
+      color-mix(in oklab, var(--color--phosphor) 14%, transparent) 0%,
+      transparent 70%
+    );
+}
+
 @utility scent-wash {
   background: radial-gradient(
     ellipse 70% 60% at 50% 55%,
@@ -318,6 +359,176 @@
      and .btn-line--ready (4×). Do not rename them.
      --------------------------------------------------------------------- */
 
+  /* Newsletter validation copy (01 §5.5) — the element is toggled and
+     the modifier class is written by modules/newsletter.ts, which also
+     tweens borderBottomColor to var(--color--amber). newsletter.test.ts
+     asserts the modifier by name. */
+  .newsletter-msg {
+    flex-basis: 100%;
+    margin-top: 0.25rem;
+  }
+
+  .newsletter-msg--error {
+    color: var(--color--amber);
+  }
+
+  /* -------------------------------------------------------------------
+     The nav's theming system (M §4.9, 01 §5.2).
+
+     `nav--solid` and `nav--theme-*` are written onto the nav root by
+     core/nav.ts as sections cross the viewport, and nav.test.ts asserts
+     all four by name (7 assertions) — so they are JS contracts and live
+     here by the ADR-016 rule, not in markup.
+
+     The descendants are matched by element rather than by BEM class. The
+     nav contains exactly one svg, one link list and two buttons, so
+     `:is(a, button)` is both shorter and harder to break than four class
+     hooks that every one of these rules would otherwise have to name.
+     ------------------------------------------------------------------- */
+
+  /* --color--black at 80%. Written as channels because rgb() cannot take
+     a hex custom property, so this literal has to track --color--black by
+     hand — it was the only value missed when the house went green. */
+  .nav--solid {
+    background: rgb(14 17 16 / 80%);
+    backdrop-filter: blur(12px);
+  }
+
+  /* `backdrop-filter` creates a containing block for `position: fixed`
+     DESCENDANTS. With nav--solid applied, the overlay menu's
+     `fixed inset-0` resolved against the nav's own 84px-tall box instead
+     of the viewport: the menu painted as a strip across the top and its
+     links spilled over the page behind it. Dropping the blur while the
+     menu is open costs nothing — the overlay covers the whole viewport,
+     so there is no backdrop left to blur. */
+  [data-nav]:has([data-nav-menu][data-open="true"]) {
+    backdrop-filter: none;
+  }
+
+  .nav--theme-light :is(a, button) {
+    color: var(--color--black);
+  }
+
+  .nav--theme-light svg text {
+    fill: var(--color--black);
+  }
+
+  .nav--theme-dark :is(a, button) {
+    color: var(--color--white);
+  }
+
+  .nav--theme-dark svg text {
+    fill: var(--color--white);
+  }
+
+  /* Under a scent-themed section the LINKS STAY WHITE. Phosphor on black
+     is 4.47:1 and misses AA at 16px (01 §6.2), and a tinted nav link also
+     reads as an unvisited default link rather than as brand theming. The
+     scent shows in the mark and in the underline marker instead — tint as
+     a light source, not a text colour (01 §6.1). */
+  .nav--theme-scent :is(a, button) {
+    color: var(--color--white);
+  }
+
+  .nav--theme-scent svg text {
+    fill: var(--scent-tint);
+  }
+
+  /* -------------------------------------------------------------------
+     Cart lines.
+
+     Built at runtime by modules/cart-drawer.ts via innerHTML, so they
+     never carried this component's scope attribute — a plain `.cart-line`
+     rule used to compile to `.cart-line[data-astro-cid-...]` and match
+     nothing. Every rule here was dead code, and the steppers and remove
+     button rendered as raw browser chrome (grey fill, black text, `2px
+     outset`) — which is how neutral grey reached a page that stylelint
+     forbids it on. The review logged it as "the stepper does not render"
+     (OSV-28); it rendered, unstyled.
+
+     Retiring scoped styles removes the cause outright. They stay here
+     rather than becoming utilities for the ADR-016 reason: no markup in
+     this repo ever carries them.
+     ------------------------------------------------------------------- */
+  .cart-line {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--color--ink-3);
+  }
+
+  /* 03 §8 — the cart is a consumer of the bottle still. */
+  .cart-line__thumb {
+    flex: none;
+    width: 4rem;
+    height: 4rem;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    background: var(--color--black);
+  }
+
+  .cart-line__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cart-line__name {
+    font-size: var(--text-base);
+    font-weight: 600;
+  }
+
+  /* The unit price used to sit here as well as in `.cart-line__price`,
+     which duplicated the number at quantity 1 and wrapped the line. It
+     appears only when it says something the row total does not — at
+     quantity 2 or more. */
+  .cart-line__meta {
+    margin-top: 0.25rem;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--color--haze-3);
+  }
+
+  .cart-line__steppers {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .cart-line__steppers button {
+    width: 1.75rem;
+    height: 1.75rem;
+    background: transparent;
+    border: 1px solid var(--color--ink-4);
+    border-radius: var(--radius-sm);
+    color: var(--color--white);
+    font-size: var(--text-base);
+    cursor: pointer;
+  }
+
+  .cart-line__qty {
+    min-width: 1.5rem;
+    text-align: center;
+    font-size: var(--text-base);
+  }
+
+  .cart-line__price {
+    min-width: 3.5rem;
+    text-align: right;
+    font-size: var(--text-base);
+  }
+
+  .cart-line__remove {
+    background: none;
+    border: 0;
+    color: var(--color--haze-3);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+  }
+
   /* Mask for SplitText line wrapping — headline reveal (M §4.2) */
   .line-mask {
     overflow: hidden;
@@ -350,27 +561,27 @@
   /* ---------------------------------------------------------------------
      Touch targets (WCAG 2.5.8 / iOS HIG, review OSV-13)
 
-     Gated on `pointer: coarse`, not on width. The constraint is the finger,
-     not the viewport — a narrow desktop window should keep its typographic
-     rhythm, and a large tablet still needs thumb-sized targets.
+     Gated on `pointer: coarse`, not on width. The constraint is the
+     finger, not the viewport — a narrow desktop window should keep its
+     typographic rhythm, and a large tablet still needs thumb-sized
+     targets.
+
+     Selected semantically rather than by class. The original list named
+     ten BEM classes; nine of them no longer exist now that markup is
+     utility-first, and a rule that silently matches nothing is worse than
+     no rule — this is the same failure mode as the `.cart-line` bug. The
+     site chrome (`nav`, `footer`) and list links are the whole audited
+     set, and both survive any restyling.
 
      Every rule here grows the HIT AREA and never the type. Nav and footer
-     links were 17px tall boxes: legible, but under half the 24×24 minimum
-     2.5.8 asks for and a quarter of the 44px iOS expects.
-
-     Inline links inside prose are deliberately excluded — 2.5.8 exempts
-     them, and padding them out would break the line rhythm of body copy.
+     links were 17px tall boxes: legible, but under half the 24x24 minimum
+     2.5.8 asks for and a quarter of the 44px iOS expects. Inline links
+     inside prose are deliberately excluded — 2.5.8 exempts them, and
+     padding them out would break the line rhythm of body copy.
      --------------------------------------------------------------------- */
   @media (pointer: coarse) {
-    .nav__logo,
-    .nav__links a,
-    .nav__cart,
-    .footer__list a,
-    .footer__legal a,
-    .contact__socials a,
-    .contact__press a,
-    .scent-card__discover,
-    .hero__cue-btn,
+    :is(nav, footer) :is(a, button),
+    li > a:not(:has(img, [class*="aspect-"])),
     .btn-text {
       /* Pad to the target instead of switching `display`. An earlier pass
          used `inline-flex` here and silently ate a space: SplitText wraps
@@ -390,7 +601,6 @@
        pixels under the line. */
     .btn-primary,
     .btn-secondary,
-    .pdp-buy__chip,
     button,
     select,
     textarea,

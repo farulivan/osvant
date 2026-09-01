@@ -35,13 +35,13 @@ const [heart, base] = macroPair([
 ---
 
 <section
-  class="formula"
+  class="bg-black px-gutter py-24"
   data-nav-theme="scent"
   aria-labelledby={`formula-${product.scent}`}
 >
-  <p class="formula__eyebrow eyebrow" data-eyebrow>the formula</p>
+  <p class="mb-4 eyebrow text-xs" data-eyebrow>the formula</p>
   <h2
-    class="formula__title display"
+    class="mb-10 display text-h2"
     id={`formula-${product.scent}`}
     data-anim="split"
   >
@@ -53,9 +53,11 @@ const [heart, base] = macroPair([
       product shot, and 01 §6 reserves the duotone for skin and vapor.
       Tinting it turned the brushed-steel cap gold on the fever page. */
   }
-  <div class="formula__row formula__row--detail">
+  <div
+    class="mb-16 grid grid-cols-2 items-center gap-16 max-md:grid-cols-1 max-md:gap-6"
+  >
     <Duotone
-      class="formula__media"
+      class="aspect-auto rounded-media"
       image={detailFor(product.scent)}
       alt={`${product.name} — cap and shoulder`}
       widths={[440, 700, 1000]}
@@ -63,20 +65,26 @@ const [heart, base] = macroPair([
       strength={0}
       fit="contain"
     />
-    <p class="formula__text">{product.formula.paragraphs[0]}</p>
+    <p class="max-w-[46ch] text-lg leading-relaxed text-haze-2">
+      {product.formula.paragraphs[0]}
+    </p>
   </div>
 
   {/* Rows 2 and 3 — the materials, from this scent's own pyramid */}
-  <div class="formula__row formula__row--reverse">
+  <div
+    class="mb-16 grid grid-cols-2 items-center gap-16 max-md:grid-cols-1 max-md:gap-6"
+  >
     <Duotone
-      class="formula__media"
+      class="order-2 aspect-4/3 rounded-media max-md:order-none"
       image={heart.image}
       alt={heart.alt}
       widths={[440, 700, 1000]}
       sizes="(width <= 47.9375rem) 100vw, 50vw"
       exposure={heart.exposure}
     />
-    <p class="formula__text">{product.formula.paragraphs[1]}</p>
+    <p class="max-w-[46ch] text-lg leading-relaxed text-haze-2">
+      {product.formula.paragraphs[1]}
+    </p>
   </div>
 
   {
@@ -87,97 +95,22 @@ const [heart, base] = macroPair([
       one page is padding, not information. Ending on the italic line also
       lands better into the cross-sell than ending on a paragraph. */
   }
-  <div class="formula__row">
+  <div
+    class="mb-16 grid grid-cols-2 items-center gap-16 max-md:grid-cols-1 max-md:gap-6"
+  >
     <Duotone
-      class="formula__media"
+      class="aspect-4/3 rounded-media"
       image={base.image}
       alt={base.alt}
       widths={[440, 700, 1000]}
       sizes="(width <= 47.9375rem) 100vw, 50vw"
       exposure={base.exposure}
     />
-    <blockquote class="formula__quote whisper">
+    {/* The muted rung of the tone ladder — exactly one per page (03 §3.3). */}
+    <blockquote
+      class="max-w-[20ch] p-0 whisper max-md:max-w-[24ch] [&_p]:text-3xl [&_p]:leading-tight [&_p]:text-white"
+    >
       <p>{product.formula.pullQuote}</p>
     </blockquote>
   </div>
 </section>
-
-<style>
-  .formula {
-    padding: var(--space--xl) var(--gutter);
-    background: var(--color--black);
-  }
-
-  .formula__eyebrow {
-    margin: 0 0 var(--space--eyebrow-headline);
-    font-size: var(--text--eyebrow);
-  }
-
-  .formula__title {
-    margin: 0 0 var(--space--lede-content);
-    font-size: var(--text--h2);
-  }
-
-  .formula__row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space--l);
-    align-items: center;
-    margin-bottom: var(--space--l);
-  }
-
-  .formula__row--reverse :global(.formula__media) {
-    order: 2;
-  }
-
-  .formula__row :global(.formula__media) {
-    aspect-ratio: 4 / 3;
-    border-radius: var(--radius--media);
-  }
-
-  /* The bottle detail is a letterbox band (the cap-and-shoulder crop runs
-     about 2.4:1), so a 4/3 box `contain`s it with 210px of dead space
-     above and below. Letting the plate drive its own height turns that
-     into a macro strip, which is what 03 §3.3 is describing anyway. */
-  .formula__row--detail :global(.formula__media) {
-    aspect-ratio: auto;
-  }
-
-  .formula__text {
-    margin: 0;
-    max-width: 46ch;
-    font-size: var(--text--body);
-    line-height: 1.6;
-    color: var(--color--haze-2);
-  }
-
-  /* The second register (01 §3.1) — exactly one per page (03 §3.3). */
-  .formula__quote {
-    margin: 0;
-    padding: 0;
-    max-width: 20ch;
-  }
-
-  .formula__quote p {
-    margin: 0;
-    font-size: var(--text--h3);
-    line-height: 1.2;
-    color: var(--color--white);
-  }
-
-  @media (width <= 47.9375rem) {
-    .formula__row,
-    .formula__row--reverse {
-      grid-template-columns: 1fr;
-      gap: var(--space--s);
-    }
-
-    .formula__row--reverse :global(.formula__media) {
-      order: 0;
-    }
-
-    .formula__quote {
-      max-width: 24ch;
-    }
-  }
-</style>

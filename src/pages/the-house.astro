@@ -53,19 +53,20 @@ const craft = [
 >
   {/* Hero — stacked fragments per 01 §3.3, reveal via data-anim="split" */}
   <section
-    class="house-hero"
+    class="flex min-h-svh flex-col justify-center bg-black px-gutter pt-32 pb-16"
     data-nav-theme="dark"
     aria-labelledby="house-title"
   >
-    <p class="house-hero__eyebrow eyebrow" data-eyebrow>the lab</p>
-    <h1 class="house-hero__title" id="house-title">
-      <span class="house-hero__fragment display" data-anim="split">the lab</span
+    <p class="mb-4 eyebrow text-xs" data-eyebrow>the lab</p>
+    <h1 id="house-title">
+      <span class="block display text-impact text-white" data-anim="split"
+        >the lab</span
       >
-      <span class="house-hero__fragment display" data-anim="split"
+      <span class="block display text-impact text-white" data-anim="split"
         >behind osvant</span
       >
     </h1>
-    <p class="house-hero__lead">
+    <p class="mt-12 max-w-[34ch] text-2xl text-haze-3">
       we are a laboratory that sells five things. no seasonal editions, no
       flankers, no reformulations to hit a price. a formula either works or it
       does not leave the bench.
@@ -77,14 +78,16 @@ const craft = [
       scrolled; reversible scrub, never triggered-once */
   }
   <section
-    class="manifesto"
+    class="flex min-h-screen flex-col justify-center gap-8 bg-black px-gutter py-[15vh]"
     data-manifesto
     data-nav-theme="dark"
     aria-label="manifesto"
   >
     {
       statements.map((statement) => (
-        <p class="manifesto__line display" data-manifesto-line>
+        /* text-white is the reduced-motion/static resting state: the
+           statements sit lit when the scrub never runs. */
+        <p class="max-w-[26ch] display text-h1 text-white" data-manifesto-line>
           {statement}
         </p>
       ))
@@ -95,24 +98,32 @@ const craft = [
     /* Craft grid — macro photography parallax (03 §4); washes until the
       shoot lands (ADR-008) */
   }
-  <section class="craft" data-nav-theme="dark" aria-labelledby="craft-title">
-    <h2 class="craft__title display" id="craft-title" data-anim="split">
+  <section
+    class="bg-black px-gutter py-[15vh]"
+    data-nav-theme="dark"
+    aria-labelledby="craft-title"
+  >
+    <h2
+      class="mb-16 display text-h2 text-white"
+      id="craft-title"
+      data-anim="split"
+    >
       the craft
     </h2>
-    <div class="craft__grid">
+    <div class="grid grid-cols-3 gap-5 max-lg:grid-cols-2 max-md:grid-cols-1">
       {
         craft.map((tile) => (
-          <figure class="craft__figure">
+          <figure>
             <Duotone
-              class="craft__tile"
+              class="aspect-3/4 overflow-hidden rounded-media"
               image={tile.photo.image}
               alt=""
               widths={[360, 560, 800]}
               sizes="(width <= 47.9375rem) 100vw, 33vw"
               exposure={tile.photo.exposure}
             />
-            <figcaption class="craft__caption">
-              <span class="craft__eyebrow eyebrow" data-eyebrow>
+            <figcaption class="mt-4 flex max-w-[32ch] flex-col gap-2 text-base text-haze-2">
+              <span class="eyebrow text-xs" data-eyebrow>
                 {tile.eyebrow}
               </span>
               {tile.caption}
@@ -124,13 +135,22 @@ const craft = [
   </section>
 
   {/* CTA band → collection (03 §4) */}
+  {
+    /* 03 §9 requires every animated section to resolve to a CTA. This one
+      resolved to ONLY a CTA: a single centred button floating in a 300px
+      band with nothing above it (review OSV-23). */
+  }
   <section
-    class="house-cta"
+    class="flex flex-col items-center justify-center bg-ink-1 px-gutter py-[15vh] text-center"
     data-nav-theme="dark"
     aria-labelledby="house-cta-title"
   >
-    <p class="house-cta__eyebrow eyebrow" data-eyebrow>five formulas</p>
-    <h2 class="house-cta__title display" id="house-cta-title" data-anim="split">
+    <p class="mb-4 eyebrow text-xs" data-eyebrow>five formulas</p>
+    <h2
+      class="mb-10 max-w-[18ch] display text-h2"
+      id="house-cta-title"
+      data-anim="split"
+    >
       the rest is on your skin
     </h2>
     <a class="btn-primary" href={withBase("collection")} data-anim="btn-line">
@@ -138,135 +158,3 @@ const craft = [
     </a>
   </section>
 </BaseLayout>
-
-<style>
-  .house-hero {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 100vh;
-    min-height: 100svh;
-    padding: 8rem var(--gutter) 4rem;
-    background: var(--color--black);
-  }
-
-  .house-hero__eyebrow {
-    margin: 0 0 var(--space--eyebrow-headline);
-    font-size: var(--text--eyebrow);
-  }
-
-  .house-hero__title {
-    margin: 0;
-  }
-
-  .house-hero__fragment {
-    display: block;
-    font-size: var(--text--impact);
-    letter-spacing: -0.02em;
-    color: var(--color--white);
-  }
-
-  .house-hero__lead {
-    margin: 3rem 0 0;
-    max-width: 34ch;
-    font-size: var(--text--lead);
-    color: var(--color--haze-3);
-  }
-
-  .manifesto {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 2rem;
-    min-height: 100vh;
-    padding: 15vh var(--gutter);
-    background: var(--color--black);
-  }
-
-  .manifesto__line {
-    margin: 0;
-    max-width: 26ch;
-    font-size: var(--text--h1);
-    color: var(--color--white); /* RM/static path: statements sit lit */
-  }
-
-  .craft {
-    padding: 15vh var(--gutter);
-    background: var(--color--black);
-  }
-
-  .craft__title {
-    margin: 0 0 4rem;
-    font-size: var(--text--h2);
-    color: var(--color--white);
-  }
-
-  .craft__grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--grid-gap);
-  }
-
-  .craft__figure {
-    margin: 0;
-  }
-
-  .craft__caption {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space--2xs);
-    margin-top: var(--space--xs);
-    font-size: var(--text--h6);
-    color: var(--color--haze-2);
-    max-width: 32ch;
-  }
-
-  .craft__eyebrow {
-    font-size: var(--text--eyebrow);
-  }
-
-  .craft__figure :global(.craft__tile) {
-    aspect-ratio: 3 / 4;
-    border-radius: var(--radius--media);
-    overflow: hidden;
-  }
-
-  /* `03 §9` requires every animated section to resolve to a CTA. This one
-     resolved to ONLY a CTA: a single centred button floating in a 300px
-     band with nothing above it (review OSV-23). */
-  .house-cta {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 15vh var(--gutter);
-    background: var(--color--ink-1);
-    text-align: center;
-  }
-
-  .house-cta__eyebrow {
-    margin: 0 0 var(--space--eyebrow-headline);
-    font-size: var(--text--eyebrow);
-  }
-
-  .house-cta__title {
-    margin: 0 0 var(--space--lede-content);
-    max-width: 18ch;
-    font-size: var(--text--h2);
-  }
-
-  /* Tablet (768–991px) had no layout of its own: the site defined four
-     breakpoints in tokens and shipped one, so a 3-up grid stayed 3-up at
-     834px and gave each cell ~240px (review OSV-13). */
-  @media (61.9375rem >= width > 47.9375rem) {
-    .craft__grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (width <= 47.9375rem) {
-    .craft__grid {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>

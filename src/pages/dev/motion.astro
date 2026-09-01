@@ -9,17 +9,17 @@ import DevHarness from "../../layouts/DevHarness.astro";
 
 <DevHarness title="motion playground" spec="M §4 · guide §8 trap #10">
   <section class="harness-block">
-    <h2 class="harness-block__title display">core state</h2>
-    <dl class="harness-stats">
-      <div class="harness-stat">
+    <h2 class="mb-3 display text-2xl">core state</h2>
+    <dl class="m-0 flex gap-12">
+      <div class="[&_dd]:mt-1 [&_dd]:text-xl [&_dt]:text-xs [&_dt]:text-haze-3">
         <dt>reduced motion (M §9)</dt>
         <dd data-stat="reduced-motion">…</dd>
       </div>
-      <div class="harness-stat">
+      <div class="[&_dd]:mt-1 [&_dd]:text-xl [&_dt]:text-xs [&_dt]:text-haze-3">
         <dt>lenis</dt>
         <dd data-stat="lenis">…</dd>
       </div>
-      <div class="harness-stat">
+      <div class="[&_dd]:mt-1 [&_dd]:text-xl [&_dt]:text-xs [&_dt]:text-haze-3">
         <dt>scroll velocity</dt>
         <dd><span data-stat="velocity">0</span> px/s</dd>
       </div>
@@ -27,26 +27,32 @@ import DevHarness from "../../layouts/DevHarness.astro";
   </section>
 
   <section class="harness-block">
-    <h2 class="harness-block__title display">
+    <h2 class="mb-3 display text-2xl">
       marquee — trap #10 reference implementation
     </h2>
-    <p class="harness-block__note">
+    <p class="mb-6 max-w-[44rem] text-lg text-haze-3">
       gsap.ticker loop via <code>scroll.onFrame</code>, speed follows Lenis
       velocity, content duplicated for seamlessness (duplicate is
       <code>aria-hidden</code>), paused off-viewport. Static under reduced
       motion (M §9). Scroll to feel it.
     </p>
-    <div class="harness-marquee" data-harness-marquee>
-      <div class="harness-marquee__track" data-harness-marquee-track>
-        <span class="harness-marquee__item">provocation, bottled. &nbsp;</span>
-        <span class="harness-marquee__item" aria-hidden="true"
+    <div
+      class="overflow-hidden border-y border-y-ink-3 py-4"
+      data-harness-marquee
+    >
+      <div
+        class="flex whitespace-nowrap will-change-transform"
+        data-harness-marquee-track
+      >
+        <span class="display text-h1">provocation, bottled. &nbsp;</span>
+        <span class="display text-h1" aria-hidden="true"
           >provocation, bottled. &nbsp;</span
         >
       </div>
     </div>
   </section>
 
-  <div class="harness-scroll-space" aria-hidden="true"></div>
+  <div class="h-[200vh]" aria-hidden="true"></div>
 </DevHarness>
 
 <script>
@@ -106,56 +112,3 @@ import DevHarness from "../../layouts/DevHarness.astro";
     });
   }
 </script>
-
-<style>
-  .harness-block__title {
-    font-size: var(--text--h4);
-    margin: 0 0 0.75rem;
-  }
-
-  .harness-block__note {
-    color: var(--color--haze-3);
-    font-size: var(--text--body);
-    margin: 0 0 1.5rem;
-    max-width: 44rem;
-  }
-
-  .harness-stats {
-    display: flex;
-    gap: 3rem;
-    margin: 0;
-  }
-
-  .harness-stat dt {
-    color: var(--color--haze-3);
-    font-size: var(--text--eyebrow);
-  }
-
-  .harness-stat dd {
-    margin: 0.25rem 0 0;
-    font-size: var(--text--h5);
-  }
-
-  .harness-marquee {
-    overflow: hidden;
-    border-block: 1px solid var(--color--ink-3);
-    padding-block: 1rem;
-  }
-
-  .harness-marquee__track {
-    display: flex;
-    white-space: nowrap;
-    will-change: transform;
-  }
-
-  .harness-marquee__item {
-    font-family: var(--font--display);
-    font-size: var(--text--h1);
-    font-weight: 900;
-    font-stretch: 125%;
-  }
-
-  .harness-scroll-space {
-    height: 200vh;
-  }
-</style>

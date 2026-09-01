@@ -16,20 +16,34 @@ const SPANS: Array<1 | 2 | 3> = [2, 1, 1, 2, 3];
   title={pageTitle("collection")}
   description="Five currents — the osvant collection."
 >
-  <section class="plp" data-nav-theme="dark" aria-labelledby="plp-title">
-    <header class="plp__header">
-      <p class="plp__eyebrow eyebrow" data-eyebrow>all formulas</p>
-      <h1 class="plp__title display" id="plp-title">
-        <span class="plp__fragment" data-anim="split">five</span>
-        <span class="plp__fragment" data-anim="split">currents</span>
+  <section
+    class="min-h-screen bg-black px-gutter pt-32 pb-24"
+    data-nav-theme="dark"
+    aria-labelledby="plp-title"
+  >
+    <header class="relative mb-16">
+      <p class="mb-4 eyebrow text-xs" data-eyebrow>all formulas</p>
+      <h1 class="display text-h1" id="plp-title">
+        <span class="block" data-anim="split">five</span>
+        <span class="block" data-anim="split">currents</span>
       </h1>
-      <p class="plp__count" aria-label={`${products.length} scents`}>
+      <p
+        class="absolute top-0 right-0 text-xl text-haze-3"
+        aria-label={`${products.length} scents`}
+      >
         {String(products.length).padStart(2, "0")}
       </p>
     </header>
 
-    <!-- Row hover dims non-hovered cards to 60% (0.3s micro) — CSS below. -->
-    <div class="plp__grid">
+    {
+      /* 03 §2 row hover — non-hovered cards dim to 60% (0.3s micro), with
+        focus-within mirroring it for keyboard users. The `> article`
+        selectors have to be written out: the children are ScentCard roots,
+        so nothing on this element can reach them by class (review OSV-04). */
+    }
+    <div
+      class="grid grid-cols-3 gap-5 max-lg:grid-cols-2 max-md:grid-cols-1 motion-safe:[&:focus-within>article:not(:hover,:focus-within)]:opacity-60 motion-safe:[&:hover>article:not(:hover,:focus-within)]:opacity-60 motion-safe:[&>article]:transition-opacity motion-safe:[&>article]:duration-300"
+    >
       {
         products.map((product, index) => (
           <ScentCard
@@ -46,78 +60,3 @@ const SPANS: Array<1 | 2 | 3> = [2, 1, 1, 2, 3];
     </div>
   </section>
 </BaseLayout>
-
-<style>
-  .plp {
-    min-height: 100vh;
-    padding: 8rem var(--gutter) 6rem;
-    background: var(--color--black);
-  }
-
-  .plp__header {
-    position: relative;
-    margin-bottom: 4rem;
-  }
-
-  .plp__eyebrow {
-    margin: 0 0 var(--space--eyebrow-headline);
-    font-size: var(--text--eyebrow);
-  }
-
-  .plp__title {
-    margin: 0;
-    font-size: var(--text--h1);
-  }
-
-  .plp__fragment {
-    display: block;
-  }
-
-  .plp__count {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 0;
-    font-size: var(--text--h5);
-    color: var(--color--haze-3);
-  }
-
-  /* Asymmetric editorial layout (03 §2): alternating 2/3 split rows,
-     fifth card spans full width. */
-  .plp__grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--grid-gap);
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    /* :global() is required on every child selector here — the children
-       are ScentCard roots carrying the component's scope attribute, not
-       this page's, so a bare `> article` never matches (review OSV-04). */
-    .plp__grid > :global(article) {
-      transition: opacity 0.3s;
-    }
-
-    /* 03 §2 row hover — non-hovered cards dim to 60% (0.3s micro).
-       focus-within mirrors it for keyboard users. */
-    .plp__grid:hover > :global(article:not(:hover, :focus-within)),
-    .plp__grid:focus-within > :global(article:not(:hover, :focus-within)) {
-      opacity: 0.6;
-    }
-  }
-
-  /* Tablet (768–991px) had no layout of its own: the site defined four
-     breakpoints in tokens and shipped one, so a 3-up grid stayed 3-up at
-     834px and gave each cell ~240px (review OSV-13). */
-  @media (61.9375rem >= width > 47.9375rem) {
-    .plp__grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (width <= 47.9375rem) {
-    .plp__grid {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>

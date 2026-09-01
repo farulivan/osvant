@@ -30,152 +30,61 @@ const doors = [
     photo: doorPhotos.cult,
   },
 ];
+// The M §2 pair for the door hover: 0.6s transform (UI move register),
+// 0.3s opacity (micro). Written out rather than a single `duration-*`,
+// which would push the opacity fade out of its register.
+const TRANSITION =
+  "motion-safe:[transition:transform_0.6s_var(--ease-power2-out),opacity_0.3s_var(--ease-power2-out)]";
 ---
 
 <section
-  class="doors"
+  class="relative z-1 bg-black"
   id="doors"
   aria-label="the lab and the cult"
   data-nav-theme="dark"
 >
   {
     doors.map((door) => (
-      <a class="door" href={withBase(door.href)}>
+      <a
+        class="group relative flex min-h-[60vh] items-end overflow-hidden border-b border-b-ink-3 p-gutter text-white no-underline"
+        href={withBase(door.href)}
+      >
         <Duotone
-          class="door__media"
+          class={`pointer-events-none absolute inset-0 ${TRANSITION} motion-safe:group-hover:scale-105 motion-safe:group-focus-visible:scale-105`}
           image={door.photo.image}
           alt=""
           widths={[720, 1280, 1920]}
           sizes="100vw"
           exposure={door.photo.exposure}
         />
-        <span class="door__scrim" aria-hidden="true" />
-        <div class="door__body">
-          <p class="door__eyebrow eyebrow" data-eyebrow>
+        {/* Bottom-up scrim — the plates are busy across the whole frame, so
+            white impact type needs a ground to sit on (review §7). */}
+        <span
+          class="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,var(--color--black)_0%,color-mix(in_oklab,var(--color--black)_70%,transparent)_34%,transparent_68%)]"
+          aria-hidden="true"
+        />
+        <div class="relative flex flex-col">
+          <p class="mb-4 eyebrow text-xs" data-eyebrow>
             {door.eyebrow}
           </p>
-          <h2 class="door__title display">
+          <h2
+            class={`relative display text-h1 ${TRANSITION} motion-safe:group-hover:translate-x-[0.5em] motion-safe:group-focus-visible:translate-x-[0.5em]`}
+          >
             {door.fragments.map((fragment) => (
-              <span class="door__fragment" data-anim="split">
+              <span class="block" data-anim="split">
                 {fragment}
               </span>
             ))}
           </h2>
-          <p class="door__line">{door.line}</p>
+          <p class="mt-6 max-w-[34ch] text-base text-haze-2">{door.line}</p>
         </div>
-        <span class="door__arrow" aria-hidden="true">
+        <span
+          class={`relative ml-auto self-end text-3xl opacity-0 ${TRANSITION} motion-safe:group-hover:opacity-100 motion-safe:group-focus-visible:opacity-100`}
+          aria-hidden="true"
+        >
           -&gt;
         </span>
       </a>
     ))
   }
 </section>
-
-<style>
-  .doors {
-    position: relative;
-    z-index: 1; /* slides over the dimming hero (M §4.10) */
-    background: var(--color--black);
-  }
-
-  .door {
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    min-height: 60vh;
-    padding: var(--gutter);
-    overflow: hidden;
-    text-decoration: none;
-    color: var(--color--white);
-    border-bottom: 1px solid var(--color--ink-3);
-  }
-
-  /* The class lands on the Duotone component ROOT, which carries
-     Duotone's scope id — not this file's. A bare `.door__media` rule
-     compiles to `.door__media[data-astro-cid-HomeDoors]` and matches
-     nothing, so the media stayed in flow and each door grew to the
-     photo's natural height (850px, 941px) instead of 60vh. Reaching
-     through a scoped ancestor keeps the rule local without leaking a
-     global class. Same pattern in HomeCampaign, FormulaStory, the-house. */
-  .door :global(.door__media) {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-
-  /* Bottom-up scrim — the plates are busy across the whole frame, so
-     white impact type needs a ground to sit on (review §7). */
-  .door__scrim {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(
-      to top,
-      var(--color--black) 0%,
-      color-mix(in oklab, var(--color--black) 70%, transparent) 34%,
-      transparent 68%
-    );
-  }
-
-  .door__body {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .door__eyebrow {
-    margin: 0 0 var(--space--eyebrow-headline);
-    font-size: var(--text--eyebrow);
-  }
-
-  .door__line {
-    margin: var(--space--headline-lede) 0 0;
-    max-width: 34ch;
-    font-size: var(--text--h6);
-    color: var(--color--haze-2);
-  }
-
-  .door__title {
-    position: relative;
-    margin: 0;
-    font-size: var(--text--h1);
-  }
-
-  .door__fragment {
-    display: block;
-  }
-
-  .door__arrow {
-    position: relative;
-    align-self: flex-end;
-    margin-left: auto;
-    font-size: var(--text--h3);
-    opacity: 0;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .door :global(.door__media),
-    .door__title,
-    .door__arrow {
-      transition:
-        transform 0.6s,
-        opacity 0.3s;
-      transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-    .door:hover :global(.door__media),
-    .door:focus-visible :global(.door__media) {
-      transform: scale(1.05);
-    }
-
-    .door:hover .door__title,
-    .door:focus-visible .door__title {
-      transform: translateX(0.5em);
-    }
-
-    .door:hover .door__arrow,
-    .door:focus-visible .door__arrow {
-      opacity: 1;
-    }
-  }
-</style>

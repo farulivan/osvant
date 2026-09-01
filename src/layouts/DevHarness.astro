@@ -30,16 +30,16 @@ const enabled =
     <title>{title} — osvant dev</title>
   </head>
   <body>
-    <main class="harness">
+    <main class="flex flex-col gap-12 px-gutter py-16">
       <header class="harness__header">
-        <p class="harness__eyebrow">dev harness · {spec}</p>
+        <p class="text-xs text-haze-3">dev harness · {spec}</p>
         <h1 class="harness__title display">{title}</h1>
       </header>
       {
         enabled ? (
           <slot />
         ) : (
-          <p class="harness__disabled">
+          <p class="text-lg text-haze-3">
             disabled in this build — run `pnpm dev`, or set
             PUBLIC_DEV_HARNESS=true for staging/preview builds (05 §1)
           </p>
@@ -48,29 +48,3 @@ const enabled =
     </main>
   </body>
 </html>
-
-<style>
-  .harness {
-    padding: 4rem var(--gutter);
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-  }
-
-  .harness__eyebrow {
-    font-size: var(--text--eyebrow);
-    color: var(--color--haze-3);
-    margin: 0;
-  }
-
-  .harness__title {
-    font-size: var(--text--h2);
-    margin: 0.5rem 0 0;
-  }
-
-  .harness__disabled {
-    color: var(--color--haze-3);
-    font-size: var(--text--body);
-    margin: 0;
-  }
-</style>

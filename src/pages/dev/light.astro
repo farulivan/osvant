@@ -1,4 +1,5 @@
 ---
+import "../../styles/dev-light.css";
 // /dev/light — the bottle-still acceptance harness (06 §2, M §8).
 //
 // This is the instrument the handoff checklist names. A candidate master
@@ -24,10 +25,12 @@ const stills = SCENTS.map((scent) => ({ scent, image: stillFor(scent) }));
 ---
 
 <DevHarness title="light study" spec="M §8 · 06 §2">
-  <section class="panel" data-light-harness>
-    <div class="controls">
-      <label class="control">
-        <span class="control__label eyebrow">
+  <section class="flex flex-col gap-8" data-light-harness>
+    <div
+      class="flex flex-wrap items-start gap-x-10 gap-y-6 rounded-sm bg-ink-1 p-5"
+    >
+      <label class="flex min-w-64 flex-col gap-2">
+        <span class="eyebrow text-xs">
           --light-angle <output data-angle-out>0.50</output>
         </span>
         <input
@@ -40,33 +43,31 @@ const stills = SCENTS.map((scent) => ({ scent, image: stillFor(scent) }));
         />
       </label>
 
-      <label class="control control--inline">
+      <label class="flex min-w-0 flex-row items-center gap-2">
         <input type="checkbox" data-ambient checked />
-        <span class="control__label eyebrow"
-          >ambient oscillation (0.45 ↔ 0.55)</span
-        >
+        <span class="eyebrow text-xs">ambient oscillation (0.45 ↔ 0.55)</span>
       </label>
 
-      <label class="control control--inline">
+      <label class="flex min-w-0 flex-row items-center gap-2">
         <input type="checkbox" data-sweep />
-        <span class="control__label eyebrow"
+        <span class="eyebrow text-xs"
           >auto-sweep 0 → 1 (acceptance check 1)</span
         >
       </label>
 
-      <label class="control control--inline">
+      <label class="flex min-w-0 flex-row items-center gap-2">
         <input type="checkbox" data-light-ground />
-        <span class="control__label eyebrow"
-          >light ground (edge/fringe check)</span
-        >
+        <span class="eyebrow text-xs">light ground (edge/fringe check)</span>
       </label>
 
-      <fieldset class="control control--layers">
-        <legend class="control__label eyebrow">isolate layer</legend>
+      <fieldset
+        class="flex flex-row flex-wrap gap-3 rounded-sm border border-ink-3 p-3"
+      >
+        <legend class="eyebrow text-xs">isolate layer</legend>
         {
           ["all", "wash", "caustic", "bottle", "sheen", "rim", "vapor"].map(
             (layer, i) => (
-              <label class="control--inline">
+              <label class="flex flex-row items-center gap-2">
                 <input
                   type="radio"
                   name="layer"
@@ -82,10 +83,16 @@ const stills = SCENTS.map((scent) => ({ scent, image: stillFor(scent) }));
       </fieldset>
     </div>
 
-    <div class="stages" data-stages>
+    <div
+      class="grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] gap-6"
+      data-stages
+    >
       {
         stills.map(({ scent, image }) => (
-          <figure class="stage" data-stage>
+          <figure
+            class="[&_figcaption]:mt-2 [&_figcaption]:text-xs [&_figcaption]:tracking-[0.12em] [&_figcaption]:text-haze-3"
+            data-stage
+          >
             <LightStudy
               scent={scent}
               alt={`the ${scent} bottle`}
@@ -100,12 +107,14 @@ const stills = SCENTS.map((scent) => ({ scent, image: stillFor(scent) }));
     </div>
 
     <div class="registration">
-      <p class="registration__note">
+      <p class="max-w-[60ch] text-xs tracking-[0.06em] text-haze-3">
         Registration check — all five stacked at 40% opacity. Any silhouette
         that does not sit exactly on the others will read as a double edge here,
         and as a jitter in the procession.
       </p>
-      <div class="registration__stack">
+      <div
+        class="relative grid max-w-96 [&>*]:col-start-1 [&>*]:row-start-1 [&>*]:opacity-40"
+      >
         {
           stills.map(({ scent, image }) => (
             <LightStudy scent={scent} alt="" image={image} width={620} eager />
@@ -192,103 +201,3 @@ const stills = SCENTS.map((scent) => ({ scent, image: stillFor(scent) }));
     });
   }
 </script>
-
-<style>
-  .panel {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem 2.5rem;
-    align-items: flex-start;
-    padding: 1.25rem;
-    background: var(--color--ink-1);
-    border-radius: var(--radius--xs);
-  }
-
-  .control {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    min-width: 16rem;
-  }
-
-  .control--inline {
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-    min-width: 0;
-  }
-
-  .control--layers {
-    display: flex;
-    flex-flow: row wrap;
-    gap: 0.75rem;
-    border: 1px solid var(--color--ink-3);
-    border-radius: var(--radius--xs);
-    padding: 0.75rem;
-  }
-
-  .control__label {
-    font-size: var(--text--eyebrow);
-  }
-
-  .stages {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-    gap: 1.5rem;
-  }
-
-  .stage {
-    margin: 0;
-  }
-
-  .stage figcaption {
-    margin-top: 0.5rem;
-    font-size: var(--text--eyebrow);
-    letter-spacing: 0.12em;
-    color: var(--color--haze-3);
-  }
-
-  .registration__note {
-    font-size: var(--text--eyebrow);
-    letter-spacing: 0.06em;
-    color: var(--color--haze-3);
-    max-width: 60ch;
-  }
-
-  .registration__stack {
-    position: relative;
-    display: grid;
-    max-width: 24rem;
-  }
-
-  .registration__stack > :global(*) {
-    grid-area: 1 / 1;
-    opacity: 0.4;
-  }
-
-  /* Alpha/fringe check — the same silhouette against a pale ground. */
-  .panel--light {
-    background: var(--color--haze-1);
-    padding: 1.5rem;
-    border-radius: var(--radius--xs);
-  }
-
-  /* Layer isolation. Names match the M §8.1 table.
-     `visibility`, never `display: none` — hiding a grid child collapses
-     the stage box, which rescales the mask and makes the diagnostic
-     report a registration fault that isn't there. */
-  [data-isolate="wash"] :global(.light-study > *:not(.light-study__wash)),
-  [data-isolate="caustic"] :global(.light-study > *:not(.light-study__caustic)),
-  [data-isolate="bottle"] :global(.light-study > *:not(.light-study__bottle)),
-  [data-isolate="sheen"] :global(.light-study > *:not(.light-study__sheen)),
-  [data-isolate="rim"] :global(.light-study > *:not(.light-study__rim)),
-  [data-isolate="vapor"] :global(.light-study > *:not(.light-study__vapor)) {
-    visibility: hidden;
-  }
-</style>
