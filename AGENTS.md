@@ -17,7 +17,7 @@ OSVANT — a fictional luxury fragrance brand site, built as a portfolio showcas
 - Budgets are merge gates: `core+transitions` ≤ 350KB gzip; Lighthouse ≥ 90 mobile on **every** page — the ≥ 75 WebGL carve-out was withdrawn with ADR-013, there are no WebGL pages; LCP ≤ 2.5s, CLS < 0.1, INP < 200ms.
 - Reduced-motion branches are written with each feature, never retrofitted (`M §9`).
 - No `#fff`/`#000`/neutral gray, no `box-shadow`, no `text-transform: uppercase` — enforced against the built output by `pnpm check:guardrails` (ADR-017); stylelint keeps the same rules as the local loop.
-- Styling is utility-first (Tailwind v4, ADR-015/016/018). **Default-first — use Tailwind's step unless it genuinely doesn't exist.** The six `01 §4.4` spacing steps are exactly `2/4/6/10/16/24`, so `gap-6`/`p-10` ARE the design system. 1–2px off a token is fine and preferred over a custom step. Custom `@theme` entries are only for what Tailwind lacks. Don't add an Astro-scoped `<style>` block to a new component.
+- Styling is utility-first (Tailwind v4, ADR-015/016/018). **Default-first — use Tailwind's step unless it genuinely doesn't exist.** The six `01 §4.4` spacing steps are exactly `2/4/6/10/16/24`, so `gap-6`/`p-10` ARE the design system. 1–2px off a token is fine and preferred over a custom step. Custom `@theme` entries are only for what Tailwind lacks. Zero Astro-scoped `<style>` blocks remain — don't add one. A utility always beats a `@layer components` rule, so anything JS toggles must not have its property also set as a utility.
 
 ## Workflow
 
