@@ -86,6 +86,16 @@ gsap.from(split.chars, {
 
 `.line-mask { overflow: hidden; }`. Eyebrow fades in 0.4s, delayed 0.2s after chars start. Re-split on resize (debounced 200ms).
 
+> **Implementation note (2026-09-02, ADR-016).** `.line-mask` and
+> `.split-word` live in `app.css`'s `@layer components`, not as Tailwind
+> utilities, and that is not a style preference. SplitText *creates* these
+> elements at runtime via `linesClass`, so the class never appears in any
+> markup — and `@utility` definitions are generated only when the scanner
+> finds them, while `@layer` rules are always emitted. As a utility the rule
+> would be tree-shaken out of the build and every masked headline would
+> silently reveal unclipped. The same reasoning covers `.btn-line--ready`,
+> `.btn-line__label--clone`, `nav--solid` and the `.cart-line*` set.
+
 ### 4.3 Scroll-scrubbed section (pinned storytelling)
 
 ```js

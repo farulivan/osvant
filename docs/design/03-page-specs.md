@@ -5,6 +5,22 @@
 > A section is "done" only when its acceptance boxes check.
 >
 > **Phase-1 fidelity note:** the build must *feel* like the reference (landonorris.com) — imitating its animation beats is explicitly OK now; differentiation comes later. The full beat list is `M §11` (Parity Map); it is part of acceptance.
+>
+> **Corrected 2026-09-02 — "serif italic" is retired throughout this document.**
+> ADR-014 collapsed the house to one face (Mosvita) and `01 §3.1/§3.3` were
+> amended, but this document was not. Wherever a section below says the article
+> or a pull-quote sets in *serif italic* — §1.4's gallery overlay, §3.1's PDP
+> name, §3.3's pull-quote — read it as the **peak rung of the tone ladder**
+> (`01 §3.3`): the same cut, coloured `--scent-tint-text`, no italic and no
+> second face. The pull-quote takes the muted rung (`.whisper`) rather than the
+> display cut, because 900 Expanded for a full sentence reads as shouting. No
+> new decision — this applies one already signed off.
+>
+> **Styling implementation (ADR-015/016/018):** the site is utility-first
+> Tailwind v4. Nothing in this document changes because of that; the three
+> global bans in §9 are now enforced against the built output rather than by
+> lint, and `01 §3.2`'s type steps mostly render through Tailwind defaults
+> (see that section's 2026-09-02 amendment for the per-step deltas).
 
 ---
 
@@ -178,9 +194,9 @@ Rive `mob-landscape` full-screen when `orientation: landscape` and viewport heig
 
 ## 9. Global Acceptance (every page, pre-merge)
 
-- [ ] no pure `#fff`/`#000`/neutral gray anywhere (`01 §1`)
-- [ ] no `text-transform: uppercase` (brief §4)
-- [ ] no `box-shadow` (`01 §4.3`)
+- [ ] no pure `#fff`/`#000`/neutral gray anywhere (`01 §1`) — *automated:* `pnpm check:guardrails`
+- [ ] no `text-transform: uppercase` (brief §4) — *automated:* `pnpm check:guardrails`
+- [ ] no `box-shadow` (`01 §4.3`) — *automated:* `pnpm check:guardrails`
 - [ ] every h1/h2 uses the masked reveal — zero plain fades on headlines
 - [ ] scrubbed tweens all `ease: "none"`; non-scrub defaults `power2.out`/0.5s (`M §2`)
 - [ ] page transition = Rive wipe, ≤1.6s perceived (`M §5`)
@@ -192,4 +208,6 @@ Rive `mob-landscape` full-screen when `orientation: landscape` and viewport heig
 - [ ] every animated section resolves to a visible CTA (brief §3)
 - [ ] **every section has at least one motion behavior** (`M §0` fidelity mandate) — no static sections
 - [ ] **every section declares `data-nav-theme`**; nav visibly re-themes while scrolling (`M §4.9`)
+- [ ] no Astro-scoped `<style>` block in a new component (ADR-016) — *automated:* `grep -rl "<style" src`
+- [ ] a property JS toggles is not also set as a utility on the same element — a utility always beats `@layer components`
 - [ ] **all 13 parity beats present** on their respective pages (`M §11`) — reviewed against landonorris.com side-by-side; **beat 5 is assessed as equivalent, not literal** (ADR-013)

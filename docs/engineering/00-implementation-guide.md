@@ -31,7 +31,7 @@ Read in this order before writing any code:
 
 ## 3. Non-negotiables (the fastest ways to fail review)
 
-1. **No invented values.** Every color/size/duration/ease traces to a token or a `M` recipe. Missing value = flag, don't guess. Stylelint enforces: no `#fff`/`#000`/neutral gray, no `box-shadow`, no `text-transform: uppercase`, raw values only in `tokens.css`.
+1. **No invented values.** Every color/size/duration/ease traces to a token, a Tailwind default, or a `M` recipe. Missing value = flag, don't guess. **Default-first (ADR-018): reach for Tailwind's step before adding a custom one** — all six `01 §4.4` spacing steps ARE Tailwind defaults (`2/4/6/10/16/24`), so `gap-6` and `p-10` are the design system rather than an approximation of it. The three bans (no `#fff`/`#000`/neutral gray, no `box-shadow`, no `text-transform: uppercase`) are enforced against the **built output** by `pnpm check:guardrails` (ADR-017); stylelint keeps the same rules as the fast local loop, but it only ever saw authored CSS.
 2. **Lifecycle discipline.** Every ScrollTrigger/SplitText/tween/canvas a module creates, that module kills in `destroy()`. Router global sweep is a safety net, not the mechanism (`01-arch §3.2`).
 3. **One scroll, one loop.** All scroll via Lenis, all RAF via `gsap.ticker`. `window.addEventListener("scroll")` and bare `requestAnimationFrame` are banned (`03-eng §4.4`).
 4. **Reduced-motion written WITH each feature** (`M §9`), not retrofitted.
@@ -55,7 +55,7 @@ Read in this order before writing any code:
 | `typescript` | 5.x | strict mode |
 | `vitest`, `@playwright/test`, `size-limit`, `@lhci/cli` | latest | wired per `04-qa` / `05-cicd` |
 
-Tooling: ESLint + Prettier + stylelint (custom rules per `03-eng §4.6`). Config committed in the scaffold PR.
+Tooling: **Tailwind v4** via `@tailwindcss/vite` (ADR-015; *not* `@astrojs/tailwind`, which is the deprecated v3-era integration) + ESLint + Prettier (with `prettier-plugin-tailwindcss` last) + stylelint (custom rules per `03-eng §4.6`). CSS-first configuration — **there is no `tailwind.config.js`**.
 
 ## 5. Build sequence (granular, follows `08-delivery-plan.md`)
 
@@ -65,7 +65,7 @@ Work top-to-bottom; each row ≈ one PR. Acceptance = the listed doc sections.
 | # | Task | Spec |
 |---|---|---|
 | 1.1 | Scaffold: Astro + TS strict + pnpm + lint/stylelint/prettier + `.nvmrc` + repo layout per `01-arch §7`; README with AI-process section; PR template with `04-qa §5` checklist | `03-eng §1/§2` |
-| 1.2 | `tokens.css` verbatim from `01 §2/§3/§4` + base styles (selection, focus, scrollbar `01 §6`) + font self-hosting (Mosvita via the Astro Fonts API, ADR-014) | `01` |
+| 1.2 | `tokens.css` verbatim from `01 §2/§3/§4` + `app.css` (the Tailwind entry: `@theme inline` mapping, custom variants, base styles for selection/focus/scrollbar `01 §6`) + font self-hosting (Mosvita via the Astro Fonts API, ADR-014) | `01` |
 | 1.3 | CI: lint/types/unit/build + size-limit + LHCI skeleton + asset guard; S3/CloudFront staging+prod deploy jobs, previews `previews/pr-<n>/`, OIDC | `05-cicd` |
 | 1.4 | Core singletons: `scroll.ts` (Lenis+ticker, §6.1 below), `track.ts`, module registry + `PageModule` contract (§6.2) | `01-arch §3` |
 | 1.5 | Router: taxi.js wiring, transition API with clip-path placeholder, lifecycle order, reduced-motion crossfade, `document.title` sync | `01-arch §3.3`, `M §5` |

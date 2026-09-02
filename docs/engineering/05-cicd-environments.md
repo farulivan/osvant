@@ -20,13 +20,16 @@
 install → lint + stylelint + tsc ──┐
         → vitest (unit)            ├─ parallel
         → astro build              ┘
+→ check:guardrails (no box-shadow / uppercase / neutral gray in dist, ADR-017)
+→ check:copy + check:glyphs + check:responsive
 → deploy preview (S3 `previews/pr-<n>/` + CloudFront invalidation; link commented on PR)
 → playwright smoke (against preview)
-→ lighthouse CI + size-limit (against preview)
+→ lighthouse CI + size-limit — JS ≤ 350KB gzip, CSS ≤ 40KB gzip (ADR-019)
 → report: budgets table + preview link as PR comment
 ```
 
 - Nightly (main): full Playwright suite + axe scan + full LHCI on all routes (`04 §2`).
+- Guardrail step: parses declarations rather than matching strings — `box-shadow` appears legitimately inside `transition-property`, and Lightning CSS minifies an authored `transparent` to `#0000`, which is neutral by channel and paints nothing (ADR-017).
 - Asset guard step: fails on any `.glb`/`.gltf`/`.hdr` or anything under `assets/video/` (withdrawn by ADR-013), any raster image not AVIF, any bottle still > 180KB, any font not woff2 (`06-asset-pipeline.md`).
 
 ## 3. Content updates
