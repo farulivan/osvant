@@ -5,6 +5,12 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { pageTitle } from "../lib/seo";
 
+// Inputs per 01 §5.5 line style: no box, one bottom rule that goes
+// phosphor on focus. ink-4 and not ink-3 — this is a control boundary and
+// needs 3:1 (01 §6.2).
+const FIELD =
+  "w-full resize-y rounded-none border-0 border-b border-b-ink-4 bg-transparent py-2 font-[inherit] text-lg text-white focus-visible:border-b-phosphor focus-visible:outline-none";
+
 const socials = [
   { href: "https://instagram.com", label: "instagram" },
   { href: "https://tiktok.com", label: "tiktok" },
@@ -15,23 +21,41 @@ const socials = [
   title={pageTitle("contact")}
   description="Business enquiries and press — osvant."
 >
+  {
+    /* grid-cols-2 is `repeat(2, minmax(0, 1fr))`, which is the fix this
+      page needed spelled as a default: a bare `1fr` is `minmax(auto, 1fr)`
+      and refuses to shrink below its content's min-content width, so the
+      column measured 350px inside a 320px viewport and pushed the page
+      into shrink-to-fit. */
+  }
   <section
-    class="contact"
+    class="grid min-h-svh grid-cols-2 gap-5 bg-black px-gutter pt-32 pb-24 max-md:grid-cols-1"
     data-nav-theme="dark"
     aria-labelledby="contact-title"
   >
-    <div class="contact__intro">
-      <p class="contact__eyebrow eyebrow" data-eyebrow>contact</p>
-      <h1 class="contact__title display" id="contact-title" data-anim="split">
+    <div>
+      <p class="mb-4 eyebrow text-xs" data-eyebrow>contact</p>
+      <h1 class="mb-6 display text-h1" id="contact-title" data-anim="split">
         get in touch
       </h1>
-      <a class="contact__business display" href="mailto:business@osvant.com">
+      {
+        /* btn-text at h3 scale (03 §6). `business@osvant.com` is a single
+          unbreakable 19-character token that measures ~350px here and
+          refuses to fit a 280px column on a 320px screen — enough on its
+          own to trigger shrink-to-fit, hence wrap-anywhere. */
+      }
+      <a
+        class="inline-block display text-3xl wrap-anywhere text-white no-underline"
+        href="mailto:business@osvant.com"
+      >
         business enquiries -&gt; business@osvant.com
       </a>
-      <p class="contact__press">
+      <p class="mt-8 text-lg text-haze-3 [&_a]:text-white [&_a]:no-underline">
         press — <a href="mailto:press@osvant.com">press@osvant.com</a>
       </p>
-      <ul class="contact__socials">
+      <ul
+        class="mt-8 flex list-none gap-6 [&_a]:text-base [&_a]:text-haze-3 [&_a]:no-underline"
+      >
         {
           socials.map((item) => (
             <li>
@@ -44,205 +68,92 @@ const socials = [
       </ul>
     </div>
 
-    <div class="contact__form-wrap">
-      <form class="contact__form" data-contact-form novalidate>
-        <div class="contact__field">
-          <label class="contact__label eyebrow" for="contact-name">name</label>
+    <div>
+      <form
+        class="flex flex-col items-stretch gap-7"
+        data-contact-form
+        novalidate
+      >
+        <div>
+          {
+            /* Real labels above the line. 03 §6 puts them at eyebrow scale
+              in haze-3 — the register the rest of the system uses for
+              micro-labels. */
+          }
+          <label class="mb-2 block eyebrow text-xs" for="contact-name">
+            name
+          </label>
           <input
             id="contact-name"
+            class={FIELD}
             type="text"
             name="name"
             autocomplete="name"
             data-field="name"
           />
-          <p class="contact__error eyebrow" data-error-for="name" role="status">
+          {/* C3: validation message at eyebrow size, below the field, amber */}
+          <p
+            class="mt-1.5 min-h-4 eyebrow text-xs text-amber"
+            data-error-for="name"
+            role="status"
+          >
           </p>
         </div>
-        <div class="contact__field">
-          <label class="contact__label eyebrow" for="contact-email">email</label
-          >
+        <div>
+          <label class="mb-2 block eyebrow text-xs" for="contact-email">
+            email
+          </label>
           <input
             id="contact-email"
+            class={FIELD}
             type="email"
             name="email"
             autocomplete="email"
             data-field="email"
           />
           <p
-            class="contact__error eyebrow"
+            class="mt-1.5 min-h-4 eyebrow text-xs text-amber"
             data-error-for="email"
             role="status"
           >
           </p>
         </div>
-        <div class="contact__field">
-          <label class="contact__label eyebrow" for="contact-message"
-            >message</label
-          >
+        <div>
+          <label class="mb-2 block eyebrow text-xs" for="contact-message">
+            message
+          </label>
           <textarea
             id="contact-message"
+            class={FIELD}
             name="message"
             rows="4"
             data-field="message"></textarea>
           <p
-            class="contact__error eyebrow"
+            class="mt-1.5 min-h-4 eyebrow text-xs text-amber"
             data-error-for="message"
             role="status"
           >
           </p>
         </div>
-        <button class="btn-primary" type="submit" data-contact-submit>
+        {
+          /* self-start: `send` was the only full-width button on the site
+            (review OSV-30). Nothing set `width: 100%` — the column's
+            `align-items: stretch` did it, which is why a grep for the
+            width never found it. */
+        }
+        <button
+          class="btn-primary self-start"
+          type="submit"
+          data-contact-submit
+        >
           <span data-btn-label>send</span>
         </button>
-        <p class="contact__demo eyebrow">demo — no message sent.</p>
+        <p class="eyebrow text-xs">demo — no message sent.</p>
       </form>
 
-      <p class="contact__success" data-contact-success hidden role="status">
+      <p class="text-2xl" data-contact-success hidden role="status">
         sent. we'll be in touch.
       </p>
     </div>
   </section>
 </BaseLayout>
-
-<style>
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
-  .contact {
-    display: grid;
-
-    /* `1fr` is `minmax(auto, 1fr)`, so a track refuses to shrink below its
-       content's min-content width — the column measured 350px inside a
-       320px viewport and pushed the page into shrink-to-fit. `minmax(0,
-       1fr)` lets it actually be fluid. */
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: var(--grid-gap);
-    min-height: 100vh;
-    min-height: 100svh;
-    padding: 8rem var(--gutter) 6rem;
-    background: var(--color--black);
-  }
-
-  .contact__title {
-    margin: 0 0 var(--space--headline-lede);
-    font-size: var(--text--h1);
-  }
-
-  /* Real labels above the line. `03 §6` puts them at --text--eyebrow in
-     haze-3, which is the same register the rest of the system uses for
-     micro-labels — and it gives the page the information-design texture
-     the review noted it was missing. */
-  .contact__label {
-    display: block;
-    margin-bottom: var(--space--2xs);
-    font-size: var(--text--eyebrow);
-  }
-
-  .contact__eyebrow {
-    margin: 0 0 var(--space--eyebrow-headline);
-    font-size: var(--text--eyebrow);
-  }
-
-  /* btn-text at h3 scale (03 §6) */
-  .contact__business {
-    display: inline-block;
-
-    /* `business@osvant.com` is a single unbreakable 19-character token at
-       --text--h3, which measures ~350px and refuses to fit a 280px column
-       on a 320px screen — enough on its own to trigger shrink-to-fit. */
-    overflow-wrap: anywhere;
-    font-size: var(--text--h3);
-    color: var(--color--white);
-    text-decoration: none;
-  }
-
-  .contact__press {
-    margin: 2rem 0 0;
-    font-size: var(--text--body);
-    color: var(--color--haze-3);
-  }
-
-  .contact__press a {
-    color: var(--color--white);
-    text-decoration: none;
-  }
-
-  .contact__socials {
-    display: flex;
-    gap: 1.5rem;
-    list-style: none;
-    margin: 2rem 0 0;
-    padding: 0;
-  }
-
-  .contact__socials a {
-    color: var(--color--haze-3);
-    font-size: var(--text--btn);
-    text-decoration: none;
-  }
-
-  /* Form — inputs per 01 §5.5 line style */
-  .contact__form {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1.75rem;
-  }
-
-  /* `send` was the only full-width button on the site (review OSV-30).
-     Nothing set `width: 100%` — the column's default `align-items:
-     stretch` did it, which is why a grep for the width never found it. */
-  .contact__form .btn-primary {
-    align-self: flex-start;
-  }
-
-  .contact__form input,
-  .contact__form textarea {
-    width: 100%;
-    background: transparent;
-    border: 0;
-    border-bottom: 1px solid var(--color--ink-4);
-    border-radius: 0;
-    padding: 0.5rem 0;
-    color: var(--color--white);
-    font-size: var(--text--body);
-    font-family: inherit;
-    resize: vertical;
-  }
-
-  .contact__form input:focus-visible,
-  .contact__form textarea:focus-visible {
-    border-bottom-color: var(--color--phosphor);
-    outline: none;
-  }
-
-  /* C3: validation message at eyebrow size, below field, amber */
-  .contact__error {
-    margin: 0.375rem 0 0;
-    min-height: 1rem;
-    font-size: var(--text--eyebrow);
-    color: var(--color--amber);
-  }
-
-  .contact__demo {
-    margin: 0;
-    font-size: var(--text--eyebrow);
-  }
-
-  .contact__success {
-    margin: 0;
-    font-size: var(--text--h4);
-  }
-
-  @media (width <= 47.9375rem) {
-    .contact {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-</style>

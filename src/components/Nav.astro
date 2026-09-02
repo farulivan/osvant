@@ -12,11 +12,29 @@ const links = [
 ];
 ---
 
-<nav data-nav class="nav">
-  <a class="nav__logo" href={withBase("/")} aria-label="osvant — home">
-    <!-- Rive `logo` artboard placeholder: static SVG wordmark (06-asset-pipeline §1) -->
+<nav
+  data-nav
+  class="nav group fixed inset-x-0 top-0 z-100 flex items-center justify-between px-gutter py-5 [transition:background-color_0.3s,backdrop-filter_0.3s]"
+>
+  {
+    /* The scent marker rides ::after so the anchor keeps one box. It is
+      revealed by .nav--theme-scent in app.css. */
+  }
+  <a
+    class="relative inline-flex after:absolute after:inset-x-0 after:-bottom-1.5 after:h-0.5 after:origin-left after:scale-x-0 after:bg-scent-tint after:content-[''] group-[.nav--theme-scent]:after:scale-x-100 motion-safe:after:[transition:transform_0.3s_var(--ease-power2-out)]"
+    data-nav-logo
+    href={withBase("/")}
+    aria-label="osvant — home"
+  >
+    {
+      /* Rive `logo` artboard placeholder: static SVG wordmark (06 §1).
+        The fill and face are set in CSS, not as SVG presentation
+        attributes: those cannot read a custom property, and font-stretch
+        does not take a percentage as an attribute — which is exactly the
+        descriptor that selects Mosvita's Expanded master (01 §3.1). */
+    }
     <svg
-      class="nav__logo-mark"
+      class="h-5 w-24 [&_text]:font-display [&_text]:font-black [&_text]:[font-stretch:125%]"
       viewBox="0 0 96 20"
       role="img"
       aria-hidden="true"
@@ -25,19 +43,53 @@ const links = [
     </svg>
   </a>
 
+  {
+    /* The menu button. 01 §5.2 specifies the overlay it opens but says
+      nothing about the control — flagged as a spec gap and built to the
+      existing register (1px rules, no chrome, currentColor so it
+      re-themes with the links). It had no visual at all before this: the
+      markup carried an empty bar span that nothing styled, so the button
+      rendered 12x2px and invisible, and at every mobile width the site
+      had no reachable navigation.
+
+      44px is the tap-target floor (WCAG 2.5.5 / iOS HIG); the bars are
+      22px and the rest is deliberate padding, not chrome. z-1 keeps it
+      above the overlay it opens, which is `fixed inset-0`. */
+  }
   <button
-    class="nav__toggle"
+    class="relative -mr-2 hidden size-11 cursor-pointer items-center justify-center border-0 bg-none max-md:z-1 max-md:inline-flex"
     type="button"
     aria-expanded="false"
     aria-controls="nav-menu"
     data-nav-toggle
   >
-    <span class="visually-hidden">Menu</span>
-    <span class="nav__toggle-bar" aria-hidden="true"></span>
+    <span class="sr-only">Menu</span>
+    {
+      /* Three rules out of one span, so the markup stays as authored.
+        Open: the middle rule goes and the outer two cross. */
+    }
+    <span
+      class="relative block h-px w-[22px] bg-current before:absolute before:start-0 before:block before:h-px before:w-[22px] before:-translate-y-[7px] before:bg-current before:content-[''] after:absolute after:start-0 after:block after:h-px after:w-[22px] after:translate-y-[7px] after:bg-current after:content-[''] aria-expanded:bg-transparent motion-safe:[&,&::before,&::after]:[transition:transform_0.3s,background-color_0.3s]"
+      aria-hidden="true"></span>
   </button>
 
-  <div id="nav-menu" class="nav__menu" data-nav-menu>
-    <ul class="nav__links">
+  {
+    /* Closed overlay stays out of the tab order and away from AT, hence
+      `invisible` with a delayed visibility transition. */
+  }
+  <div
+    id="nav-menu"
+    class="flex items-center gap-10 max-md:invisible max-md:fixed max-md:inset-0 max-md:translate-x-full max-md:flex-col max-md:justify-center max-md:gap-8 max-md:bg-ink-1 max-md:[transition:transform_0.3s,visibility_0s_0.3s] max-md:data-[open=true]:visible max-md:data-[open=true]:translate-x-0 max-md:data-[open=true]:[transition:transform_0.3s,visibility_0s]"
+    data-nav-menu
+  >
+    {
+      /* 01 §5.2: "links at --text--h2". Setting it on the list did nothing
+        — a rule on the anchor outranks an inherited value, so the overlay
+        shipped at 16px. Invisible until the toggle became pressable. */
+    }
+    <ul
+      class="nav__links flex list-none gap-8 max-md:flex-col max-md:items-center max-md:gap-6 [&_a]:text-base [&_a]:no-underline max-md:[&_a]:text-h2"
+    >
       {
         links.map((link) => (
           <li>
@@ -47,299 +99,17 @@ const links = [
       }
     </ul>
 
-    <button class="nav__cart" type="button" data-cart-open aria-label="Cart">
+    <button
+      class="inline-flex cursor-pointer items-center gap-1.5 border-0 bg-none p-0 text-base max-md:text-h2"
+      type="button"
+      data-cart-open
+      aria-label="Cart"
+    >
       cart
-      <span class="nav__cart-count" data-cart-count>0</span>
+      <span
+        class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-amber px-1.5 text-xs text-black"
+        data-cart-count>0</span
+      >
     </button>
   </div>
 </nav>
-
-<style>
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
-  .nav {
-    position: fixed;
-    inset: 0 0 auto;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem var(--gutter);
-    background: transparent;
-    transition:
-      background-color 0.3s,
-      backdrop-filter 0.3s;
-  }
-
-  .nav--solid {
-    /* --color--black at 80%. Written as channels because rgb() cannot take
-       a hex custom property, so this literal has to track --color--black by
-       hand — it was the only value missed when the house went green. */
-    background: rgb(14 17 16 / 80%);
-    backdrop-filter: blur(12px);
-  }
-
-  /* `backdrop-filter` creates a containing block for `position: fixed`
-     DESCENDANTS. With `nav--solid` applied, the overlay menu's
-     `position: fixed; inset: 0` therefore resolved against the nav's own
-     84px-tall box instead of the viewport: the menu painted as a strip
-     across the top and its links spilled over the page behind it.
-
-     This has been broken since the overlay was written; it was never
-     visible because the button that opens it had no styling and could
-     not be pressed (see `.nav__toggle`). Dropping the blur while the
-     menu is open costs nothing — the overlay covers the whole viewport,
-     so there is no backdrop left to blur. */
-  .nav:has([data-nav-menu][data-open="true"]) {
-    backdrop-filter: none;
-  }
-
-  .nav__logo {
-    position: relative;
-    display: inline-flex;
-  }
-
-  .nav__logo-mark {
-    width: 6rem;
-    height: 1.25rem;
-  }
-
-  /* Set in CSS, not as SVG presentation attributes: those cannot read a
-     custom property, and `font-stretch` does not take a percentage as an
-     attribute — which is exactly the descriptor that selects Mosvita's
-     Expanded master (01 §3.1). */
-  .nav__logo-mark text {
-    fill: var(--color--white);
-    font-family: var(--font--display);
-    font-weight: 900;
-    font-stretch: 125%;
-  }
-
-  /* The menu button. `01 §5.2` specifies the overlay menu it opens but
-     says nothing about the control itself — flagged as a spec gap and
-     built to the existing register (1px rules, no chrome, currentColor
-     so it re-themes with the links).
-
-     It had no visual at all before this: the markup carries a single
-     empty `.nav__toggle-bar` span and nothing ever styled it, so the
-     button rendered 12x2px and invisible. At every mobile width the site
-     had no reachable navigation — collection, the house, journal,
-     contact and the cart were all unreachable on a phone. */
-  .nav__toggle {
-    display: none;
-    position: relative;
-
-    /* 44px is the tap-target floor (WCAG 2.5.5 / iOS HIG). The bars are
-       22px; the rest is deliberate padding, not chrome. */
-    width: 44px;
-    height: 44px;
-    align-items: center;
-    justify-content: center;
-    margin-right: calc(var(--space--2xs) * -1);
-    background: none;
-    border: 0;
-    color: var(--color--white);
-    cursor: pointer;
-  }
-
-  /* Three rules out of one span, so the markup stays as authored. */
-  .nav__toggle-bar,
-  .nav__toggle-bar::before,
-  .nav__toggle-bar::after {
-    display: block;
-    width: 22px;
-    height: 1px;
-    background: currentcolor;
-  }
-
-  .nav__toggle-bar {
-    position: relative;
-  }
-
-  .nav__toggle-bar::before,
-  .nav__toggle-bar::after {
-    content: "";
-    position: absolute;
-    inset-inline-start: 0;
-  }
-
-  .nav__toggle-bar::before {
-    transform: translateY(-7px);
-  }
-
-  .nav__toggle-bar::after {
-    transform: translateY(7px);
-  }
-
-  /* Open: the middle rule goes, the outer two cross. */
-  .nav__toggle[aria-expanded="true"] .nav__toggle-bar {
-    background: transparent;
-  }
-
-  .nav__toggle[aria-expanded="true"] .nav__toggle-bar::before {
-    transform: rotate(45deg);
-  }
-
-  .nav__toggle[aria-expanded="true"] .nav__toggle-bar::after {
-    transform: rotate(-45deg);
-  }
-
-  .nav__menu {
-    display: flex;
-    align-items: center;
-    gap: 2.5rem;
-  }
-
-  .nav__links {
-    display: flex;
-    gap: 2rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .nav__links a,
-  .nav__cart {
-    color: var(--color--white);
-    text-decoration: none;
-    font-size: var(--text--btn);
-  }
-
-  .nav__cart {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: none;
-    border: 0;
-    padding: 0;
-    cursor: pointer;
-  }
-
-  .nav__cart-count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.25rem;
-    height: 1.25rem;
-    padding: 0 0.35rem;
-    border-radius: 50%;
-    background: var(--color--amber);
-    color: var(--color--black);
-    font-size: var(--text--eyebrow);
-  }
-
-  .nav--theme-light .nav__logo-mark text,
-  .nav--theme-light .nav__links a,
-  .nav--theme-light .nav__toggle,
-  .nav--theme-light .nav__cart {
-    fill: var(--color--black);
-    color: var(--color--black);
-  }
-
-  .nav--theme-dark .nav__logo-mark text,
-  .nav--theme-dark .nav__links a,
-  .nav--theme-dark .nav__toggle,
-  .nav--theme-dark .nav__cart {
-    fill: var(--color--white);
-    color: var(--color--white);
-  }
-
-  /* Under a scent-themed section the LINKS STAY WHITE. Phosphor on black is
-     4.47:1 and misses AA at 16px (01 §6.2), and a tinted nav link also
-     reads as an unvisited default link rather than as brand theming.
-     The scent shows in the mark and in an underline marker instead —
-     tint as a light source, not a text colour (01 §6.1). */
-  .nav--theme-scent .nav__links a,
-  .nav--theme-scent .nav__toggle,
-  .nav--theme-scent .nav__cart {
-    color: var(--color--white);
-  }
-
-  .nav--theme-scent .nav__logo-mark text {
-    fill: var(--scent-tint);
-  }
-
-  /* The marker: a rule under the wordmark that only exists while a
-     scent section is in view. */
-  .nav__logo::after {
-    content: "";
-    position: absolute;
-    inset: auto 0 -0.35rem;
-    height: 2px;
-    background: var(--scent-tint);
-    transform: scaleX(0);
-    transform-origin: left center;
-  }
-
-  .nav--theme-scent .nav__logo::after {
-    transform: scaleX(1);
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .nav__logo::after {
-      transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-    .nav__toggle-bar,
-    .nav__toggle-bar::before,
-    .nav__toggle-bar::after {
-      transition:
-        transform 0.3s,
-        background-color 0.3s;
-    }
-  }
-
-  @media (width <= 47.9375rem) {
-    .nav__toggle {
-      display: inline-flex;
-
-      /* The open menu is `position: fixed; inset: 0`, so without this the
-         overlay paints over its own close button. */
-      z-index: 1;
-    }
-
-    .nav__menu {
-      position: fixed;
-      inset: 0;
-      flex-direction: column;
-      justify-content: center;
-      gap: 2rem;
-      background: var(--color--ink-1);
-      transform: translateX(100%);
-      visibility: hidden; /* closed menu stays out of the tab order/AT */
-      transition:
-        transform 0.3s,
-        visibility 0s 0.3s;
-    }
-
-    .nav__menu[data-open="true"] {
-      transform: translateX(0);
-      visibility: visible;
-      transition:
-        transform 0.3s,
-        visibility 0s;
-    }
-
-    .nav__links {
-      flex-direction: column;
-      align-items: center;
-      gap: 1.5rem;
-    }
-
-    /* `01 §5.2`: "links at `--text--h2`". Setting it on the list did
-       nothing — `.nav__links a` sets `--text--btn` and a rule on the
-       anchor outranks an inherited value, so the overlay shipped at 16px.
-       Invisible until the toggle became pressable. */
-    .nav__links a,
-    .nav__cart {
-      font-size: var(--text--h2);
-    }
-  }
-</style>

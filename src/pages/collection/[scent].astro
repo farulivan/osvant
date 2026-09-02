@@ -63,17 +63,22 @@ const rows = [
     data-default-sku={product.variants[0].sku}
   >
     {/* 3.1 scent hero */}
-    <section class="pdp-hero" data-nav-theme="scent">
-      <div class="pdp-hero__column">
-        <div class="pdp-hero__info">
-          <p class="pdp-hero__eyebrow eyebrow" data-eyebrow>
+    <section
+      class="grid min-h-svh grid-cols-2 items-center gap-5 bg-black px-gutter pt-[calc(var(--nav-height)+3rem)] pb-12 max-md:min-h-0 max-md:grid-cols-1 max-md:items-start max-md:pb-32"
+      data-nav-theme="scent"
+    >
+      <div class="flex flex-col gap-10 max-md:order-2">
+        <div>
+          <p class="mb-4 eyebrow text-xs" data-eyebrow>
             batch {product.batch} — eau de parfum
           </p>
-          <h1 class="pdp-hero__name display">
+          <h1
+            class="display text-impact [&_em]:text-scent-tint-text [&_em]:not-italic"
+          >
             <em>{article}</em>{" "}
             {rest.join(" ")}
           </h1>
-          <p class="pdp-hero__character">{product.character}</p>
+          <p class="mt-6 max-w-[28ch] text-2xl">{product.character}</p>
         </div>
 
         {
@@ -81,28 +86,36 @@ const rows = [
           fixed bottom bar ≤767px (03 §3.1). Its own grid area so the
           mobile bar can detach without reflowing the column. */
         }
-        <div class="pdp-buy">
+        <div
+          class="flex flex-wrap items-center gap-x-6 gap-y-4 max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-20 max-md:gap-3 max-md:border-t max-md:border-t-ink-3 max-md:bg-ink-1 max-md:px-gutter max-md:py-4 [&_.btn-primary]:ml-auto max-md:[&_.btn-primary]:ml-0 max-md:[&_.btn-primary]:flex-1 [&_.btn-primary:disabled]:cursor-not-allowed [&_.btn-primary:disabled]:bg-ink-3 [&_.btn-primary:disabled]:text-haze-3"
+        >
           {
             /* One size is not a choice. Rendering it as a lone chip offers
               a control that cannot be operated, and next to the `limited`
               badge the two were indistinguishable (review OSV-26). */
             product.variants.length === 1 ? (
-              <p class="pdp-buy__spec">
+              <p class="flex items-center gap-2 text-base text-haze-2">
                 <span>{product.variants[0].size}</span>
                 {limited && (
                   <>
-                    <span class="pdp-buy__spec-sep" aria-hidden="true">
+                    <span class="text-ink-4" aria-hidden="true">
                       ·
                     </span>
-                    <span class="pdp-buy__badge eyebrow">limited</span>
+                    <span class="rounded-sm bg-[color-mix(in_oklab,var(--color--amber)_16%,transparent)] px-3 py-1.5 eyebrow text-xs text-amber">
+                      limited
+                    </span>
                   </>
                 )}
               </p>
             ) : (
-              <div class="pdp-buy__chips" role="group" aria-label="size">
+              <div
+                class="flex items-center gap-2"
+                role="group"
+                aria-label="size"
+              >
                 {product.variants.map((variant, i) => (
                   <button
-                    class="pdp-buy__chip"
+                    class="cursor-pointer rounded-sm border border-ink-4 bg-transparent px-4 py-2 text-base text-white aria-pressed:border-scent-tint aria-pressed:bg-[color-mix(in_oklab,var(--scent-tint)_18%,transparent)]"
                     type="button"
                     data-size-chip
                     data-sku={variant.sku}
@@ -113,12 +126,16 @@ const rows = [
                     {variant.size}
                   </button>
                 ))}
-                {limited && <span class="pdp-buy__badge eyebrow">limited</span>}
+                {limited && (
+                  <span class="rounded-sm bg-[color-mix(in_oklab,var(--color--amber)_16%,transparent)] px-3 py-1.5 eyebrow text-xs text-amber">
+                    limited
+                  </span>
+                )}
               </div>
             )
           }
 
-          <p class="pdp-buy__price" data-price>
+          <p class="text-xl" data-price>
             €{available[0]?.price ?? product.variants[0].price}
           </p>
 
@@ -129,11 +146,11 @@ const rows = [
                 <button class="btn-primary" type="button" disabled>
                   <span data-btn-label>sold out — next batch soon</span>
                 </button>
-                <form class="pdp-buy__notify" data-notify-form>
-                  <label
-                    class="visually-hidden"
-                    for={`notify-${product.scent}`}
-                  >
+                <form
+                  class="ml-auto flex gap-3 [&_input]:rounded-none [&_input]:border-0 [&_input]:border-b [&_input]:border-b-ink-4 [&_input]:bg-transparent [&_input]:py-2 [&_input]:text-lg [&_input]:text-white [&_input:focus-visible]:border-b-phosphor"
+                  data-notify-form
+                >
+                  <label class="sr-only" for={`notify-${product.scent}`}>
                     Email
                   </label>
                   <input
@@ -143,11 +160,14 @@ const rows = [
                     placeholder="your email"
                     required
                   />
-                  <button class="pdp-buy__notify-btn" type="submit">
+                  <button
+                    class="cursor-pointer border-0 bg-none text-base text-white"
+                    type="submit"
+                  >
                     get notified
                   </button>
                 </form>
-                <p class="pdp-buy__notify-done" data-notify-done hidden>
+                <p class="ml-auto text-xl" data-notify-done hidden>
                   you're in the current.
                 </p>
               </>
@@ -166,7 +186,7 @@ const rows = [
           pointer and keyboard controls to this stage. */
       }
       <div
-        class="pdp-hero__bottle"
+        class="w-full max-w-[min(72vh,40rem)] cursor-grab touch-pan-y place-self-center active:cursor-grabbing max-md:order-1"
         data-pdp-bottle
         tabindex="0"
         role="slider"
@@ -188,20 +208,20 @@ const rows = [
 
     {/* 3.2 note pyramid (M §4.6) */}
     <section
-      class="pyramid"
+      class="bg-black px-gutter py-24"
       data-pyramid
       data-nav-theme="scent"
       aria-label="note pyramid"
     >
       {
         rows.map((row) => (
-          <div class="pyramid__row" data-pyramid-row>
-            <p class="pyramid__eyebrow eyebrow">{row.label}</p>
-            <p class="pyramid__notes display" data-pyramid-notes>
+          <div class="relative py-10" data-pyramid-row>
+            <p class="mb-4 eyebrow text-xs">{row.label}</p>
+            <p class="display text-3xl" data-pyramid-notes>
               {row.notes.join(" · ")}
             </p>
             <span
-              class="pyramid__divider"
+              class="mt-10 block h-px origin-left bg-ink-3"
               data-pyramid-divider
               aria-hidden="true"
             />
@@ -214,19 +234,27 @@ const rows = [
     <FormulaStory product={product} />
 
     {/* 3.4 cross-sell — native overflow-x + scroll-snap (no hijacking) */}
-    <section class="xsell" data-nav-theme="dark" aria-labelledby="xsell-title">
-      <h2 class="xsell__title display" id="xsell-title">also in the current</h2>
-      <ul class="xsell__rail">
+    <section
+      class="bg-black px-gutter pt-16 pb-24"
+      data-nav-theme="dark"
+      aria-labelledby="xsell-title"
+    >
+      <h2 class="mb-8 display text-3xl" id="xsell-title">
+        also in the current
+      </h2>
+      <ul
+        class="m-0 flex snap-x snap-mandatory list-none gap-5 overflow-x-auto p-0"
+      >
         {
           others.map((other) => (
-            <li class="xsell__item">
+            <li class="flex-none basis-64 snap-start">
               <a
-                class="xsell__card"
+                class="flex flex-col gap-2 rounded-sm border border-transparent bg-ink-2 p-5 text-white no-underline motion-safe:[transition:border-color_0.3s] motion-safe:hover:border-scent-tint motion-safe:focus-visible:border-scent-tint"
                 href={withBase(`collection/${other.scent}/`)}
                 data-scent={other.scent}
               >
                 <Image
-                  class="xsell__still"
+                  class="mb-1 aspect-square w-full rounded-sm bg-[radial-gradient(circle_at_50%_55%,color-mix(in_oklab,var(--scent-tint)_22%,transparent),transparent_70%)] object-contain"
                   src={stillFor(other.scent)}
                   alt=""
                   width={320}
@@ -237,13 +265,11 @@ const rows = [
                   loading="lazy"
                   decoding="async"
                 />
-                <span class="xsell__notes eyebrow">
+                <span class="eyebrow text-xs">
                   {summaryNotes(other).join(" · ")}
                 </span>
-                <span class="xsell__name display">{other.name}</span>
-                <span class="xsell__price eyebrow">
-                  €{other.variants[0].price}
-                </span>
+                <span class="display text-xl">{other.name}</span>
+                <span class="eyebrow text-xs">€{other.variants[0].price}</span>
               </a>
             </li>
           ))
@@ -252,351 +278,3 @@ const rows = [
     </section>
   </div>
 </BaseLayout>
-
-<style>
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
-  /* 03 §3.1 — the hero has to FIT one viewport: product, price and
-     add-to-cart all reachable without scrolling. It previously ran to
-     149vh with `align-items: center`, which centred the content out of
-     view and pushed the bottle 291px below the fold (review OSV-05).
-     Rows are sized to content and the whole grid is centred as a block,
-     so the column can never grow taller than the section. */
-  .pdp-hero {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: "column bottle";
-    align-items: center;
-    gap: var(--grid-gap);
-    min-height: 100vh;
-    min-height: 100svh;
-    padding: calc(var(--nav-height) + 3rem) var(--gutter) 3rem;
-    background: var(--color--black);
-  }
-
-  /* Name block and buy row travel together — the bottle spans the full
-     hero height, so any slack has to land outside this column rather
-     than opening a void between the character line and the CTA. */
-  .pdp-hero__column {
-    grid-area: column;
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
-  }
-
-  .pdp-hero__eyebrow {
-    margin: 0 0 var(--space--eyebrow-headline);
-    font-size: var(--text--eyebrow);
-  }
-
-  .pdp-hero__name {
-    margin: 0;
-    font-size: var(--text--impact);
-  }
-
-  .pdp-hero__name em {
-    font-style: normal;
-    color: var(--scent-tint-text);
-  }
-
-  .pdp-hero__character {
-    margin: var(--space--headline-lede) 0 0;
-    font-size: var(--text--lead);
-    max-width: 28ch;
-  }
-
-  /* Bottle stage (03 §3.1) — the light study mounts here (M §8).
-     Capped so the hero always clears one viewport. */
-  .pdp-hero__bottle {
-    grid-area: bottle;
-    place-self: center center;
-    width: 100%;
-    max-width: min(72vh, 40rem);
-
-    /* Horizontal drags move the light; vertical scroll stays native
-       (M §4.4b). */
-    touch-action: pan-y;
-    cursor: grab;
-  }
-
-  .pdp-hero__bottle:active {
-    cursor: grabbing;
-  }
-
-  /* Purchase row — inline in the hero at desktop (03 §3.1) */
-  .pdp-buy {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem 1.5rem;
-  }
-
-  .pdp-buy__chips {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .pdp-buy__chip {
-    padding: 0.5rem 1rem;
-    background: transparent;
-    border: 1px solid var(--color--ink-4);
-    border-radius: var(--radius--xs);
-    color: var(--color--white);
-    font-size: var(--text--btn);
-    cursor: pointer;
-  }
-
-  /* Selected reads as filled, not merely re-bordered. A border-colour
-     swap alone is a weak selected state next to an unselected sibling
-     that also has a border. */
-  .pdp-buy__chip[aria-pressed="true"] {
-    border-color: var(--scent-tint);
-    background: color-mix(in oklab, var(--scent-tint) 18%, transparent);
-    color: var(--color--white);
-  }
-
-  /* Form encodes function (review OSV-26). A CONTROL carries a border and
-     gains a fill when selected; a BADGE is a tinted field with no border,
-     because a border is what the eye reads as "you can press this". The
-     size chip and the limited badge previously shared both, sat adjacent
-     on the fever PDP, and were indistinguishable.
-
-     Amber canonical role: scarcity signal (01 §1 rule 4). */
-  .pdp-buy__badge {
-    padding: 0.375rem 0.75rem;
-    border-radius: var(--radius--xs);
-    background: color-mix(in oklab, var(--color--amber) 16%, transparent);
-    color: var(--color--amber);
-    font-size: var(--text--eyebrow);
-  }
-
-  /* One size is a fact about the product, so it is set as one. */
-  .pdp-buy__spec {
-    display: flex;
-    align-items: center;
-    gap: var(--space--2xs);
-    margin: 0;
-    font-size: var(--text--btn);
-    color: var(--color--haze-2);
-  }
-
-  .pdp-buy__spec-sep {
-    color: var(--color--ink-4);
-  }
-
-  .pdp-buy__price {
-    margin: 0;
-    font-size: var(--text--h5);
-  }
-
-  .pdp-buy .btn-primary {
-    margin-left: auto;
-  }
-
-  /* ≤767px the buy row detaches into the fixed bottom bar the spec asks
-     for — below the nav (100), above page content. */
-  @media (width <= 47.9375rem) {
-    .pdp-hero {
-      grid-template-columns: 1fr;
-      grid-template-areas:
-        "bottle"
-        "column";
-      align-items: start;
-      padding-bottom: 8rem;
-    }
-
-    .pdp-buy {
-      position: fixed;
-      inset: auto 0 0;
-      z-index: 90;
-      gap: 0.75rem 1rem;
-      padding: 1rem var(--gutter);
-      background: var(--color--ink-1);
-      border-top: 1px solid var(--color--ink-3);
-    }
-  }
-
-  .pdp-buy .btn-primary:disabled {
-    background: var(--color--ink-3);
-    color: var(--color--haze-3);
-    cursor: not-allowed;
-  }
-
-  .pdp-buy__notify {
-    display: flex;
-    gap: 0.75rem;
-    margin-left: auto;
-  }
-
-  .pdp-buy__notify input {
-    background: transparent;
-    border: 0;
-    border-bottom: 1px solid var(--color--ink-4);
-    border-radius: 0;
-    color: var(--color--white);
-    padding: 0.5rem 0;
-    font-size: var(--text--body);
-  }
-
-  .pdp-buy__notify input:focus-visible {
-    border-bottom-color: var(--color--phosphor);
-  }
-
-  .pdp-buy__notify-btn {
-    background: none;
-    border: 0;
-    color: var(--color--white);
-    font-size: var(--text--btn);
-    cursor: pointer;
-  }
-
-  /* Size alone lifts this out of the UI around it — the italic serif that
-     used to sit here was decoration on top of that (01 §3.3). */
-  .pdp-buy__notify-done {
-    margin: 0;
-    margin-left: auto;
-    font-size: var(--text--h5);
-  }
-
-  /* Note pyramid (03 §3.2) */
-  .pyramid {
-    padding: var(--space--xl) var(--gutter);
-    background: var(--color--black);
-  }
-
-  .pyramid__row {
-    position: relative;
-    padding: var(--space--m) 0;
-  }
-
-  .pyramid__eyebrow {
-    margin: 0 0 var(--space--eyebrow-headline);
-    font-size: var(--text--eyebrow);
-  }
-
-  .pyramid__notes {
-    margin: 0;
-    font-size: var(--text--h3);
-  }
-
-  .pyramid__divider {
-    display: block;
-    height: 1px;
-    margin-top: var(--space--m);
-    background: var(--color--ink-3);
-    transform-origin: left center;
-  }
-
-  /* Cross-sell (03 §3.4) — native overflow-x + scroll-snap only */
-  .xsell {
-    padding: 4rem var(--gutter) 6rem;
-    background: var(--color--black);
-  }
-
-  .xsell__title {
-    margin: 0 0 2rem;
-    font-size: var(--text--h3);
-  }
-
-  .xsell__rail {
-    display: flex;
-    gap: var(--grid-gap);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-  }
-
-  .xsell__item {
-    flex: 0 0 16rem;
-    scroll-snap-align: start;
-  }
-
-  /* `03 §3.4` asks for a drag-scroll rail with native snap. The rail always
-     had `overflow-x: auto` and `scroll-snap-type`, but four 275x100px
-     boxes never overflowed, so the interaction did not exist (review
-     OSV-25). Cards now carry the bottle still and the scent's own notes,
-     which is both the missing information and the height that makes the
-     rail a rail. */
-  .xsell__card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1.25rem;
-    background: var(--color--ink-2);
-    border: 1px solid transparent;
-    border-radius: var(--radius--xs);
-    text-decoration: none;
-    color: var(--color--white);
-  }
-
-  /* Flat-lit still on the scent's own ambient wash — tint as a light
-     source, never as a text colour (01 §6.1). */
-  .xsell__still {
-    width: 100%;
-    aspect-ratio: 1;
-    margin-bottom: 0.25rem;
-    object-fit: contain;
-    border-radius: var(--radius--xs);
-    background: radial-gradient(
-      circle at 50% 55%,
-      color-mix(in oklab, var(--scent-tint) 22%, transparent),
-      transparent 70%
-    );
-  }
-
-  .xsell__notes {
-    font-size: var(--text--eyebrow);
-  }
-
-  .xsell__name {
-    font-size: var(--text--h5);
-  }
-
-  .xsell__price {
-    font-size: var(--text--eyebrow);
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .xsell__card {
-      transition: border-color 0.3s;
-    }
-
-    .xsell__card:hover,
-    .xsell__card:focus-visible {
-      border-color: var(--scent-tint);
-    }
-  }
-
-  @media (width <= 47.9375rem) {
-    .pdp-hero {
-      grid-template-columns: 1fr;
-      min-height: 0;
-      padding-bottom: 8rem; /* clears the sticky bar */
-    }
-
-    .pdp-buy {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 20;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-
-    .pdp-buy .btn-primary {
-      flex: 1;
-      margin-left: 0;
-    }
-  }
-</style>

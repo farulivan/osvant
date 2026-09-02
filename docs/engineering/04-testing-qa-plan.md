@@ -6,7 +6,9 @@
 
 | Level | Tool | Scope | Gate |
 |---|---|---|---|
-| Static | ESLint, stylelint (token rules `03-eng §4.6`), `tsc` | all code | CI, every PR |
+| Static | ESLint, stylelint (token rules `03-eng §4.6`, `src/styles/*.css`), `tsc` | all code | CI, every PR |
+| Brand guardrails | `check-guardrails.mjs` — reads `dist/**/*.html` | generated CSS, runtime-injected markup, inline styles | CI, every PR |
+| Style parity | `style-parity.mjs` — 46 computed properties per element | refactors that must not change rendering | review tool, not a gate |
 | Unit | Vitest | `lib/commerce.ts` adapter, cart state logic, content schema, module registry | CI, every PR |
 | E2E | Playwright | user flows (§2), overlays, fallbacks | CI, every PR (smoke) + nightly (full) |
 | Visual regression | Playwright screenshots | static states only — animations disabled via reduced-motion emulation | CI, every PR |
@@ -42,13 +44,20 @@ Automated tests cannot judge feel. Weekly build review runs this manually:
 | Gate | Threshold | Tool |
 |---|---|---|
 | `core + transitions` JS | ≤ 350KB gzip (`M §10`) | size-limit |
+| Styles CSS | ≤ 40KB gzip (ADR-019) | size-limit |
 | Lighthouse perf, standard pages | ≥ 90 mobile (brief §6) | LHCI, throttled, Pixel-class emulation |
 | Lighthouse perf, **every page** | ≥ 90 mobile | LHCI |
 | LCP / CLS / INP | ≤ 2.5s / < 0.1 / < 200ms (`M §10`) | LHCI assertions |
 | A11y score | ≥ 95 all pages | LHCI |
 | Bottle still size | ≤ 180KB each at 1× (`M §10`) | asset check script in CI |
+| Horizontal overflow | none, 17 routes × 4 widths | `check-responsive.mjs` |
+| Tap targets | ≥ 24×24 (WCAG 2.5.8) | measured under touch emulation |
 
 LHCI runs against the preview deploy (real CDN), not localhost. Regressions block merge; overrides require a `perf:` label + head-of-eng approval.
+
+**Why the guardrail scan reads the output rather than the source (ADR-017).** stylelint can only see CSS a human typed into a file it is pointed at, which is a strictly smaller set than "CSS that reaches the page". The cart lines were built at runtime with `innerHTML`, so every `.cart-line*` rule matched nothing and neutral grey reached a page whose config forbids it; Tailwind widens the same gap from the other side, since a generated utility is never linted either. Because `inlineStylesheets` keeps small sheets inline and links the shared bundle, the scan reads both.
+
+**The CSS budget could not exist before ADR-019.** `size-limit` watched `dist/**/*.js` only, and while all CSS was inlined into HTML there was nothing to measure. Linking the bundle made it measurable and the gate real.
 
 Post-launch: no RUM by default (zero third-party, ADR-012); field CWV via CrUX/PageSpeed once traffic exists. CloudWatch RUM optional later if wanted.
 

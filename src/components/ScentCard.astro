@@ -25,136 +25,57 @@ const [article, ...rest] = name.split(" ");
 ---
 
 <article
-  class="scent-card"
+  class:list={[
+    "group flex flex-col gap-4 rounded-sm border border-transparent bg-ink-2 p-6",
+    /* 01 §5.3 hover — border goes to the scent tint, bottle drifts -8px. */
+    "motion-safe:[transition:border-color_0.3s,transform_0.5s_var(--ease-expo-out)] motion-safe:focus-within:border-scent-tint motion-safe:hover:border-scent-tint",
+    /* Asymmetric editorial rows (03 §2) — the card owns its own span,
+       because a page-scoped `.grid > :nth-child()` rule can never match a
+       component root (review OSV-04). Spelled out per branch: Tailwind's
+       scanner cannot see a class name built by concatenation. */
+    span === 2 && "col-span-2 max-md:col-auto",
+    span === 3 && "col-span-full max-md:col-auto",
+  ]}
   data-scent={scent}
   data-anim="card"
   data-stagger={stagger}
   data-span={span}
 >
-  <p class="scent-card__eyebrow eyebrow">batch {batch}</p>
-  <h2 class="scent-card__name display">
+  <p class="eyebrow text-xs">batch {batch}</p>
+  {
+    /* The peak rung (01 §3.3): the accent word keeps the display cut and
+      changes only its light. Under a scent scope that is the scent's own
+      tint; at house level --scent-tint-text resolves to white. */
+  }
+  <h2 class="display text-3xl [&_em]:text-scent-tint-text [&_em]:not-italic">
     <em>{article}</em>{" "}
     {rest.join(" ")}
   </h2>
 
-  <div class="scent-card__bottle" aria-hidden="true"></div>
+  {
+    /* Scent-tinted wash, standing in for the bottle render. Bounded height
+      rather than a bare aspect-ratio: once the asymmetric rows apply
+      (review OSV-04) a span-2 card is ~950px wide, and 3/4 of that is a
+      1266px-tall slab. Height still reserves its own space, so the CLS
+      budget is unaffected (M §8.4). */
+  }
+  <div
+    class="h-[clamp(11rem,18vw,18rem)] rounded-media bg-[radial-gradient(ellipse_70%_55%_at_50%_62%,color-mix(in_oklab,var(--scent-tint)_26%,transparent)_0%,transparent_75%)] motion-safe:[transition:transform_0.5s_var(--ease-expo-out)] motion-safe:group-focus-within:-translate-y-2 motion-safe:group-hover:-translate-y-2"
+    aria-hidden="true"
+  >
+  </div>
 
-  <ul class="scent-card__notes eyebrow">
+  <ul class="flex list-none flex-wrap gap-x-3 gap-y-1.5 eyebrow text-xs">
     {notes.map((note) => <li>{note}</li>)}
   </ul>
 
-  <div class="scent-card__footer">
-    <p class="scent-card__price">€{price}</p>
-    <a class="scent-card__discover" href={withBase(`collection/${scent}/`)}>
+  <div class="mt-auto flex items-center justify-between">
+    <p class="text-xl">€{price}</p>
+    <a
+      class="text-base text-white no-underline"
+      href={withBase(`collection/${scent}/`)}
+    >
       <span data-btn-label>discover -&gt;</span>
     </a>
   </div>
 </article>
-
-<style>
-  /* Asymmetric editorial rows (03 §2) — the card owns its own span. */
-  .scent-card[data-span="2"] {
-    grid-column: span 2;
-  }
-
-  .scent-card[data-span="3"] {
-    grid-column: 1 / -1;
-  }
-
-  @media (width <= 47.9375rem) {
-    .scent-card[data-span] {
-      grid-column: auto;
-    }
-  }
-
-  .scent-card {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1.5rem;
-    background: var(--color--ink-2);
-    border: 1px solid transparent;
-    border-radius: var(--radius--xs);
-  }
-
-  .scent-card__eyebrow {
-    margin: 0;
-    font-size: var(--text--eyebrow);
-  }
-
-  .scent-card__name {
-    margin: 0;
-    font-size: var(--text--h3);
-  }
-
-  /* The peak rung (01 §3.3): the accent word keeps the display cut and
-     changes only its light. Under a scent scope this is that scent's tint;
-     at house level --scent-tint-text resolves to white. */
-  .scent-card__name em {
-    font-style: normal;
-    color: var(--scent-tint-text);
-  }
-
-  /* Scent-tinted duotone wash, standing in for the bottle render.
-     Bounded height, not a bare aspect-ratio: once the asymmetric rows
-     actually apply (review OSV-04) a span-2 card is ~950px wide, and
-     3/4 of that is a 1266px-tall slab. Height still reserves its own
-     space, so the CLS budget is unaffected (M §8.4). */
-  .scent-card__bottle {
-    height: clamp(11rem, 18vw, 18rem);
-    border-radius: var(--radius--media);
-    background: radial-gradient(
-      ellipse 70% 55% at 50% 62%,
-      color-mix(in oklab, var(--scent-tint) 26%, transparent) 0%,
-      transparent 75%
-    );
-  }
-
-  .scent-card__notes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.375rem 0.75rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    font-size: var(--text--eyebrow);
-  }
-
-  .scent-card__footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: auto;
-  }
-
-  .scent-card__price {
-    margin: 0;
-    font-size: var(--text--h5);
-  }
-
-  .scent-card__discover {
-    color: var(--color--white);
-    font-size: var(--text--btn);
-    text-decoration: none;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .scent-card,
-    .scent-card__bottle {
-      transition:
-        border-color 0.3s,
-        transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-    }
-
-    /* 01 §5.3 hover — border → --scent-tint, bottle drifts −8px */
-    .scent-card:hover,
-    .scent-card:focus-within {
-      border-color: var(--scent-tint);
-    }
-
-    .scent-card:hover .scent-card__bottle,
-    .scent-card:focus-within .scent-card__bottle {
-      transform: translateY(-8px);
-    }
-  }
-</style>

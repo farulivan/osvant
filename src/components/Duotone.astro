@@ -103,15 +103,41 @@ const {
 // srcset. Modern browsers ignore it, but it ships in the deploy and any
 // client without srcset support downloads it.
 const widest = Math.max(...widths);
+
+// Whether the caller has already taken responsibility for positioning.
+const positioned = /(^|\s)(absolute|fixed|sticky|relative|static)(\s|$)/.test(
+  className ?? "",
+);
 ---
 
 <div
-  class:list={["duotone", strength > 0 && "duotone--graded", className]}
+  class:list={[
+    /* isolation contains the blend so it cannot reach the page behind the
+       image. bg-black is load-bearing WITH it: an isolated group has no
+       backdrop of its own, so where the image is transparent — the keyed
+       bottle detail — the tint layer blends against nothing and paints a
+       flat field of colour. Giving the group the page's own ground makes
+       transparency read as transparency. */
+    "isolate overflow-hidden bg-black",
+    /* `relative` is a DEFAULT, not a fixture. A consumer that positions
+       this component itself (HomeDoors lays the plate out `absolute
+       inset-0` behind its type) must win, and utility order alone cannot
+       decide that — Tailwind emits `.relative` after `.absolute`, so the
+       default would quietly beat the override on every door. */
+    !positioned && "relative",
+    /* Hue and saturation from the tint, luminosity from the photograph,
+       which is what makes this a duotone rather than a colour wash. */
+    strength > 0 &&
+      "after:pointer-events-none after:absolute after:inset-0 after:bg-[var(--duotone-tint)] after:opacity-[var(--duotone-strength)] after:mix-blend-color after:content-['']",
+    strength > 0 &&
+      "[&_img]:[filter:grayscale(1)_contrast(var(--duotone-contrast))_brightness(var(--duotone-exposure))]",
+    className,
+  ]}
   style={`--duotone-tint: ${tint}; --duotone-exposure: ${exposure}; --duotone-contrast: ${contrast}; --duotone-strength: ${strength}; --duotone-fit: ${fit};`}
   aria-hidden={alt === "" ? "true" : undefined}
 >
   <Image
-    class="duotone__media"
+    class="h-full w-full object-[var(--duotone-fit)]"
     src={image}
     alt={alt}
     width={widest}
@@ -124,43 +150,3 @@ const widest = Math.max(...widths);
     fetchpriority={eager ? "high" : "auto"}
   />
 </div>
-
-<style>
-  .duotone {
-    position: relative;
-    overflow: hidden;
-
-    /* Contains the blend so it cannot reach the page behind the image. */
-    isolation: isolate;
-
-    /* Load-bearing with `isolation`: the isolated group has no backdrop
-       of its own, so where the image is transparent — the keyed bottle
-       detail — the tint layer blends against nothing and paints a flat
-       field of colour. Giving the group the page's own ground makes
-       transparency read as transparency. */
-    background: var(--color--black);
-  }
-
-  .duotone__media {
-    width: 100%;
-    height: 100%;
-    object-fit: var(--duotone-fit);
-  }
-
-  .duotone--graded .duotone__media {
-    filter: grayscale(1) contrast(var(--duotone-contrast))
-      brightness(var(--duotone-exposure));
-  }
-
-  /* Hue and saturation from the tint, luminosity from the photograph —
-     which is what makes this a duotone rather than a colour wash. */
-  .duotone--graded::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: var(--duotone-tint);
-    mix-blend-mode: color;
-    opacity: var(--duotone-strength);
-    pointer-events: none;
-  }
-</style>

@@ -105,8 +105,11 @@ Budget gates in CI: `core + transitions` ≤ 350KB gzip (`M §10`); enforced via
 src/
   pages/               # Astro routes
   layouts/             # base shell: head/meta, nav, footer, transition scrim
-  components/          # .astro presentational components (markup + motion hooks)
-  styles/              # tokens.css (01-design-system verbatim), base, utilities
+  components/          # .astro presentational components (markup + motion
+                       #   hooks). Utility-first — no <style> blocks (ADR-016)
+  styles/              # tokens.css (01-design-system verbatim) + the three
+                       #   Tailwind sheets: app.css (entry), light-study.css,
+                       #   dev-light.css (imported by /dev/light alone)
   scripts/
     core/              # scroll.ts, router.ts, transition.ts, nav.ts, cart.ts, track.ts
     modules/           # one file per PageModule (hero, gallery, pyramid, marquee…)
@@ -120,7 +123,8 @@ docs/                  # design + engineering docs (this repo is the source of t
 
 ## 8. Cross-cutting constraints (inherited, non-negotiable)
 
-- Tokens implemented verbatim from `01-design-system.md §2/§3/§4` as `tokens.css` — no ad-hoc values.
+- Tokens implemented verbatim from `01-design-system.md §2/§3/§4` as `tokens.css` — no ad-hoc values. `app.css` **maps** them to Tailwind utilities with `@theme inline` and never restates a value (ADR-015).
+- Styling is utility-first; zero Astro-scoped `<style>` blocks exist and none may be added (ADR-016). CSS survives only for what markup cannot express: the `M §8` light-study layers and classes JavaScript creates or toggles.
 - All scroll work through Lenis; all RAF through `gsap.ticker` — one loop (`M §10` INP guard).
 - Preloader gates fonts + `logo.riv` + `page-transition.riv` + `vapor.riv` only, ~3s cap (RFC A2).
 - Hero `h1` text must be LCP on non-preloader loads — no canvas/image may paint larger above the fold before it.

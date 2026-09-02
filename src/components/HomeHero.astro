@@ -10,143 +10,49 @@
 import { withBase } from "../lib/url";
 ---
 
-<section class="hero" data-nav-theme="dark" data-hero data-nav-transparent>
-  <div class="hero__vapor" data-vapor aria-hidden="true"></div>
+<section
+  class="relative flex min-h-svh flex-col justify-center overflow-hidden bg-black px-gutter"
+  data-nav-theme="dark"
+  data-hero
+  data-nav-transparent
+>
+  <div
+    class="pointer-events-none absolute -inset-[20%] opacity-35 hero-vapor motion-reduce:opacity-20"
+    data-vapor
+    aria-hidden="true"
+  >
+  </div>
 
   <a
-    class="hero__chip"
+    class="absolute top-22 right-gutter flex flex-col gap-1 rounded-sm border border-ink-4 px-4 py-3 text-white no-underline"
     data-hero-chip
     href={withBase("journal/001-batch-002/")}
   >
-    <span class="hero__chip-eyebrow eyebrow">next drop</span>
-    <span class="hero__chip-label">batch 002 — fall</span>
+    <span class="eyebrow text-xs">next drop</span>
+    <span class="text-base">batch 002 — fall</span>
   </a>
 
-  <div class="hero__inner">
-    <p class="hero__eyebrow eyebrow" data-eyebrow>
+  <div class="relative">
+    <p class="mb-4 eyebrow text-xs" data-eyebrow>
       eau de parfum — est. batch 001
     </p>
-    <h1 class="hero__title display" data-anim="split">osvant</h1>
-    <p class="hero__subline whisper" data-hero-subline>
+    <h1 class="display text-impact" data-anim="split">osvant</h1>
+    <p
+      class="mt-6 whisper text-2xl [&_em]:text-white [&_em]:not-italic"
+      data-hero-subline
+    >
       scent <em>beyond</em> the visible
     </p>
   </div>
 
-  <div class="hero__cue">
-    <button class="hero__cue-btn btn-text" type="button" data-hero-cue>
+  <div class="absolute bottom-8 left-gutter flex items-center gap-4">
+    {/* btn-text already sets the reset this element used to restate. */}
+    <button class="btn-text" type="button" data-hero-cue>
       <span data-btn-label>explore the collection</span>
     </button>
-    <span class="hero__cue-line" data-hero-cue-line aria-hidden="true"></span>
+    <span
+      class="block h-12 w-px origin-top bg-haze-3"
+      data-hero-cue-line
+      aria-hidden="true"></span>
   </div>
 </section>
-
-<style>
-  .hero {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 100vh;
-    min-height: 100svh;
-    padding: 0 var(--gutter);
-    overflow: hidden;
-    background: var(--color--black);
-  }
-
-  /* vapor.riv placeholder (ADR-008) — opacity is the intensity channel */
-  .hero__vapor {
-    position: absolute;
-    inset: -20%;
-    background:
-      radial-gradient(
-        ellipse 60% 45% at 50% 60%,
-        var(--color--phosphor-zero) 0%,
-        transparent 70%
-      ),
-      radial-gradient(
-        ellipse 45% 35% at 35% 45%,
-        color-mix(in oklab, var(--color--phosphor) 14%, transparent) 0%,
-        transparent 70%
-      );
-    opacity: 0.35;
-    pointer-events: none;
-  }
-
-  .hero__chip {
-    position: absolute;
-    top: 5.5rem;
-    right: var(--gutter);
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--color--ink-4);
-    border-radius: var(--radius--xs);
-    text-decoration: none;
-    color: var(--color--white);
-  }
-
-  .hero__chip-eyebrow {
-    font-size: var(--text--eyebrow);
-  }
-
-  .hero__chip-label {
-    font-size: var(--text--btn);
-  }
-
-  .hero__inner {
-    position: relative;
-  }
-
-  .hero__eyebrow {
-    margin: 0 0 var(--space--eyebrow-headline);
-    font-size: var(--text--eyebrow);
-  }
-
-  .hero__title {
-    margin: 0;
-    font-size: var(--text--impact);
-  }
-
-  .hero__subline {
-    margin: 1.5rem 0 0;
-    font-size: var(--text--lead);
-  }
-
-  .hero__subline em {
-    font-style: normal;
-    color: var(--color--white);
-  }
-
-  .hero__cue {
-    position: absolute;
-    bottom: 2rem;
-    left: var(--gutter);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .hero__cue-btn {
-    padding: 0;
-    border: 0;
-    background: none;
-    color: var(--color--white);
-    font-size: var(--text--btn);
-    cursor: pointer;
-  }
-
-  .hero__cue-line {
-    display: block;
-    width: 1px;
-    height: 3rem;
-    background: var(--color--haze-3);
-    transform-origin: top;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero__vapor {
-      opacity: 0.2;
-    }
-  }
-</style>

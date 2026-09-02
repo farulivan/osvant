@@ -12,6 +12,18 @@
 3. The accent has a **transparent twin** (`--color--phosphor-zero`) for gradient/fade animation endpoints and an **off state** (`--color--phosphor-off`).
 4. One counter-accent (`--color--amber`) = scarcity/commerce-urgency and error signals ONLY: `limited` chips, cart badge, sold-out states, form error/validation states. Never decorative. (RFC-001 A3/C3)
 
+> **Note added 2026-09-02 — how rule 2 is held now.** `app.css` **overrides**
+> Tailwind's `white` and `black` rather than adding beside them, so
+> `text-white` emits `#f1f5f2` and `bg-black` emits `#0e1110`. There is no
+> named utility anywhere in the build that can produce `#fff` or `#000`,
+> because the two that would have are the house's green-shifted pair.
+>
+> Tailwind's own grey ramps are declared and unused. **The guarantee does not
+> depend on the vocabulary being small** — `pnpm check:guardrails` reads the
+> built output, so `text-gray-500` existing is harmless and *using* it fails
+> CI naming this rule. That check is what made ADR-018's default-first
+> reversal affordable without giving this rule up.
+
 ## 2. Color
 
 ### 2.1 Core tokens
@@ -270,6 +282,41 @@ Note: the reference build sizes its `h2` token above `h1` (research §3.2). We n
 >
 > `scripts/check-responsive.mjs` fails the build if any route overflows again.
 
+> **Amended 2026-09-02 (owner sign-off) — nine of twelve steps now render
+> through Tailwind's default scale (ADR-018).** Owner direction alongside the
+> Tailwind migration: prefer the framework's step wherever one is close,
+> because a utility 1–2px off a token that any Tailwind developer reads
+> instantly beats an exact custom step only this repo understands. **The
+> values above are unchanged as the design intent; what changed is which of
+> them the build actually renders.**
+>
+> | token | specified | build renders | delta |
+> |---|---|---|---|
+> | `--text--btn` / `--text--h6` | 1rem | `text-base` | exact |
+> | `--text--body` | 1.125rem | `text-lg` | exact |
+> | `--text--h4` | 1.5rem | `text-2xl` | exact |
+> | `--text--h5` | 1.2rem | `text-xl` | +0.8px |
+> | `--text--lead` | 1.6rem | `text-2xl` | −1.6px |
+> | `--text--h3` | 2rem | `text-3xl` | −2px |
+> | `--text--eyebrow` | 0.625rem | `text-xs` | **+2px** |
+> | `--text--med` | 2.75rem | `text-5xl` | +4px |
+> | `--text--impact` / `--text--h1` / `--text--h2` | clamp() | **live tokens** | exact |
+>
+> The three fluid steps stay as tokens because Tailwind has no `clamp()`
+> equivalent at any size, and because the *extreme jump* the note above
+> protects depends on them. `--text--eyebrow` at 10px → 12px is the largest
+> proportional move and the one most worth revisiting; 12px is also the
+> friendlier number at `letter-spacing: 0.12em`.
+>
+> **A consequence that needs an owner decision.** `--text--impact`,
+> `--text--h1`, `--text--h2` and `--text--body` are still consumed — the first
+> three through `app.css`'s `@theme inline` map, the last by the `body` rule.
+> The other **eight now have no consumers in the build.** They remain declared
+> in `tokens.css` as the reference the Tailwind steps were chosen against and
+> as the record of this document's intent, but whether they should be deleted
+> or kept is a call this amendment does not make. `--text--med` had zero
+> consumers before this migration too.
+
 ### 3.3 Setting rules
 
 - **Headlines:** Mosvita, `wght` 900, `font-stretch: 125%` (the Expanded cut), `line-height: 1.05–1.2`, **lowercase**. Every heading level takes the same cut — h1 through h5. Hierarchy comes from the §3.2 size scale and from tone, never from weight. Use `.display`.
@@ -297,7 +344,7 @@ Note: the reference build sizes its `h2` token above `h1` (research §3.2). We n
 >
 > **The tone ladder replaces the italic-serif rule.** It is stated here as a rule rather than as tokens because `tokens.css` is implemented verbatim from this document and may not invent values — the ladder composes `--color--white`, `--color--haze-3` and `--scent-tint-text`, all of which already exist in §2.1.
 >
-> `.display`, `.eyebrow` and `.whisper` in `src/styles/base.css` are the only sanctioned implementations. Before this, the eyebrow recipe was hand-copied in 38 places across 17 files and the expanded-headline recipe in 19 across 16 — which is how `line-height` values of 0.8, 0.95 and 1.02 and letter-spacing of −0.01em/−0.02em entered the build with no doc source. Those are normalised back into range by the classes; the footer wordmark is the one survivor, and it is now specified above.
+> `.display`, `.eyebrow` and `.whisper` are the only sanctioned implementations. Since 2026-09-02 they live in `src/styles/app.css` as Tailwind `@utility` definitions rather than in `base.css`, which no longer exists (ADR-016); `.peak` was added alongside them for the ladder's top rung. Being utilities rather than plain classes keeps them single-definition *and* lets them compose with variants — `[&_h3]:display` applies the headline recipe to markdown the article template cannot put a class on, instead of retyping it. Before this, the eyebrow recipe was hand-copied in 38 places across 17 files and the expanded-headline recipe in 19 across 16 — which is how `line-height` values of 0.8, 0.95 and 1.02 and letter-spacing of −0.01em/−0.02em entered the build with no doc source. Those are normalised back into range by the classes; the footer wordmark is the one survivor, and it is now specified above.
 
 ## 4. Layout
 
@@ -342,6 +389,31 @@ Note: the reference build sizes its `h2` token above `h1` (research §3.2). We n
 > the single source of the numbers and are usable in `calc()` and container
 > queries; they are **not** readable by `@media`.
 
+> **Amended 2026-09-02 (owner sign-off) — three of the four now ride
+> Tailwind's breakpoints (ADR-018).** The *rule* above is unchanged and is
+> what matters: four breakpoints, one spelling each. What changed is where two
+> of the boundaries sit.
+>
+> | this doc | build | boundary |
+> |---|---|---|
+> | `tiny` ≤ 479px | `max-tiny` (custom, 30rem) | **identical** — 480px has no near default, `sm` being 160px away |
+> | `mobile` ≤ 767px | `max-md` (< 48rem) | **identical** — the same edge, spelled the way Tailwind spells it |
+> | `tablet` 768–991px | `md:max-lg` (768–1023px) | **+32px** |
+> | `desktop` ≥ 992px | `lg` (≥ 1024px) | **+32px** |
+>
+> The laptop boundary moving 992px → 1024px is a real change and a deliberate
+> one: a 1000px-wide window now gets the tablet layout where it previously got
+> desktop. It buys the whole default breakpoint vocabulary and removes four
+> hand-written `@custom-variant` blocks. Worth revisiting if anything in the
+> 992–1023px band reads wrong.
+>
+> The one-spelling-each guarantee is *stronger* than before, not weaker.
+> Tailwind's default `sm`/`xl`/`2xl` are still declared but unused, and
+> because breakpoints now come from named variants rather than hand-typed
+> literals, a fifth spelling of an existing boundary cannot be written by
+> accident. stylelint's literal allow-list still guards `src/styles/*.css`,
+> which is the only place a raw media query can still appear.
+
 ### 4.3 Radius & elevation
 
 ```css
@@ -353,6 +425,19 @@ Note: the reference build sizes its `h2` token above `h1` (research §3.2). We n
 ```
 
 Predominantly square-cornered (research §3.3). **No drop shadows** — depth comes from surface color steps (`ink-2` on `ink-1` on `black`) and motion parallax, never from `box-shadow`.
+
+> **Amended 2026-09-02 (owner sign-off) — `--radius--xs` renders as
+> `rounded-sm` (ADR-018).** Tailwind's `rounded-sm` is 4px against this
+> token's 3px. One pixel on a chip edge does not justify a custom step, and
+> `rounded-full` is the circle. `--radius--media` stays a live token — `1vw`
+> is fluid and has no default equivalent. *"No other radii exist"* is
+> unchanged and is now enforced by absence as well as by review: a radius the
+> theme does not name has no utility to apply.
+>
+> The `box-shadow` ban moved from a stylelint rule to `pnpm check:guardrails`,
+> which reads the built output (ADR-017). It is strictly stronger — it also
+> sees generated utilities, runtime-injected markup and inline styles, none of
+> which stylelint could reach.
 
 ### 4.4 Spacing scale
 
@@ -384,6 +469,30 @@ for three words on the PDP note pyramid, 488px of nothing above its `h1`,
 and 210px of dead space above the footer — the same inconsistency read as
 low quality across the whole site.
 
+> **Note added 2026-09-02 — this scale IS Tailwind's scale.** Nothing changed
+> here, and that is the point worth recording. Every one of the six steps is
+> an exact Tailwind default, because both are multiples of `0.25rem`:
+>
+> | token | rem | Tailwind |
+> |---|---|---|
+> | `2xs` | 0.5 | `2` |
+> | `xs` | 1 | `4` |
+> | `s` | 1.5 | `6` |
+> | `m` | 2.5 | `10` |
+> | `l` | 4 | `16` |
+> | `xl` | 6 | `24` |
+>
+> So `gap-6` and `p-10` are not approximations of this scale — they are it,
+> spelled the way every Tailwind codebase spells it. The three semantic
+> composites keep their names in `app.css`. This exact correspondence is what
+> made ADR-018's default-first reversal cheap rather than a compromise: the
+> place where exactness mattered most turned out to cost nothing.
+>
+> Two values that were *off* this scale in the pre-migration CSS — `2rem` on
+> the 404/500 stacks and `0.75rem` on the journal cards — are exactly `8` and
+> `3`. Utility-first surfaced both as ordinary steps rather than as the
+> deviations they had been.
+
 ## 5. Components
 
 Every component below lists its motion hook — the class/attribute the animation layer binds to. Markup without these hooks is an incomplete implementation.
@@ -397,6 +506,27 @@ Every component below lists its motion hook — the class/attribute the animatio
 | `btn-text` | label + arrow `->`, no box | arrow shifts 0.4em right on hover, 0.3s |
 
 All buttons: label wrapped in `<span data-btn-label>` (needed for the y-flip label swap animation).
+
+> **Corrected 2026-09-02 — this section had not been updated by ADR-014 or by
+> the §6 contrast amendments.** No new decisions here; it applies ones already
+> signed off elsewhere in this document, which §5 simply fell out of sync with.
+>
+> - **`Archivo 600` → Mosvita SemiBold 600.** Archivo and Instrument Serif were
+>   retired by ADR-014 (§3.1); the house runs one face. The same correction
+>   applies to §5.3's scent card, which still describes `Archivo 800 +
+>   Instrument Serif italic for the article` — that is the **peak rung** of the
+>   §3.3 tone ladder now: same cut, `--scent-tint-text`, no italic and no
+>   second face.
+> - **`btn-primary` black text → `--color--on-phosphor`.** Black on phosphor
+>   measures 4.47:1 and misses AA; §6.2 added the token and the build uses it.
+> - **`btn-secondary` `--color--ink-3` → `--color--ink-4`.** §6.2 scopes ink-3
+>   to decorative rules; a control boundary needs 3:1.
+> - **`--radius--xs` renders as `rounded-sm` (4px)** per the §4.3 amendment.
+>
+> The three variants live in `app.css`'s `@layer components` — they are shared
+> across footer, campaign, PDP and cart, and a component that re-declares one
+> locally is how 404 kept a stale `color: var(--color--black)` and failed
+> contrast on the last page in the build.
 
 ### 5.2 Navigation
 

@@ -1,0 +1,165 @@
+/*
+ * The light study (M §8) — the six compositing layers, as utilities.
+ *
+ * This is the one part of the migration that is NOT better expressed as
+ * utility classes in markup, and the reason is worth stating rather than
+ * assuming. Every layer here is a calc() over --light-angle,
+ * --light-bloom, --light-parallax and --light-tilt; written as arbitrary
+ * values those become 150-250 character class names with underscore-
+ * escaped spaces, which is legal, unreadable and unreviewable. M §8.1
+ * also names these six layers as the design-side contract, and
+ * /dev/light reaches across the component boundary to isolate them by
+ * name.
+ *
+ * So they stay CSS — as `@utility`, so they still sit in the utilities
+ * layer and compose with variants, and in their own file so app.css
+ * stays navigable. The ADR-018 principle is unchanged: reach for a
+ * default first, and keep custom CSS for what genuinely cannot be said
+ * any other way.
+ *
+ * The principle of the study itself: THE OBJECT IS FIXED, THE LIGHT
+ * MOVES. `--light-angle` (0 -> 1) is the ENTIRE interface — scroll drives
+ * it in the gallery (M §4.4), drag drives it on the PDP (M §4.4b), an
+ * ambient oscillation drives it at rest, and nothing else may write to it
+ * (M §8.2).
+ */
+
+@utility light-study {
+  position: relative;
+  display: grid;
+  perspective: 1200px;
+
+  /* Reserves the slot before the image decodes — the CLS budget is
+     unchanged by the light study (M §8.4). */
+  aspect-ratio: 1 / 1;
+  isolation: isolate;
+
+  & > * {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* --- 0. tint wash — slowest parallax (0.4x), blooms on active --- */
+@utility light-study__wash {
+  background: radial-gradient(
+    ellipse 58% 46% at 50% 56%,
+    color-mix(in oklab, var(--scent-tint) 34%, transparent) 0%,
+    transparent 72%
+  );
+  opacity: calc(0.35 + var(--light-bloom) * 0.65);
+  transform: translate3d(
+      calc((var(--light-angle) - 0.5) * -6% + var(--light-parallax) * -0.6),
+      0,
+      0
+    )
+    rotateY(calc(var(--light-tilt) * 1deg));
+}
+
+/* --- 1. caustic — screen, slides inverse to the light --- */
+@utility light-study__caustic {
+  background: radial-gradient(
+    ellipse 26% 12% at 50% 78%,
+    color-mix(in oklab, var(--scent-tint) 60%, transparent) 0%,
+    transparent 70%
+  );
+  filter: blur(18px);
+  mix-blend-mode: screen;
+  opacity: calc(0.5 + var(--light-bloom) * 0.5);
+  transform: translate3d(calc((0.5 - var(--light-angle)) * 46%), 0, 0);
+}
+
+/* --- 2. the bottle — 1x parallax, scales when active --- */
+@utility light-study__bottle {
+  object-fit: contain;
+  transform: rotateY(calc(var(--light-tilt) * 3deg));
+}
+
+/*
+ * --- 3 & 4 — the masked pair.
+ *
+ * Clipped to layer 2's own alpha; there is no separate mask file
+ * (M §8.1). The wrapper carries the mask and is never transformed —
+ * moving a masked element moves its mask with it, which drags a
+ * bottle-shaped ghost across the stage instead of sliding a highlight
+ * along the glass.
+ *
+ * `position: relative` is load-bearing: without it the absolutely
+ * positioned beam resolves against the stage instead of this wrapper,
+ * escapes the overflow clip, and the mask lands out of register.
+ * ---
+ */
+
+/* --- 3. sheen — overlay, tracks the light in position AND angle.
+   Restrained deliberately: at the resting angle (0.5) the band sits dead
+   centre on the glass, so anything stronger flattens the bottle into a
+   bright smear — which is what it did until it was measured against a
+   bottle rather than a thumbnail at an off-centre angle. --- */
+@utility light-study__sheen {
+  position: relative;
+  mask-image: var(--bottle-mask);
+  mask-size: contain;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  overflow: hidden;
+  mix-blend-mode: overlay;
+  opacity: calc(0.22 + var(--light-bloom) * 0.3);
+
+  & .light-study__beam {
+    background: linear-gradient(
+      calc(74deg + (var(--light-angle) - 0.5) * 46deg),
+      transparent 36%,
+      color-mix(in oklab, var(--color--white) 34%, transparent) 47%,
+      color-mix(in oklab, var(--color--white) 10%, transparent) 54%,
+      transparent 64%
+    );
+    transform: translate3d(calc((var(--light-angle) - 0.5) * 46%), 0, 0);
+  }
+}
+
+/* --- 4. rim — screen, tinted, opposite the sheen --- */
+@utility light-study__rim {
+  position: relative;
+  mask-image: var(--bottle-mask);
+  mask-size: contain;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  overflow: hidden;
+  mix-blend-mode: screen;
+  opacity: calc(0.35 + var(--light-bloom) * 0.65);
+
+  & .light-study__beam {
+    background: linear-gradient(
+      calc(254deg + (var(--light-angle) - 0.5) * 46deg),
+      transparent 42%,
+      color-mix(in oklab, var(--scent-tint) 75%, transparent) 60%,
+      transparent 74%
+    );
+    transform: translate3d(calc((0.5 - var(--light-angle)) * 30%), 0, 0);
+  }
+}
+
+/* The beam is wider than its window so travelling never exposes an edge. */
+@utility light-study__beam {
+  position: absolute;
+  inset: 0 -35%;
+  display: block;
+}
+
+/* --- 5. vapor — fastest parallax (1.6x); Rive artboard when it lands --- */
+@utility light-study__vapor {
+  background: radial-gradient(
+    ellipse 44% 34% at 62% 34%,
+    color-mix(in oklab, var(--scent-tint) 18%, transparent) 0%,
+    transparent 68%
+  );
+  mix-blend-mode: screen;
+  opacity: calc(var(--light-bloom) * 0.7);
+  transform: translate3d(
+      calc((var(--light-angle) - 0.5) * 12% + var(--light-parallax) * 0.6),
+      0,
+      0
+    )
+    rotateY(calc(var(--light-tilt) * 5deg));
+}
