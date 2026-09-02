@@ -2,7 +2,7 @@
 
 > One entry per PR: date, PR title, spec sections implemented, deviations/flags raised, notable judgment calls. 3–5 lines each, newest first. Required by `00-implementation-guide.md §9`.
 
-## 2026-09-02 — docs: the LAW and engineering docs catch up with the styling layer (01 §1/§3.2/§3.3/§4.2/§4.3/§4.4/§5.1 amended, 03 §9)
+## 2026-09-02 — docs: the design and engineering docs catch up with the styling layer; "LAW" becomes "normative" (01 §1/§3.2/§3.3/§4.2/§4.3/§4.4/§5.1 amended, 03 §9)
 
 - The migration amended `03-eng §2/§4.6`, the ADRs and `AGENTS.md` as it went; the other seven engineering docs and the design docs still described the old architecture. This closes that gap. No code changed.
 - **`01 §3.2` is the substantive one.** Nine of twelve type steps now render through Tailwind defaults, so the section carries the full per-step table with deltas. The specified values are left standing as the design intent — what the amendment records is which of them the build actually renders. `--text--eyebrow` at 10px → 12px is called out as the largest proportional move and the one most worth revisiting.
@@ -12,6 +12,9 @@
 - **Two pre-existing drifts surfaced by the sweep, both fixed by applying decisions already signed off, neither caused by this migration.** `01 §5.1/§5.3` still specified `Archivo 600` and `Archivo 800 + Instrument Serif italic` — ADR-014 retired both faces in #35 and §5 was never updated. `03-page-specs` said "serif italic" in three places for the same reason. Corrected with notes that say explicitly that no new decision is being made.
 - `00-guide §3/§4/§5`, `01-arch §7/§8`, `04-qa §1/§4` and `05-cicd §2` updated for: default-first, the Tailwind toolchain (`@tailwindcss/vite`, no `tailwind.config.js`), the three stylesheets and why each exists, the guardrail scan and style-parity as test levels, the new CSS budget, and the CI steps.
 - `03 §9`'s three brand boxes are marked *automated* now, and two boxes were added — no scoped `<style>` in a new component, and no property set as a utility on an element whose class JS toggles. That second one is the cascade trap that silently disabled the nav's solid background and its whole theming system before measurement caught it.
+- **Renamed the project's own term of art: `LAW` → `normative`.** The label marked the three design docs as binding specification and was invented here — it reads as shouting and means nothing to anyone who has not read the guide. `normative`, paired with `informative`, is the standard (W3C/IETF/ISO) and needs no glossary. Checked for collisions first: `canonical` was already taken 16× and `binding contract` 6×, while `normative`/`informative` had zero prior uses.
+- The guide now states the distinction explicitly rather than relying on a label — the three design docs are normative, everything else is informative and cannot be cited to justify a value, and the ADRs are normative for *decisions* but never for design values. That last clause was implicit before and is what ADR-018 leaned on.
+- Renamed in the live docs only (`AGENTS.md`, the guide, ADR-015 — the last is in this same unmerged PR). **The ten older worklog entries, the 2026-08-21 design review and merged commit messages keep saying `LAW`**, and a dated note where the term is defined maps the old label to the new one. Renaming vocabulary inside dated records would be the same mistake as editing a superseded ADR to match today's stack.
 - Deliberately NOT touched: `design-review-2026-08-21.md` and `rfc-001` are dated records, and editing them to match today's code would falsify the history the same way editing a superseded ADR would.
 
 ## 2026-09-01 — feat: the last 22 components go utility — zero scoped styles remain (ADR-016 complete)

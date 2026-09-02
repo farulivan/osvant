@@ -14,9 +14,9 @@ Read in this order before writing any code:
 | # | Doc | Role | Authority |
 |---|---|---|---|
 | 1 | `docs/design/00-design-brief.md` | vision, voice, success criteria | canonical (what) |
-| 2 | `docs/design/01-design-system.md` | tokens, type, components | **LAW for all values** |
-| 3 | `docs/design/02-motion-guidelines.md` ("`M`") | easing, recipes, Rive, budgets | **LAW for all motion** |
-| 4 | `docs/design/03-page-specs.md` | per-section specs + acceptance boxes | **LAW for structure** |
+| 2 | `docs/design/01-design-system.md` | tokens, type, components | **normative — all values** |
+| 3 | `docs/design/02-motion-guidelines.md` ("`M`") | easing, recipes, Rive, budgets | **normative — all motion** |
+| 4 | `docs/design/03-page-specs.md` | per-section specs + acceptance boxes | **normative — structure** |
 | 5 | `docs/engineering/02-adrs.md` | why the stack is what it is | decisions record |
 | 6 | `docs/engineering/01-architecture.md` | system + client architecture | canonical (how) |
 | 7 | `docs/engineering/03-engineering-standards.md` | conventions + Definition of Done | merge gate |
@@ -27,7 +27,11 @@ Read in this order before writing any code:
 
 **Notation legend** used everywhere: `M §4.2` = motion guidelines section 4.2 · `01 §5.1` = design-system section 5.1 · `03 §1.5` = page-specs section 1.5 · `RFC B3` = rfc-001 item B3 · `ADR-009` = ADR entry.
 
-**Precedence on conflict:** design docs (01/02/03) > architecture/ADRs > this guide > research doc. Within motion: `M §4` recipes > `M §2` register table (RFC A4). If two LAW docs disagree → stop, flag it (see §7). Never improvise a value.
+**Normative vs informative.** The three design docs (01/02/03) are **normative**: they state binding requirements, and code implements them rather than interpreting them. Everything else is **informative** — it explains, records or contextualises, and cannot be cited to justify a value. `landonorris-design-research.md` and `rfc-001` are informative by construction; the ADRs are normative for *decisions* but never for design values.
+
+> Renamed 2026-09-02. These docs were previously labelled **LAW**, which is what older worklog entries, the 2026-08-21 design review and some commit messages still call them. Same meaning — `normative`/`informative` is the standard pairing (W3C/IETF/ISO) and reads to anyone who has not read this guide.
+
+**Precedence on conflict:** design docs (01/02/03) > architecture/ADRs > this guide > research doc. Within motion: `M §4` recipes > `M §2` register table (RFC A4). If two normative docs disagree → stop, flag it (see §7). Never improvise a value.
 
 ## 3. Non-negotiables (the fastest ways to fail review)
 
@@ -145,7 +149,7 @@ Disambiguation: `batch` = product index by collection order (volt `001` … halo
 ## 7. When to stop and ask (escalation to head of eng)
 
 - A needed value/copy/behavior is missing from the docs (do NOT invent — the RFC process exists for this).
-- Two LAW docs conflict.
+- Two normative docs conflict.
 - A budget is infeasible as spec'd on target hardware (bring measurements, propose per `09-risks` contingency).
 - Anything requires a new runtime dependency, a new route, or touching `docs/design/*` content.
 - An asset fails its `06-assets §2` acceptance spec.

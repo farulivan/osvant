@@ -7,7 +7,7 @@ OSVANT — a fictional luxury fragrance brand site, built as a portfolio showcas
 ## Start here (non-optional)
 
 1. Read `docs/engineering/00-implementation-guide.md` — reading order, build sequence, binding contracts, known traps, escalation rules.
-2. Design docs (`docs/design/01-design-system.md`, `02-motion-guidelines.md`, `03-page-specs.md`) are **LAW** for values, motion and structure. Never invent a value — flag gaps instead (guide §7).
+2. Design docs (`docs/design/01-design-system.md`, `02-motion-guidelines.md`, `03-page-specs.md`) are **normative** for values, motion and structure — binding requirements, not guidance. Everything else is informative. Never invent a value — flag gaps instead (guide §7).
 
 ## Ground rules
 
@@ -24,7 +24,7 @@ OSVANT — a fictional luxury fragrance brand site, built as a portfolio showcas
 - Conventional commits (`feat:`/`fix:`/`perf:`/`docs:`/`chore:`); body explains _why_. AI-assisted commits carry a `Co-authored-by:` trailer.
 - One module/section per PR. PR description links the spec section it implements and quotes its acceptance boxes; visual changes need recordings; mobile screenshots mandatory.
 - Append 3–5 lines per PR to `docs/engineering/worklog.md`: what, spec refs, deviations, judgment calls.
-- Stop and escalate per guide §7: missing values, LAW-doc conflicts, infeasible budgets, new deps/routes, anything touching `docs/design/*` content.
+- Stop and escalate per guide §7: missing values, conflicts between normative docs, infeasible budgets, new deps/routes, anything touching `docs/design/*` content.
 
 ## Commands
 
